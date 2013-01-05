@@ -1,0 +1,108 @@
+Definition of the ByteCode for the Virtual Machine
+--------------------------------------------------
+
+return-register
+---------------
+
+The virtual machine has a special register, which has magically the right size
+for the latest return.
+
+This register is set every time a function was called and a value returned. 
+
+Binary protocol
+---------------
+
+1) Header
+
+	1		Byte version information
+	256		Byte Length of the Binary
+	4		Byte field how many functions are there
+	64		Byte Pointer to function definition position in binary (0 -> appended)
+	4		Byte field how many types are there
+	64		Byte Pointer to types definition position in binary (0 -> appended)
+
+2) Types
+
+	- 8 Byte Type identification
+		0 - Basic type "Byte" which is 8 bit
+		1 - Basic tyoe "Function" which is specially handled
+	- 8 Byte included types count
+	- Type definition: 
+		- n * 8 Byte Type identification
+
+3) Functions
+
+	- 8 Byte function identication, where several core functions are used:
+		1	Main	(Main Function)
+		2	=		(Variable assign)
+		3	return  (return variable)
+		4	+		(Binary plus)
+		5	-		(Binary minus)
+		6	++		(Binary increment)
+		7	--		(Binary decrement)
+		8	<<		(Binary lshift)
+		9	>>		(Binary rshift)
+		10	|		(Binary OR)
+		11	&		(Binary AND)
+		12	<>		(Binary SWAP NIBBLES)
+		13	!		(Binary NOT)
+		14	<		(Binary SMALLER)
+		15	>		(Binary BIGGER)
+
+	- 8 Byte Type identification for return value
+	- 8 Byte Argument Count
+	- Arguments
+		- 8 Byte Argument number (used as variable number inside function block)
+		- 8 Byte Argument type
+
+	- Block
+		- 64 Byte Block length (function call count)
+		- Variable map
+			- 32 Byte Variable map length (in Byte)
+			- n * Variable:
+				- 16 Byte variable number
+				- 8 Byte Type identification
+				- value (length based on type)
+
+		- n Function calls:
+			- 8 Byte function identification
+			- m Byte arguments
+				(Arguments are just values. What to read is known from the fct. def.)
+
+4) Core functions:
+
+	4.1) Main
+		use:		Starting the programm
+		params:		none
+
+	4.2) = (variable assign)
+		use:		assign a value to a variable/symbol
+		params:		variable identification, value 
+
+	4.3) return (return variable)
+		use:		set the return-register to a value 
+		params		value 
+
+	4.4) + (Binary plus)
+		use:		set the return-register to the value results from binary addition of
+					both params
+		params:		value, value
+
+	4.5) - (Binary minus)
+		use:		set the return-register to the value results from binary
+					subtraction of both params
+		params		value, value
+
+	4.6) ++ (Binary increment)
+		use:		set the return-register to the value +1
+		params:		value
+
+	4.7) -- (Binary decrement)
+		use:		set the return-register to the value -1
+		params:		value
+
+	4.8) << (Binary lshift)
+		use:		set the return-register to the value binary shifted left
+		params:		value
+
+	...	
