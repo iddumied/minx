@@ -260,10 +260,6 @@ static void run_command(uint16_t cmd) {
             command_ifzjmp();
             break;
 
-        case C_STARTAT: 
-            command_startat();
-            break;
-
     }
 
 }
@@ -735,19 +731,6 @@ static void command_jmpnz() {
  * if akku is zero then jump else jump
  */
 static void command_ifzjmp() {
-#ifdef DEBUG
-    EXPLAIN_COMMAND();
-#endif
-}
-
-/*
- * Command:                 STARTAT
- * Parameters:              1: address
- * Affects Program Pointer: YES
- *
- * set program pointer to position where to start
- */
-static void command_startat() {
 #ifdef DEBUG
     EXPLAIN_COMMAND();
 #endif

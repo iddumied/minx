@@ -72,8 +72,6 @@ code	|	Short expl.	|	arguments				|	Expl.
 0x42	|	JMPNZ		|	Register, Adress		| jump if register is not zero
 0x43	|	IFZJMP		|	Adress, Adress			| if akku is zero jump, else jump
 
-0x50	|	STARTAT		|	Adress					| Adress of main()
-
 Special: (no support yet, later versions will support them)
 
 0x60	|	LNREG		|	Register				| load value of next register into akku
