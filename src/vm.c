@@ -270,6 +270,25 @@ static void run_command(uint16_t cmd) {
 
 /*
  * Commands 
+ * --------
+ *
+ * (Almost) each command has to modify the command pointer to the byte after 
+ * the command.
+ *
+ * Explanation:
+ *  mov 0x00FF, 0x00FE
+ * takes 
+ *    16 Bit 
+ *  + 64 Bit
+ *  + 64 Bit
+ *  --------
+ *   144 Bit = 18 Byte
+ *
+ * so the program pointer has to be set to 
+ *  program_pointer = program_pointer + 18 Byte
+ *
+ * If the command does affect the program pointer, this has not to be done!
+ *
  */
 
 static void command_return() {
