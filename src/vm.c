@@ -269,6 +269,64 @@ static void run_command(uint16_t cmd) {
 }
 
 /*
+ * Helper function for parsing command parameters
+ * args:
+ *
+ * @param cp            storage for the result 
+ * @param size1         size of argument 1
+ *
+ * Why
+ * ---
+ *
+ *  Have a look at the description for read_2_command_parameters() function.
+ *
+ */
+static CommandParameters* read_1_command_parameter(CommandParameters *cp,
+                                                    unsigned int size1) {
+    uint64_t ptr1_location = program_pointer + COMMAND_SIZE;
+    cp->p1 = minx_binary_get_at( ptr1_location, size1 );
+    
+    return cp;
+}
+
+/*
+ * Helper function for parsing command parameters
+ * args:
+ *
+ * @param cp            storage for the result 
+ * @param size1         size of argument 1
+ * @param offset2       offset of the program_pointer to the value of arg 2
+ * @param size2         size of argument 2
+ *
+ * Why
+ * ---
+ *
+ *  Reading the parameters from the binary is always the same procedure:
+ *      - go to (program_pointer + COMMAND_SIZE )
+ *      - read the value there, it could be a constant or a pointer, doesn't
+ *      matter yet
+ *      - go to (program_pointer + COMMAND_SIZE + <size of prev read data>)
+ *      - read the value there, it could be a constant or a pointer, doesn't
+ *      matter yet
+ *
+ *  and then use this data. The upper part is done by this helper function, to
+ *  simplify the work of the command_ functions.
+ */
+static CommandParameters* read_2_command_parameters(CommandParameters *cp,
+                                                    unsigned int size1,
+                                                    unsigned int offset2,
+                                                    unsigned int size2) {
+
+    uint64_t ptr1_location = program_pointer + COMMAND_SIZE;
+    uint64_t ptr2_location = program_pointer + COMMAND_SIZE + offset2;
+
+    cp->p1 = minx_binary_get_at( ptr1_location, size1 );
+    cp->p2 = minx_binary_get_at( ptr2_location, size2 );
+    
+    return cp;
+}
+
+/*
  * Commands 
  * --------
  *
