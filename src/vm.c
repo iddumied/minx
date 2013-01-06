@@ -8,7 +8,7 @@ static Register             *   registers               = NULL;
 static unsigned int             registers_cnt           = 0;
 
 static Stack                *   stack                   = NULL;
-static CommandParameters    *   command_parameters      = NULL;
+static CommandParameters    *   cmd_p                   = NULL;
 
 /*
  * static functions prototypes
@@ -24,9 +24,7 @@ static void         run                         (void);
  */
 
 static void read_1_command_parameter(unsigned int size1);
-static void read_2_command_parameters(  unsigned int size1,
-                                        unsigned int offset2,
-                                        unsigned int size2);
+static void read_2_command_parameters(unsigned int size1, unsigned int size2);
 
 // static void command_nop();
 static void         command_return(void);
@@ -88,7 +86,7 @@ void minx_vm_run() {
     }
 
     stack = empty_stack();
-    command_parameters = (CommandParameters*) malloc( sizeof( *command_parameters ) );
+    cmd_p = (CommandParameters*) malloc( sizeof(*cmd_p) );
 
     run();
 
@@ -120,7 +118,7 @@ static void new_register() {
 
 static void shutdown() {
     free(registers);
-    free(command_parameters);
+    free(cmd_p);
     stackdelete(stack);
 }
 
@@ -283,7 +281,7 @@ static void run_command(uint16_t cmd) {
  */
 static void read_1_command_parameter(unsigned int size1) {
     uint64_t ptr1_location = program_pointer + COMMAND_SIZE;
-    command_parameters->p1 = minx_binary_get_at( ptr1_location, size1 );
+    cmd_p->p1 = minx_binary_get_at( ptr1_location, size1 );
 }
 
 /*
@@ -291,8 +289,7 @@ static void read_1_command_parameter(unsigned int size1) {
  * args:
  *
  * @param cp            storage for the result 
- * @param size1         size of argument 1
- * @param offset2       offset of the program_pointer to the value of arg 2
+ * @param size1         size of argument 1, used as offset, too
  * @param size2         size of argument 2
  *
  * Why
@@ -309,15 +306,13 @@ static void read_1_command_parameter(unsigned int size1) {
  *  and then use this data. The upper part is done by this helper function, to
  *  simplify the work of the command_ functions.
  */
-static void read_2_command_parameters(  unsigned int size1,
-                                        unsigned int offset2,
-                                        unsigned int size2) {
+static void read_2_command_parameters(unsigned int size1, unsigned int size2) {
 
     uint64_t ptr1_location = program_pointer + COMMAND_SIZE;
-    uint64_t ptr2_location = program_pointer + COMMAND_SIZE + offset2;
+    uint64_t ptr2_location = program_pointer + COMMAND_SIZE + size1;
 
-    command_parameters->p1 = minx_binary_get_at( ptr1_location, size1 );
-    command_parameters->p2 = minx_binary_get_at( ptr2_location, size2 );
+    cmd_p->p1 = minx_binary_get_at( ptr1_location, size1 );
+    cmd_p->p2 = minx_binary_get_at( ptr2_location, size2 );
 }
 
 /*
