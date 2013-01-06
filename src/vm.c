@@ -5,7 +5,9 @@
  */
 
 static Register             *   registers               = NULL;
-static unsigned int             registers_cnt           = 0;
+static uint64_t                 registers_cnt           = 0x0000;
+
+#define register_exists(addr)   (register_cnt >= addr)
 
 static Stack                *   stack                   = NULL;
 static CommandParameters    *   cmd_p                   = NULL;
@@ -114,6 +116,18 @@ static void new_register() {
 #undef curr_r
 
     registers_cnt++;
+}
+
+/*
+ * Allocates registers until 'addr' exists
+ */
+static void new_registers_until(uint64_t addr) {
+#ifdef DEBUG
+    EXPLAIN_FUNCTION();
+#endif 
+    while( !register_exists(addr) ) {
+        new_register();
+    }
 }
 
 /*
