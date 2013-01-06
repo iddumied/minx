@@ -1,32 +1,33 @@
 Much simpler:
 
-registers
----------
+special registers:
+------------------
+Registers 0x00 to 0x0F are special, they are not useable.
 
-- return register / akku 
-- overflow 
-- working registers are allocated on the fly
+- 0x0000	Programm-counter high byte
+- 0x0001	Programm-counter low byte 
+- 0x0002	akku-register
+- 0x0003	status-register 
+	Bit	|	use 
+	----+-------
+	0	|	overflow 
+	1-7	|	not used yet
+- 0x0004	overflow value 
+- 0x0005-0x000F (unused yet)
 
-Register size can be set via command line options
-Adress size can be set via command line options
-Register adress number can be set via command line options.
-
-
-stack
+stack 
 -----
-- infinite size
+- infinite size (only limited by your system)
 - used for both function calls and pushing values
 
-binary protocol
----------------
+codes
+-----
 
-the code is interpreted from begin of file to end of file.
+A opcode is 16 Bit, registers, values and adresses are 64 bit
 
-Commands:
-
-'Register' stands for register number, or 0x00 for Akku
-'Adress' stands for number of byte in code
-'Value' stands for value, size is set dynamically via command line
+'Register'	stands for 64 Bit register address 
+'Value'		stands for 64 Bit value
+'Adress'	stands for 64 Bit code address
 
 code	|	Short expl.	|	arguments				|	Expl.
 --------+---------------+---------------------------+---------------------------
