@@ -1,108 +1,80 @@
-Definition of the ByteCode for the Virtual Machine
---------------------------------------------------
+Much simpler:
 
-return-register
+registers
+---------
+
+- return register / akku 
+- overflow 
+- working registers are allocated on the fly
+
+Register size can be set via command line options
+Adress size can be set via command line options
+Register adress number can be set via command line options.
+
+
+stack
+-----
+- infinite size
+- used for both function calls and pushing values
+
+binary protocol
 ---------------
 
-The virtual machine has a special register, which has magically the right size
-for the latest return.
+the code is interpreted from begin of file to end of file.
 
-This register is set every time a function was called and a value returned. 
+Commands:
 
-Binary protocol
----------------
+'Register' stands for register number, or 0x00 for Akku
+'Adress' stands for number of byte in code
+'Value' stands for value, size is set dynamically via command line
 
-1) Header
+code	|	Short expl.	|	arguments				|	Expl.
+--------+---------------+---------------------------+---------------------------
+0x00	|	NOP			|	none					|
+0x01	|	RET			|	none					| Jump to $(stack pop)
 
-	1		Byte version information
-	256		Byte Length of the Binary
-	4		Byte field how many functions are there
-	64		Byte Pointer to function definition position in binary (0 -> appended)
-	4		Byte field how many types are there
-	64		Byte Pointer to types definition position in binary (0 -> appended)
+0x02	|	MOV			|	Register, Register		|
+0x03	|	MOVI		|	Register, Value			|
 
-2) Types
+0x04	|	NOT			|	Register				| result in akku
+0x05	|	NOTR		|	Register				| result in register
 
-	- 8 Byte Type identification
-		0 - Basic type "Byte" which is 8 bit
-		1 - Basic tyoe "Function" which is specially handled
-	- 8 Byte included types count
-	- Type definition: 
-		- n * 8 Byte Type identification
+0x06	|	AND			|	Register, Register		| result in akku
+0x07	|	ANDI		|	Register, Value			| result in akku
+0x08	|	ANDR		|	Register, Register		| result in register 
+0x09	|	ANDIR		|	Register, Value			| result in register
 
-3) Functions
+0x0A	|	OR			|	Register, Register		| result in akku 
+0x0B	|	ORI			|	Register, Value			| result in akku 
+0x0C	|	ORR			|	Register, Register		| result in register 
+0x0D	|	ORIR		|	Register, Value			| result in register
 
-	- 8 Byte function identication, where several core functions are used:
-		1	Main	(Main Function)
-		2	=		(Variable assign)
-		3	return  (return variable)
-		4	+		(Binary plus)
-		5	-		(Binary minus)
-		6	++		(Binary increment)
-		7	--		(Binary decrement)
-		8	<<		(Binary lshift)
-		9	>>		(Binary rshift)
-		10	|		(Binary OR)
-		11	&		(Binary AND)
-		12	<>		(Binary SWAP NIBBLES)
-		13	!		(Binary NOT)
-		14	<		(Binary SMALLER)
-		15	>		(Binary BIGGER)
+0x0E	|	DEC			|	Register				| result in register 
+0x0F	|	INC			|	Register				| result in register 
 
-	- 8 Byte Type identification for return value
-	- 8 Byte Argument Count
-	- Arguments
-		- 8 Byte Argument number (used as variable number inside function block)
-		- 8 Byte Argument type
+0x10	|	LSH			|	Register				| result in register 
+0x11	|	RSH			|	Register				| result in register 
 
-	- Block
-		- 64 Byte Block length (function call count)
-		- Variable map
-			- 32 Byte Variable map length (in Byte)
-			- n * Variable:
-				- 16 Byte variable number
-				- 8 Byte Type identification
-				- value (length based on type)
+0x20	|	PUSH		|	Register				| push register to stack
+0x21	|	POP			|	Register				| pop from stack into register
+0x22	|	DROP		|	none					| pop from stack and drop
 
-		- n Function calls:
-			- 8 Byte function identification
-			- m Byte arguments
-				(Arguments are just values. What to read is known from the fct. def.)
+0x30	|	ADD			|	Register, Register		| result in akku 
+0x31	|	ADDI		|	Register, Value			| result in akku 
+0x32	|	ADDR		|	Register, Register		| result in register 
+0x33	|	ADDIR		|	Register, Value			| result in register
 
-4) Core functions:
+0x40	|	JMP			|	Adress					| jump to address (number of byte)
+0x41	|	JMPIZ		|	Register, Adress		| jump if register is zero
+0x42	|	JMPNZ		|	Register, Adress		| jump if register is not zero
+0x43	|	IFZJMP		|	Adress, Adress			| if akku is zero jump, else jump
 
-	4.1) Main
-		use:		Starting the programm
-		params:		none
+0x50	|	STARTAT		|	Adress					| Adress of main()
 
-	4.2) = (variable assign)
-		use:		assign a value to a variable/symbol
-		params:		variable identification, value 
+Special: (no support yet, later versions will support them)
+0x60	|	GETP		|	Register				| Write current program pointer to register and next one
+0x61	|	GETPA		|	Adress, Register		| Write adress to register and next register
+0x62	|	SETP		|	Register				| Set current programm pointer to address(register, next register)
 
-	4.3) return (return variable)
-		use:		set the return-register to a value 
-		params		value 
-
-	4.4) + (Binary plus)
-		use:		set the return-register to the value results from binary addition of
-					both params
-		params:		value, value
-
-	4.5) - (Binary minus)
-		use:		set the return-register to the value results from binary
-					subtraction of both params
-		params		value, value
-
-	4.6) ++ (Binary increment)
-		use:		set the return-register to the value +1
-		params:		value
-
-	4.7) -- (Binary decrement)
-		use:		set the return-register to the value -1
-		params:		value
-
-	4.8) << (Binary lshift)
-		use:		set the return-register to the value binary shifted left
-		params:		value
-
-	...	
+0x70	|	LNREG		|	Register				| load value of next register into akku
+0x71	|	LPREG		|	Register				| load value of prev register into akku
