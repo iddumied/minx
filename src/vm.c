@@ -125,8 +125,27 @@ static void shutdown() {
  */
 
 static void run() {
-    uint16_t cmd = minx_consume_bytes( COMMAND_SIZE );
 
+    uint64_t cmd_p;
+    uint16_t cmd;
+
+    while( !program_pointer_is( 0xFFFF ) ) {
+        cmd_p  = get_current_command_ptr();
+        cmd    = minx_binary_get_at(cmd_p, COMMAND_SIZE); 
+        run_command(cmd);
+    }
+
+}
+
+static signed int program_pointer_is( uint64_t val ) {
+    return registers[0].value == val;
+}
+
+static uint64_t get_current_command_ptr() {
+    return registers[0].value;
+}
+
+static void run_command(uint16_t cmd) {
     switch( cmd ) {
 
         case C_RET: 
