@@ -34,7 +34,14 @@ typedef struct {
 
 #define program_pointer (registers[0x0000].value)
 #define akku            (registers[0x0002].value)
+#define statusregister  (registers[0x0003].value)
 
+typedef enum {
+    OVERFLOW_BIT    =   0,
+} StatusBit;
+
+#define setbit(byte,bitnum)     do { byte |=  0x0001<<bitnum; } while(0)
+#define clrbit(byte,bitnum)     do { byte &= !0x0001<<bitnum; } while(0)
 
 /*
  * command parameters parsing helper struct
