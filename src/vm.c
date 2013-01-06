@@ -15,7 +15,6 @@ static CommandParameters    *   cmd_p                   = NULL;
  */
 
 static void         new_register                (void);
-static void         shutdown                    (void);
 static void         run                         (void);
 
 /*
@@ -90,7 +89,9 @@ void minx_vm_run() {
 
     run();
 
-    shutdown();
+    free(registers);
+    free(cmd_p);
+    stackdelete(stack);
 }
 
 /* static functions */
@@ -113,13 +114,6 @@ static void new_register() {
 #undef curr_r
 
     registers_cnt++;
-    
-}
-
-static void shutdown() {
-    free(registers);
-    free(cmd_p);
-    stackdelete(stack);
 }
 
 /*
@@ -681,6 +675,10 @@ static void command_pop() {
 #ifdef DEBUG
     EXPLAIN_COMMAND();
 #endif
+    if( stack_is_empty( stack ) ) {
+        FATAL_DESC_ERROR("Cannot pop from empty stack!");
+    }
+
     read_1_command_parameter(ADDRESS_SIZE);
     registers[cmd_p->p1].value = *((uint64_t*)stackpop(stack));
     
@@ -698,6 +696,10 @@ static void command_drop() {
 #ifdef DEBUG
     EXPLAIN_COMMAND();
 #endif
+    if( stack_is_empty( stack ) ) {
+        FATAL_DESC_ERROR("Cannot drop from empty stack!");
+    }
+
     read_1_command_parameter(ADDRESS_SIZE);
     stackpop(stack);
     
@@ -784,7 +786,12 @@ static void command_jmp() {
     EXPLAIN_COMMAND();
 #endif
     read_1_command_parameter(ADDRESS_SIZE);
-    program_pointer = cmd_p->p1;
+    if( minx_binary_exists_at(cmd_p->p1) ) {
+        program_pointer = cmd_p->p1;
+    }
+    else {
+        FATAL_DESC_ERROR("Cannot jump");
+    }
 }
 
 /*
@@ -799,11 +806,16 @@ static void command_jmpiz() {
     EXPLAIN_COMMAND();
 #endif
     read_2_command_parameters(ADDRESS_SIZE, ADDRESS_SIZE);
-    if( registers[cmd_p->p1].value == 0x0000 ) {
-        program_pointer = cmd_p->p2;
+    if( minx_binary_exists_at(cmp_p->p2) ) {
+        if( registers[cmd_p->p1].value == 0x0000 ) {
+            program_pointer = cmd_p->p2;
+        }
+        else {
+            inc_program_pointer( COMMAND_SIZE + ADDRESS_SIZE + ADDRESS_SIZE );
+        }
     }
     else {
-        inc_program_pointer( COMMAND_SIZE + ADDRESS_SIZE + ADDRESS_SIZE );
+        FATAL_DESC_ERROR("Cannot jump");
     }
 }
 
@@ -819,11 +831,16 @@ static void command_jmpnz() {
     EXPLAIN_COMMAND();
 #endif
     read_2_command_parameters(ADDRESS_SIZE, ADDRESS_SIZE);
-    if( registers[cmd_p->p1].value != 0x0000 ) {
-        program_pointer = cmd_p->p2;
-    }
+    if( minx_binary_exists_at(cmp_p->p2) ) {
+        if( registers[cmd_p->p1].value != 0x0000 ) {
+            program_pointer = cmd_p->p2;
+        }
+        else {
+            inc_program_pointer( COMMAND_SIZE + ADDRESS_SIZE + ADDRESS_SIZE );
+        }
+    } 
     else {
-        inc_program_pointer( COMMAND_SIZE + ADDRESS_SIZE + ADDRESS_SIZE );
+        FATAL_DESC_ERROR("Cannot jump");
     }
 }
 
@@ -839,11 +856,16 @@ static void command_ifzjmp() {
     EXPLAIN_COMMAND();
 #endif
     read_2_command_parameters(ADDRESS_SIZE, ADDRESS_SIZE);
-    if( akku == 0x0000 ) {
-        program_pointer = cmd_p->p1;
-    }
+    if(minx_binary_exists_at(cmp_p->p1) && minx_binary_exists_at(cmd_p->p2)) {
+        if( akku == 0x0000 ) {
+            program_pointer = cmd_p->p1;
+        }
+        else {
+            program_pointer = cmd_p->p2;
+        }
+    } 
     else {
-        program_pointer = cmd_p->p2;
+        FATAL_DESC_ERROR("Cannot jump");
     }
 }
 
