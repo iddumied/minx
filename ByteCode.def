@@ -2,10 +2,10 @@ Much simpler:
 
 special registers:
 ------------------
-Registers 0x00 to 0x0F are special, they are not useable.
+Registers 0x00 to 0x0F are special, they are not useable for program data.
 
-- 0x0000	Programm-counter high byte
-- 0x0001	Programm-counter low byte 
+- 0x0000	Programm-ptr, is zero at init and 0xFFFF at end of programm
+
 - 0x0002	akku-register
 - 0x0003	status-register 
 	Bit	|	use 
@@ -14,6 +14,8 @@ Registers 0x00 to 0x0F are special, they are not useable.
 	1-7	|	not used yet
 - 0x0004	overflow value 
 - 0x0005-0x000F (unused yet)
+
+All other registers are available (if addressable with 64 bit)
 
 stack 
 -----
