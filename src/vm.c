@@ -20,8 +20,13 @@ static void         run                         (void);
 
 /*
  * Commands
- *
+ * --------
  */
+
+static void read_1_command_parameter(unsigned int size1);
+static void read_2_command_parameters(  unsigned int size1,
+                                        unsigned int offset2,
+                                        unsigned int size2);
 
 // static void command_nop();
 static void         command_return(void);
@@ -276,12 +281,9 @@ static void run_command(uint16_t cmd) {
  *  Have a look at the description for read_2_command_parameters() function.
  *
  */
-static CommandParameters* read_1_command_parameter(CommandParameters *cp,
-                                                    unsigned int size1) {
+static void read_1_command_parameter(unsigned int size1) {
     uint64_t ptr1_location = program_pointer + COMMAND_SIZE;
-    cp->p1 = minx_binary_get_at( ptr1_location, size1 );
-    
-    return cp;
+    command_parameters->p1 = minx_binary_get_at( ptr1_location, size1 );
 }
 
 /*
@@ -307,18 +309,15 @@ static CommandParameters* read_1_command_parameter(CommandParameters *cp,
  *  and then use this data. The upper part is done by this helper function, to
  *  simplify the work of the command_ functions.
  */
-static CommandParameters* read_2_command_parameters(CommandParameters *cp,
-                                                    unsigned int size1,
-                                                    unsigned int offset2,
-                                                    unsigned int size2) {
+static void read_2_command_parameters(  unsigned int size1,
+                                        unsigned int offset2,
+                                        unsigned int size2) {
 
     uint64_t ptr1_location = program_pointer + COMMAND_SIZE;
     uint64_t ptr2_location = program_pointer + COMMAND_SIZE + offset2;
 
-    cp->p1 = minx_binary_get_at( ptr1_location, size1 );
-    cp->p2 = minx_binary_get_at( ptr2_location, size2 );
-    
-    return cp;
+    command_parameters->p1 = minx_binary_get_at( ptr1_location, size1 );
+    command_parameters->p2 = minx_binary_get_at( ptr2_location, size2 );
 }
 
 /*
