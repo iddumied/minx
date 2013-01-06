@@ -3,6 +3,6 @@
 
 #include <stdint.h>
 
-uint16_t    minx_consume_bytes(unsigned int bytes_count);
+uint16_t    minx_binary_get_at(uint64_t p, unsigned int number_of_bytes);
 
 #endif // __MINX_BINARY_READER_H__
