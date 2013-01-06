@@ -72,9 +72,15 @@ code	|	Short expl.	|	arguments				|	Expl.
 0x50	|	STARTAT		|	Adress					| Adress of main()
 
 Special: (no support yet, later versions will support them)
-0x60	|	GETP		|	Register				| Write current program pointer to register and next one
-0x61	|	GETPA		|	Adress, Register		| Write adress to register and next register
-0x62	|	SETP		|	Register				| Set current programm pointer to address(register, next register)
 
-0x70	|	LNREG		|	Register				| load value of next register into akku
-0x71	|	LPREG		|	Register				| load value of prev register into akku
+0x60	|	LNREG		|	Register				| load value of next register into akku
+0x61	|	LPREG		|	Register				| load value of prev register into akku
+
+Not supported yet:
+-----------------
+- Pointers to registers
+
+0x70	|	GETP		|	Register				| Write current program pointer to register and next one
+0x71	|	GETPA		|	Adress, Register		| Write adress to register and next register
+0x72	|	SETP		|	Register				| Set current programm pointer to address(register, next register)
+
