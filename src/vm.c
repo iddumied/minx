@@ -1,157 +1,342 @@
 #include "vm.h"
 
 /*
+ * static variables
+ */
+
+static Register *   registers       = NULL;
+static unsigned int registers_cnt   = 0;
+
+static Stack    *   stack           = NULL;
+
+/*
+ * static functions prototypes
+ */
+
+static void         alloc_standard_registers    (void);
+static void         new_register                (void);
+static void         shutdown                    (void);
+static void         run                         (void);
+
+/*
+ * Commands
  *
  */
-#define DEFAULT_TYPES_CNT   2
-struct type {
-    uint64_t ident;
-    uint64_t included_types_cnt;
-    uint64_t *included_types_idents; 
-};
-typedef struct type Type;
 
-struct variable { /* used as argument, too */
-    uint64_t ident;
-    uint64_t type_ident;
-    void * value;
-}
-typedef struct variable Variable
-   
-#define DEFAULT_FUNCTIONS_CNT 15
-struct function {
-    uint64_t ident;
-    uint64_t return_type_ident;
-    uint64_t arg_cnt;
-    Variable * variables; /* used for arguments, too */
-};
-typedef struct function Function;
+// static void command_nop();
+static void         command_return(void);
 
-static Function * functions;
+static void         command_mov(void);
+static void         command_movi(void);
 
-/*
- * Static functions
- */
-static void allocate_basic_types(void);
-static void read_header(void);
-static void read_types(void);
-static void read_functions(void);
+static void         command_not(void);
+static void         command_notr(void);
 
-/*
- * Static variables 
- */
+static void         command_and(void);
+static void         command_andi(void);
+static void         command_andr(void);
+static void         command_andir(void);
 
-static char * version;
-static char * length;
-static char * function_count;
-static char * function_def_ptr; // not supported yet
-static char * type_count;
-static char * type_def_ptr; // not supported yet
+static void         command_or(void);
+static void         command_ori(void);
+static void         command_orr(void);
+static void         command_orir(void);
 
-static Type * types;
+static void         command_dec(void);
+static void         command_inc(void);
+
+static void         command_lsh(void);
+static void         command_rsh(void);
+
+static void         command_push(void);
+static void         command_pop(void);
+static void         command_drop(void);
+
+static void         command_add(void);
+static void         command_addi(void);
+static void         command_addr(void);
+static void         command_addir(void);
+
+static void         command_jmp(void);
+static void         command_jmpiz(void);
+static void         command_jmpnz(void);
+static void         command_ifzjmp(void);
+
+static void         command_startat(void);
+
+/* NOT SUPPORTED YET
+static void         command_lnreg();
+static void         command_lpreg();
+
+static void         command_getp();
+static void         command_getpa();
+*/
 
 /*
  * Functions
  */
 
-void minx_vm_init() {
-    allocate_basic_types();
+void minx_vm_run() {
+    alloc_standard_registers();
+    init_stack();
+    run();
 
-    read_header();
-    read_types();
+    shutdown();
 }
 
-static void allocate_basic_types() {
-    types = (Type*) malloc( sizeof(Type) * DEFAULT_TYPES_CNT );
+/* static functions */
 
-    /* basic type 0: Byte */
-    types[0]->ident                 = 0;
-    types[0]->included_types_cnt    = 0;
-    types[0]->included_types        = NULL;
-
-    /* basic type 1: Function */
-    types[1]->ident                 = 1;
-    types[1]->included_types_cnt    = 0;
-    types[1]->included_types        = NULL;
-
+static void alloc_standard_registers() {
+    for( registers_cnt = 0 ; registers_cnt < 8 ; registers_cnt++ ) {
+        new_register();
+    }
 }
 
-static void allocate_basic_functions() {
-    /* TODO */
+static void init_stack() {
+    stack = empty_stack();
 }
 
-static void read_header() {
-    version          = minx_consume_bytes(L_VERSION);
-    length           = minx_consume_bytes(L_LENGTH);
-    function_count   = minx_consume_bytes(L_FUNCTION_COUNT);
-    function_def_ptr = minx_consume_bytes(L_FUNCTION_DEF_PTR);
-    type_count       = minx_consume_bytes(L_TYPES_COUNT);
-    type_def_ptr     = minx_consume_bytes(L_TYPES_DEF_PTR);
+static void new_register() {
+    if( registers == NULL )
+        registers = (Register*) malloc( sizeof(*registers) );
+    else 
+        registers = (Register*) realloc( registers, sizeof(Register) * (registers_cnt+1) );
+
+#define curr_r (&(registers[registers_cnt]))
+    curr_r->value = (uint64_t*) malloc( sizeof(curr_r->value) );
+
+    if( curr_r->value == NULL ) 
+        FATAL_DESC_ERROR("Could not malloc() space for register");
+
+    memset( &curr_r->value, 0x0, sizeof(curr_r->value));
+#undef curr_r
+
+    registers_cnt++;
     
-    if( minx_option_is_set(OPT_VERBOSE) ) {
-        printf(
-                "minx binary version:    %c\n"
-                "minx binary length:     %s\n"
-                "minx function count:    %s\n"
-                "minx function def ptr:  %s\n"
-                "minx type count:        %s\n"
-                "minx type def ptr:      %s\n",
-
-                version,
-                length,
-                function_count,
-                function_def_ptr,
-                type_count,
-                type_def_ptr);
-    }
 }
 
-static void read_types() {
-    types = (Type *) malloc( sizeof(Type) * (type_count + DEFAULT_TYPES_CNT) );
-    
-    uint64_t i;
-    uint64_t j;
+static void shutdown() {
+    free(registers);
+    stackdelete(stack);
+}
 
-#define curr_t (&(types[i]))
-    for( i = 0 ; i < (uint64_t) *type_count; i++ ) {
-        curr_t->ident              = minx_consume_bytes( L_TYPE_IDENTIFICATION );
-        curr_t->included_types_cnt = minx_consume_bytes( L_TYPE_DEF_INCLUDED_TYPES );
-        
-        curr_t->types_idents = (uint64_t *) malloc( 
-                uint64_t * curr_t->included_types_cnt );
+/*
+ * execution
+ */
 
-        for( j = 0 ; j < curr_t->included_types_cnt ; j++ ) {
-            curr_t->included_types_idents[j] = minx_consume_bytes( L_TYPE_IDENTIFICATION );    
-        }
+static void run() {
+    uint16_t cmd = minx_consume_bytes( COMMAND_SIZE );
+
+    switch( cmd ) {
+
+        case C_RET: 
+            command_return();
+            break;
+
+        case C_MOV: 
+            command_mov();
+            break;
+
+        case C_MOVI: 
+            command_movi();
+            break;
+
+        case C_NOT: 
+            command_not();
+            break;
+
+        case C_NOTR: 
+            command_notr();
+            break;
+
+        case C_AND: 
+            command_and();
+            break;
+
+        case C_ANDI: 
+            command_andi();
+            break;
+
+        case C_ANDR: 
+            command_andr();
+            break;
+
+        case C_ANDIR: 
+            command_andir();
+            break;
+
+        case C_OR: 
+            command_or();
+            break;
+
+        case C_ORI: 
+            command_ori();
+            break;
+
+        case C_ORR: 
+            command_orr();
+            break;
+
+        case C_ORIR: 
+            command_orir();
+            break;
+
+        case C_DEC: 
+            command_dec();
+            break;
+
+        case C_INC: 
+            command_inc();
+            break;
+
+        case C_LSH: 
+            command_lsh();
+            break;
+
+        case C_RSH: 
+            command_rsh();
+            break;
+
+        case C_PUSH: 
+            command_push();
+            break;
+
+        case C_POP: 
+            command_pop();
+            break;
+
+        case C_DROP: 
+            command_drop();
+            break;
+
+        case C_ADD: 
+            command_add();
+            break;
+
+        case C_ADDI: 
+            command_addi();
+            break;
+
+        case C_ADDR: 
+            command_addr();
+            break;
+
+        case C_ADDIR: 
+            command_addir();
+            break;
+
+        case C_JMP: 
+            command_jmp();
+            break;
+
+        case C_JMPIZ: 
+            command_jmpiz();
+            break;
+
+        case C_JMPNZ: 
+            command_jmpnz();
+            break;
+
+        case C_IFZJMP: 
+            command_ifzjmp();
+            break;
+
+        case C_STARTAT: 
+            command_startat();
+            break;
+
     }
-#undef
 
 }
 
-static void read_functions() {
-    uint64_t i, j;
-    functions = (Function*) malloc(sizeof(Function) * (function_count + DEFAULT_FUNCTIONS_CNT));
+/*
+ * Commands 
+ */
 
-#define curr_f (&(functions[i]))
-    for( i = 0 ; i < function_count ; i++ ) {
-        curr_f->ident               = minx_consume_bytes( L_FUNCTION_IDENTIFICATION );
-        curr_f->return_type_ident   = minx_consume_bytes( L_TYPE_IDENTIFICATION );
-        curr_f->arg_cnt             = minx_consume_bytes( L_FUNCTION_ARGUMENT_COUNT );
-
-        /* arguments */
-
-        curr_t->variables = (Variable*) malloc( sizeof(Variable)*curr_f->arg_cnt );
-
-#define curr_v (&(variables[j]))
-        for( j = 0 ; j < curr_f->arg_cnt ; j++ ) {
-            curr_f->curr_v->ident               = minx_consume_bytes( L_FUNCTION_ARGUMENT_NUMBER );
-            curr_f->curr_v->return_type_ident   = minx_consume_bytes( L_TYPE_IDENTIFICATION );
-            curr_f->curr_v->value               = NULL;
-        }
-#undef curr_v
-
-        /* block */
-
-    }
-#undef curr_f
+static void command_return() {
 }
+
+static void command_mov() {
+}
+
+static void command_movi() {
+}
+
+static void command_not() {
+}
+
+static void command_notr() {
+}
+
+static void command_and() {
+}
+
+static void command_andi() {
+}
+
+static void command_andr() {
+}
+
+static void command_andir() {
+}
+
+static void command_or() {
+}
+
+static void command_ori() {
+}
+
+static void command_orr() {
+}
+
+static void command_orir() {
+}
+
+static void command_dec() {
+}
+
+static void command_inc() {
+}
+
+static void command_lsh() {
+}
+
+static void command_rsh() {
+}
+
+static void command_push() {
+}
+
+static void command_pop() {
+}
+
+static void command_drop() {
+}
+
+static void command_add() {
+}
+
+static void command_addi() {
+}
+
+static void command_addr() {
+}
+
+static void command_addir() {
+}
+
+static void command_jmp() {
+}
+
+static void command_jmpiz() {
+}
+
+static void command_jmpnz() {
+}
+
+static void command_ifzjmp() {
+}
+
+static void command_startat() {
+}
+
