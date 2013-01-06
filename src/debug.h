@@ -13,6 +13,11 @@
                                         , __func__, __LINE__);      \
                             } while(0)
 
+#define EXPLAIN_COMMAND_VERBOSE(cmd,string)                                 \
+                                    do{                                     \
+                                        printf("minx command: %s\n\t%s\n",  \
+                                                cmd, string );              \
+                                    } while( 0 );
 #endif //__MINX_DEBUG_H__
 
 #endif //DEBUG
