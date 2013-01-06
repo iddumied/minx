@@ -12,10 +12,13 @@
 
 #include "stack/stack.h"
 
+
 /* defines for size in bytes */
 #define COMMAND_SIZE    2
 #define VALUE_SIZE      8
 #define ADDRESS_SIZE    8
+
+#define IN_BIT(bytes)   (bytes*8)
 
 typedef struct {
     uint64_t * value;
