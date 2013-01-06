@@ -357,6 +357,15 @@ static CommandParameters* read_2_command_parameters(CommandParameters *cp,
  *
  */
 static void command_return() {
+#ifdef DEBUG
+    EXPLAIN_COMMAND();
+#endif
+
+    /*
+     * if (stack_is_empty())
+     *      FATAL_DESC_ERROR("Cannot RET, stack is empty!");
+     */
+    program_pointer = (uint64_t) stackpop();
 }
 
 /*
@@ -367,6 +376,12 @@ static void command_return() {
  *
  */
 static void command_mov() {
+#ifdef DEBUG
+    EXPLAIN_COMMAND();
+#endif
+
+
+    inc_program_pointer( COMMAND_SIZE + ADDRESS_SIZE + ADDRESS_SIZE );
 }
 
 /*
@@ -377,6 +392,12 @@ static void command_mov() {
  *
  */
 static void command_movi() {
+#ifdef DEBUG
+    EXPLAIN_COMMAND();
+#endif
+
+
+    inc_program_pointer( COMMAND_SIZE + ADDRESS_SIZE + VALUE_SIZE );
 }
 
 /*
@@ -387,6 +408,11 @@ static void command_movi() {
  * Result in akku
  */
 static void command_not() {
+#ifdef DEBUG
+    EXPLAIN_COMMAND();
+#endif
+
+    inc_program_pointer( COMMAND_SIZE + ADDRESS_SIZE );
 }
 
 /*
@@ -397,247 +423,334 @@ static void command_not() {
  * Result in same register
  */
 static void command_notr() {
+#ifdef DEBUG
+    EXPLAIN_COMMAND();
+#endif
+ 
+    inc_program_pointer( COMMAND_SIZE + ADDRESS_SIZE );
 }
 
 /*
  * Command:                 AND
- * Parameters:              0
+ * Parameters:              2: register-address register-address
  * Affects Program Pointer: NO
  *
  * result in akku
  */
 static void command_and() {
+#ifdef DEBUG
+    EXPLAIN_COMMAND();
+#endif
+
+    inc_program_pointer( COMMAND_SIZE + ADDRESS_SIZE + ADDRESS_SIZE );
 }
 
 /*
  * Command:                 ANDI
- * Parameters:              0
+ * Parameters:              2: register-address, value
  * Affects Program Pointer: NO
  *
  * Result in akku
  */
 static void command_andi() {
+#ifdef DEBUG
+    EXPLAIN_COMMAND();
+#endif
+
+    inc_program_pointer( COMMAND_SIZE + ADDRESS_SIZE + ADDRESS_SIZE );
 }
 
 /*
  * Command:                 ANDR
- * Parameters:              0
+ * Parameters:              2: register-address, register-address
  * Affects Program Pointer: NO
  *
  * Result in first register
  */
 static void command_andr() {
+#ifdef DEBUG
+    EXPLAIN_COMMAND();
+#endif
+
+    inc_program_pointer( COMMAND_SIZE + ADDRESS_SIZE + ADDRESS_SIZE );
 }
 
 /*
  * Command:                 ANDIR
- * Parameters:              0
+ * Parameters:              2: register-address, value
  * Affects Program Pointer: NO
  *
  * Result in first register
  */
 static void command_andir() {
+#ifdef DEBUG
+    EXPLAIN_COMMAND();
+#endif
+
+    inc_program_pointer( COMMAND_SIZE + ADDRESS_SIZE + VALUE_SIZE);
 }
 
 
 /*
  * Command:                 OR
- * Parameters:              0
+ * Parameters:              2: register-address, register-address
  * Affects Program Pointer: NO
  *
  * Result in akku
  */
 static void command_or() {
+#ifdef DEBUG
+    EXPLAIN_COMMAND();
+#endif
+
+    inc_program_pointer( COMMAND_SIZE + ADDRESS_SIZE + ADDRESS_SIZE );
 }
 
 /*
- * Command: 
- * Parameters:              0
+ * Command:                 ORI 
+ * Parameters:              2: register-address, value
  * Affects Program Pointer: NO
  *
  *
  */
 static void command_ori() {
+#ifdef DEBUG
+    EXPLAIN_COMMAND();
+#endif
 }
 
 /*
- * Command: 
- * Parameters:              0
+ * Command:                 ORR
+ * Parameters:              2: register-address, register-address
  * Affects Program Pointer: NO
  *
  *
  */
 static void command_orr() {
+#ifdef DEBUG
+    EXPLAIN_COMMAND();
+#endif
 }
 
 /*
- * Command: 
- * Parameters:              0
+ * Command:                 ORIR
+ * Parameters:              2: register-address, value
  * Affects Program Pointer: NO
  *
  *
  */
 static void command_orir() {
+#ifdef DEBUG
+    EXPLAIN_COMMAND();
+#endif
 }
 
 /*
- * Command: 
- * Parameters:              0
+ * Command:                 DEC
+ * Parameters:              1: register-address
  * Affects Program Pointer: NO
  *
  *
  */
 static void command_dec() {
+#ifdef DEBUG
+    EXPLAIN_COMMAND();
+#endif
 }
 
 /*
- * Command: 
- * Parameters:              0
+ * Command:                 INC
+ * Parameters:              1: register-address
  * Affects Program Pointer: NO
  *
  *
  */
 static void command_inc() {
+#ifdef DEBUG
+    EXPLAIN_COMMAND();
+#endif
 }
 
 /*
- * Command: 
- * Parameters:              0
+ * Command:                 LSH
+ * Parameters:              1: register-address
  * Affects Program Pointer: NO
  *
  *
  */
 static void command_lsh() {
+#ifdef DEBUG
+    EXPLAIN_COMMAND();
+#endif
 }
 
 /*
- * Command: 
- * Parameters:              0
+ * Command:                 RSH
+ * Parameters:              1: register-address
  * Affects Program Pointer: NO
  *
  *
  */
 static void command_rsh() {
+#ifdef DEBUG
+    EXPLAIN_COMMAND();
+#endif
 }
 
 /*
- * Command: 
- * Parameters:              0
+ * Command:                 PUSH
+ * Parameters:              1: register-address
  * Affects Program Pointer: NO
  *
  *
  */
 static void command_push() {
+#ifdef DEBUG
+    EXPLAIN_COMMAND();
+#endif
 }
 
 /*
- * Command: 
- * Parameters:              0
+ * Command:                 POP
+ * Parameters:              1: register-address
  * Affects Program Pointer: NO
  *
  *
  */
 static void command_pop() {
+#ifdef DEBUG
+    EXPLAIN_COMMAND();
+#endif
 }
 
 /*
- * Command: 
+ * Command:                 DROP
  * Parameters:              0
  * Affects Program Pointer: NO
  *
  *
  */
 static void command_drop() {
+#ifdef DEBUG
+    EXPLAIN_COMMAND();
+#endif
 }
 
 /*
- * Command: 
- * Parameters:              0
+ * Command:                 ADD
+ * Parameters:              2: register-address, register-address
  * Affects Program Pointer: NO
  *
- *
+ * Result in akku
  */
 static void command_add() {
+#ifdef DEBUG
+    EXPLAIN_COMMAND();
+#endif
 }
 
 /*
- * Command: 
- * Parameters:              0
+ * Command:                 ADDI
+ * Parameters:              2: register-address, value
  * Affects Program Pointer: NO
  *
- *
+ * Result in akku
  */
 static void command_addi() {
+#ifdef DEBUG
+    EXPLAIN_COMMAND();
+#endif
 }
 
 /*
- * Command: 
- * Parameters:              0
+ * Command:                 ADDR
+ * Parameters:              2: register-address, register-address
  * Affects Program Pointer: NO
  *
- *
+ * Result in register
  */
 static void command_addr() {
+#ifdef DEBUG
+    EXPLAIN_COMMAND();
+#endif
 }
 
 /*
- * Command: 
- * Parameters:              0
+ * Command:                 ADDIR
+ * Parameters:              2: register-address, value
  * Affects Program Pointer: NO
  *
- *
+ * Result in register
  */
 static void command_addir() {
+#ifdef DEBUG
+    EXPLAIN_COMMAND();
+#endif
 }
 
 /*
- * Command: 
- * Parameters:              0
- * Affects Program Pointer: NO
+ * Command:                 JMP
+ * Parameters:              1: address
+ * Affects Program Pointer: YES
  *
  *
  */
 static void command_jmp() {
+#ifdef DEBUG
+    EXPLAIN_COMMAND();
+#endif
 }
 
 /*
- * Command: 
- * Parameters:              0
- * Affects Program Pointer: NO
+ * Command:                 JMPIZ
+ * Parameters:              2: register-address, address
+ * Affects Program Pointer: YES
  *
  *
  */
 static void command_jmpiz() {
+#ifdef DEBUG
+    EXPLAIN_COMMAND();
+#endif
 }
 
 /*
- * Command: 
- * Parameters:              0
- * Affects Program Pointer: NO
+ * Command:                 JMPNZ
+ * Parameters:              2: register-address, address
+ * Affects Program Pointer: YES
  *
  *
  */
 static void command_jmpnz() {
+#ifdef DEBUG
+    EXPLAIN_COMMAND();
+#endif
 }
 
 /*
- * Command: 
- * Parameters:              0
- * Affects Program Pointer: NO
+ * Command:                 IFZJMP
+ * Parameters:              2: address, address 
+ * Affects Program Pointer: YES
  *
- *
+ * if akku is zero then jump else jump
  */
 static void command_ifzjmp() {
+#ifdef DEBUG
+    EXPLAIN_COMMAND();
+#endif
 }
 
 /*
- * Command: 
- * Parameters:              0
- * Affects Program Pointer: NO
+ * Command:                 STARTAT
+ * Parameters:              1: address
+ * Affects Program Pointer: YES
  *
- *
+ * set program pointer to position where to start
  */
 static void command_startat() {
+#ifdef DEBUG
+    EXPLAIN_COMMAND();
+#endif
 }
 
 /*
