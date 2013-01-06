@@ -1,0 +1,10 @@
+TODO:
+
+- There is no check function if a register exists before accessing it.
+- Registers have to be allocated on the fly, but if a command accesses 
+	
+	register 0xFF 
+
+  all registers from 0x00 to 0xFF have to be allocated.
+
+  -> Store the registers in a MAP, maybe the one from next utilc version?
