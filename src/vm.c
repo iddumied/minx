@@ -4,16 +4,16 @@
  * static variables
  */
 
-static Register *   registers       = NULL;
-static unsigned int registers_cnt   = 0;
+static Register             *   registers               = NULL;
+static unsigned int             registers_cnt           = 0;
 
-static Stack    *   stack           = NULL;
+static Stack                *   stack                   = NULL;
+static CommandParameters    *   command_parameters      = NULL;
 
 /*
  * static functions prototypes
  */
 
-static void         alloc_standard_registers    (void);
 static void         new_register                (void);
 static void         shutdown                    (void);
 static void         run                         (void);
@@ -77,8 +77,14 @@ static void         command_getpa();
  */
 
 void minx_vm_run() {
-    alloc_standard_registers();
-    init_stack();
+    /* alloc standard registers */
+    for( registers_cnt = 0 ; registers_cnt < 8 ; registers_cnt++ ) {
+        new_register();
+    }
+
+    stack = empty_stack();
+    command_parameters = (CommandParameters*) malloc( sizeof( *command_parameters ) );
+
     run();
 
     shutdown();
@@ -86,21 +92,13 @@ void minx_vm_run() {
 
 /* static functions */
 
-static void alloc_standard_registers() {
-    for( registers_cnt = 0 ; registers_cnt < 8 ; registers_cnt++ ) {
-        new_register();
-    }
-}
-
-static void init_stack() {
-    stack = empty_stack();
-}
-
 static void new_register() {
-    if( registers == NULL )
+    if( registers == NULL ) {
         registers = (Register*) malloc( sizeof(*registers) );
-    else 
+    }
+    else {
         registers = (Register*) realloc( registers, sizeof(Register) * (registers_cnt+1) );
+    }
 
 #define curr_r (&(registers[registers_cnt]))
     curr_r->value = (uint64_t*) malloc( sizeof(curr_r->value) );
@@ -117,6 +115,7 @@ static void new_register() {
 
 static void shutdown() {
     free(registers);
+    free(command_parameters);
     stackdelete(stack);
 }
 
