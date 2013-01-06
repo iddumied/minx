@@ -32,10 +32,6 @@ typedef struct {
 
 /* register aliases */
 
-#define program_pointer (registers[0x0000].value)
-#define akku            (registers[0x0002].value)
-#define statusregister  (registers[0x0003].value)
-
 typedef enum {
     OVERFLOW_BIT    =   0,
 } StatusBit;

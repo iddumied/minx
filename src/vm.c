@@ -2,71 +2,67 @@
 
 /*
  * static variables
+ * ----------------
  */
 
-static Register             *   registers               = NULL;
-static uint64_t                 registers_cnt           = 0x0000;
+static Register             *   registers       = NULL;
+static uint64_t                 registers_cnt   = 0x0000;
 
-#define register_exists(addr)   (register_cnt >= addr)
-
-static Stack                *   stack                   = NULL;
-static CommandParameters    *   cmd_p                   = NULL;
+static Stack                *   stack           = NULL;
+static CommandParameters    *   cmd_p           = NULL;
 
 /*
  * static functions prototypes
+ * ---------------------------
  */
 
 static void         new_register                (void);
 static void         run                         (void);
 
-/*
- * Commands
- * --------
- */
-
-static void read_1_command_parameter(unsigned int size1);
-static void read_2_command_parameters(unsigned int size1, unsigned int size2);
+static void         read_1_command_parameter    (unsigned int size1);
+static void         read_2_command_parameters   (unsigned int size1, 
+                                                 unsigned int size2);
 
 // static void command_nop();
-static void         command_return(void);
+static void         command_return              (void);
 
-static void         command_mov(void);
-static void         command_movi(void);
+static void         command_mov                 (void);
+static void         command_movi                (void);
 
-static void         command_not(void);
-static void         command_notr(void);
+static void         command_not                 (void);
+static void         command_notr                (void);
 
-static void         command_and(void);
-static void         command_andi(void);
-static void         command_andr(void);
-static void         command_andir(void);
+static void         command_and                 (void);
+static void         command_andi                (void);
+static void         command_andr                (void);
+static void         command_andir               (void);
 
-static void         command_or(void);
-static void         command_ori(void);
-static void         command_orr(void);
-static void         command_orir(void);
+static void         command_or                  (void);
+static void         command_ori                 (void);
+static void         command_orr                 (void);
+static void         command_orir                (void);
 
-static void         command_dec(void);
-static void         command_inc(void);
+static void         command_dec                 (void);
+static void         command_inc                 (void);
 
-static void         command_lsh(void);
-static void         command_rsh(void);
+static void         command_lsh                 (void);
+static void         command_rsh                 (void);
 
-static void         command_push(void);
-static void         command_pop(void);
-static void         command_drop(void);
+static void         command_push                (void);
+static void         command_pop                 (void);
+static void         command_drop                (void);
 
-static void         command_add(void);
-static void         command_addi(void);
-static void         command_addr(void);
-static void         command_addir(void);
+static void         command_add                 (void);
+static void         command_addi                (void);
+static void         command_addr                (void);
+static void         command_addir               (void);
 
-static void         command_jmp(void);
-static void         command_jmpiz(void);
-static void         command_jmpnz(void);
-static void         command_ifzjmp(void);
+static void         command_jmp                 (void);
+static void         command_jmpiz               (void);
+static void         command_jmpnz               (void);
+static void         command_ifzjmp              (void);
 
-static void         command_startat(void);
+static void         command_startat             (void);
 
 /* NOT SUPPORTED YET
 static void         command_lnreg();
@@ -77,7 +73,19 @@ static void         command_getpa();
 */
 
 /*
+ * "static" macros 
+ * ---------------
+ */ 
+#define program_pointer                 (registers[0x0000].value)
+#define akku                            (registers[0x0002].value)
+#define statusregister                  (registers[0x0003].value)
+
+#define register_exists(addr)           (register_cnt >= addr)
+#define program_pointer_is(val)         (program_pointer == val)
+
+/*
  * Functions
+ * ---------
  */
 
 void minx_vm_run() {
@@ -96,7 +104,10 @@ void minx_vm_run() {
     stackdelete(stack);
 }
 
-/* static functions */
+/* 
+ * static functions 
+ * ----------------
+ */
 
 static void new_register() {
     if( registers == NULL ) {
@@ -131,28 +142,19 @@ static void new_registers_until(uint64_t addr) {
 }
 
 /*
- * execution
+ * run function 
+ *
+ * runs the vm.  
  */
-
 static void run() {
 
-    uint64_t cmd_p;
     uint16_t cmd;
 
     while( !program_pointer_is( 0xFFFF ) ) {
-        cmd_p  = get_current_command_ptr();
-        cmd    = minx_binary_get_at(cmd_p, COMMAND_SIZE); 
+        cmd    = minx_binary_get_at(program_pointer, COMMAND_SIZE); 
         run_command(cmd);
     }
 
-}
-
-static signed int program_pointer_is( uint64_t val ) {
-    return registers[0].value == val;
-}
-
-static uint64_t get_current_command_ptr() {
-    return registers[0].value;
 }
 
 static void run_command(uint16_t cmd) {
@@ -890,3 +892,15 @@ static void command_ifzjmp() {
 static void inc_program_pointer(uint64_t number_of_bytes) {
     registers[0].value += number_of_bytes;
 }
+
+
+/*
+ * "static" macros undef  
+ * ---------------------
+ */ 
+#undef program_pointer
+#undef akku
+#undef statusregister
+
+#undef register_exists
+#undef program_pointer_is
