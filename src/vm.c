@@ -369,6 +369,8 @@ static void command_mov() {
     EXPLAIN_COMMAND();
 #endif
 
+    read_2_command_parameters(ADDRESS_SIZE, ADDRESS_SIZE);
+    registers[cmd_p->p1].value = registers[cmd_p->p2];
 
     inc_program_pointer( COMMAND_SIZE + ADDRESS_SIZE + ADDRESS_SIZE );
 }
@@ -385,6 +387,8 @@ static void command_movi() {
     EXPLAIN_COMMAND();
 #endif
 
+    read_2_command_parameters(ADDRESS_SIZE, VALUE_SIZE);
+    registers[cmd_p->p1].value  =   cmd_p->p2;
 
     inc_program_pointer( COMMAND_SIZE + ADDRESS_SIZE + VALUE_SIZE );
 }
@@ -401,6 +405,9 @@ static void command_not() {
     EXPLAIN_COMMAND();
 #endif
 
+    read_1_command_parameter(ADDRESS_SIZE);
+    akku = ! registers[cmd_p->p1].value;
+
     inc_program_pointer( COMMAND_SIZE + ADDRESS_SIZE );
 }
 
@@ -415,6 +422,9 @@ static void command_notr() {
 #ifdef DEBUG
     EXPLAIN_COMMAND();
 #endif
+
+    read_1_command_parameter(ADDRESS_SIZE);
+    registers[cmd_p->p1].value = ! registers[cmd_p->p1].value;
  
     inc_program_pointer( COMMAND_SIZE + ADDRESS_SIZE );
 }
@@ -431,6 +441,9 @@ static void command_and() {
     EXPLAIN_COMMAND();
 #endif
 
+    read_2_command_parameters(ADDRESS_SIZE, ADDRESS_SIZE);
+    akku = registers[cmd_p->p1].value & registers[cmd_p->p2].value;
+
     inc_program_pointer( COMMAND_SIZE + ADDRESS_SIZE + ADDRESS_SIZE );
 }
 
@@ -445,6 +458,9 @@ static void command_andi() {
 #ifdef DEBUG
     EXPLAIN_COMMAND();
 #endif
+
+    read_2_command_parameters(ADDRESS_SIZE, VALUE_SIZE);
+    akku = registers[cmd_p->p1].value & cmd_p->p2;
 
     inc_program_pointer( COMMAND_SIZE + ADDRESS_SIZE + ADDRESS_SIZE );
 }
@@ -461,6 +477,9 @@ static void command_andr() {
     EXPLAIN_COMMAND();
 #endif
 
+    read_2_command_parameters(ADDRESS_SIZE, ADDRESS_SIZE);
+    registers[cmd_p->p1].value &= registers[cmd_p->p2].value;
+
     inc_program_pointer( COMMAND_SIZE + ADDRESS_SIZE + ADDRESS_SIZE );
 }
 
@@ -475,6 +494,9 @@ static void command_andir() {
 #ifdef DEBUG
     EXPLAIN_COMMAND();
 #endif
+
+    read_2_command_parameters(ADDRESS_SIZE, VALUE_SIZE);
+    registers[cmd_p->p1].value &= cmd_p->p2;
 
     inc_program_pointer( COMMAND_SIZE + ADDRESS_SIZE + VALUE_SIZE);
 }
@@ -492,6 +514,9 @@ static void command_or() {
     EXPLAIN_COMMAND();
 #endif
 
+    read_2_command_parameters(ADDRESS_SIZE, ADDRESS_SIZE);
+    akku = registers[cmd_p->p1].value | registers[cmd_p->p2].value;
+
     inc_program_pointer( COMMAND_SIZE + ADDRESS_SIZE + ADDRESS_SIZE );
 }
 
@@ -506,6 +531,11 @@ static void command_ori() {
 #ifdef DEBUG
     EXPLAIN_COMMAND();
 #endif
+
+    read_2_command_parameters(ADDRESS_SIZE, VALUE_SIZE);
+    akku = registers[cmd_p->p1].value | cmd_p->p2;
+
+    inc_program_pointer( COMMAND_SIZE + ADDRESS_SIZE + VALUE_SIZE);
 }
 
 /*
@@ -519,6 +549,11 @@ static void command_orr() {
 #ifdef DEBUG
     EXPLAIN_COMMAND();
 #endif
+
+    read_2_command_parameters(ADDRESS_SIZE, ADDRESS_SIZE);
+    registers[cmd_p->p1].value |= registers[cmd_p->p2].value;
+
+    inc_program_pointer( COMMAND_SIZE + ADDRESS_SIZE + ADDRESS_SIZE);
 }
 
 /*
@@ -532,6 +567,11 @@ static void command_orir() {
 #ifdef DEBUG
     EXPLAIN_COMMAND();
 #endif
+
+    read_2_command_parameters(ADDRESS_SIZE, VALUE_SIZE);
+    registers[cmd_p->p1].value |= cmd_p->p2;
+
+    inc_program_pointer( COMMAND_SIZE + ADDRESS_SIZE + VALUE_SIZE);
 }
 
 /*
@@ -545,6 +585,16 @@ static void command_dec() {
 #ifdef DEBUG
     EXPLAIN_COMMAND();
 #endif
+
+    read_1_command_parameter(ADDRESS_SIZE);
+
+    if( registers[cmd_p->p1].value == 0x0000 ) {
+        setbit(statusregister, OVERFLOW_BIT);
+    }
+
+    registers[cmd_p->p1].value--;
+    
+    inc_program_pointer(COMMAND_SIZE + ADDRESS_SIZE);
 }
 
 /*
@@ -558,6 +608,15 @@ static void command_inc() {
 #ifdef DEBUG
     EXPLAIN_COMMAND();
 #endif
+    read_1_command_parameter(ADDRESS_SIZE);
+
+    if( registers[cmd_p->p1].value == 0xFFFF ) {
+        setbit(statusregister, OVERFLOW_BIT);
+    }
+
+    registers[cmd_p->p1].value++;
+    
+    inc_program_pointer(COMMAND_SIZE + ADDRESS_SIZE);
 }
 
 /*
@@ -571,6 +630,10 @@ static void command_lsh() {
 #ifdef DEBUG
     EXPLAIN_COMMAND();
 #endif
+    read_1_command_parameter(ADDRESS_SIZE);
+    registers[cmd_p->p1].value<<1;
+    
+    inc_program_pointer(COMMAND_SIZE + ADDRESS_SIZE);
 }
 
 /*
@@ -584,6 +647,10 @@ static void command_rsh() {
 #ifdef DEBUG
     EXPLAIN_COMMAND();
 #endif
+    read_1_command_parameter(ADDRESS_SIZE);
+    registers[cmd_p->p1].value>>1;
+    
+    inc_program_pointer(COMMAND_SIZE + ADDRESS_SIZE);
 }
 
 /*
@@ -597,6 +664,10 @@ static void command_push() {
 #ifdef DEBUG
     EXPLAIN_COMMAND();
 #endif
+    read_1_command_parameter(ADDRESS_SIZE);
+    stackpush(stack, &(registers[cmd_p->p1].value), VALUE_SIZE) ;
+    
+    inc_program_pointer(COMMAND_SIZE + ADDRESS_SIZE);
 }
 
 /*
@@ -610,6 +681,10 @@ static void command_pop() {
 #ifdef DEBUG
     EXPLAIN_COMMAND();
 #endif
+    read_1_command_parameter(ADDRESS_SIZE);
+    registers[cmd_p->p1].value = *((uint64_t*)stackpop(stack));
+    
+    inc_program_pointer(COMMAND_SIZE + ADDRESS_SIZE);
 }
 
 /*
@@ -623,6 +698,10 @@ static void command_drop() {
 #ifdef DEBUG
     EXPLAIN_COMMAND();
 #endif
+    read_1_command_parameter(ADDRESS_SIZE);
+    stackpop(stack);
+    
+    inc_program_pointer(COMMAND_SIZE);
 }
 
 /*
@@ -636,6 +715,10 @@ static void command_add() {
 #ifdef DEBUG
     EXPLAIN_COMMAND();
 #endif
+    read_2_command_parameters(ADDRESS_SIZE, ADDRESS_SIZE);
+    akku = registers[cmd_p->p1].value + registers[cmd_p->p2].value;
+
+    inc_program_pointer(COMMAND_SIZE + ADDRESS_SIZE + ADDRESS_SIZE);
 }
 
 /*
@@ -649,6 +732,10 @@ static void command_addi() {
 #ifdef DEBUG
     EXPLAIN_COMMAND();
 #endif
+    read_2_command_parameters(ADDRESS_SIZE, VALUE_SIZE);
+    akku = registers[cmd_p->p1].value + cmd_p->p2;
+
+    inc_program_pointer(COMMAND_SIZE + ADDRESS_SIZE + VALUE_SIZE);
 }
 
 /*
@@ -662,6 +749,10 @@ static void command_addr() {
 #ifdef DEBUG
     EXPLAIN_COMMAND();
 #endif
+    read_2_command_parameters(ADDRESS_SIZE, ADDRESS_SIZE);
+    registers[cmd_p->p1].value += registers[cmd_p->p2].value;
+
+    inc_program_pointer(COMMAND_SIZE + ADDRESS_SIZE + ADDRESS_SIZE);
 }
 
 /*
@@ -675,6 +766,10 @@ static void command_addir() {
 #ifdef DEBUG
     EXPLAIN_COMMAND();
 #endif
+    read_2_command_parameters(ADDRESS_SIZE, VALUE_SIZE);
+    registers[cmd_p->p1].value += cmd_p->p2;
+
+    inc_program_pointer(COMMAND_SIZE + ADDRESS_SIZE + VALUE_SIZE);
 }
 
 /*
@@ -688,6 +783,8 @@ static void command_jmp() {
 #ifdef DEBUG
     EXPLAIN_COMMAND();
 #endif
+    read_1_command_parameter(ADDRESS_SIZE);
+    program_pointer = cmd_p->p1;
 }
 
 /*
@@ -701,6 +798,13 @@ static void command_jmpiz() {
 #ifdef DEBUG
     EXPLAIN_COMMAND();
 #endif
+    read_2_command_parameters(ADDRESS_SIZE, ADDRESS_SIZE);
+    if( registers[cmd_p->p1].value == 0x0000 ) {
+        program_pointer = cmd_p->p2;
+    }
+    else {
+        inc_program_pointer( COMMAND_SIZE + ADDRESS_SIZE + ADDRESS_SIZE );
+    }
 }
 
 /*
@@ -714,6 +818,13 @@ static void command_jmpnz() {
 #ifdef DEBUG
     EXPLAIN_COMMAND();
 #endif
+    read_2_command_parameters(ADDRESS_SIZE, ADDRESS_SIZE);
+    if( registers[cmd_p->p1].value != 0x0000 ) {
+        program_pointer = cmd_p->p2;
+    }
+    else {
+        inc_program_pointer( COMMAND_SIZE + ADDRESS_SIZE + ADDRESS_SIZE );
+    }
 }
 
 /*
@@ -727,6 +838,13 @@ static void command_ifzjmp() {
 #ifdef DEBUG
     EXPLAIN_COMMAND();
 #endif
+    read_2_command_parameters(ADDRESS_SIZE, ADDRESS_SIZE);
+    if( akku == 0x0000 ) {
+        program_pointer = cmd_p->p1;
+    }
+    else {
+        program_pointer = cmd_p->p2;
+    }
 }
 
 /*
