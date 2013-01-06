@@ -349,90 +349,301 @@ static CommandParameters* read_2_command_parameters(CommandParameters *cp,
  *
  */
 
+/*
+ * Command:                 RET
+ * Parameters:              0
+ * Affects Program Pointer: YES
+ *
+ *
+ */
 static void command_return() {
 }
 
+/*
+ * Command:                 MOV 
+ * Parameters:              2: register-adress register-address
+ * Affects Program Pointer: NO
+ *
+ *
+ */
 static void command_mov() {
 }
 
+/*
+ * Command:                 MOVI
+ * Parameters:              2: register-address value
+ * Affects Program Pointer: NO
+ *
+ *
+ */
 static void command_movi() {
 }
 
+/*
+ * Command:                 NOT 
+ * Parameters:              1: register-address 
+ * Affects Program Pointer: NO
+ *
+ * Result in akku
+ */
 static void command_not() {
 }
 
+/*
+ * Command:                 NOTR
+ * Parameters:              1: register-address
+ * Affects Program Pointer: NO
+ *
+ * Result in same register
+ */
 static void command_notr() {
 }
 
+/*
+ * Command:                 AND
+ * Parameters:              0
+ * Affects Program Pointer: NO
+ *
+ * result in akku
+ */
 static void command_and() {
 }
 
+/*
+ * Command:                 ANDI
+ * Parameters:              0
+ * Affects Program Pointer: NO
+ *
+ * Result in akku
+ */
 static void command_andi() {
 }
 
+/*
+ * Command:                 ANDR
+ * Parameters:              0
+ * Affects Program Pointer: NO
+ *
+ * Result in first register
+ */
 static void command_andr() {
 }
 
+/*
+ * Command:                 ANDIR
+ * Parameters:              0
+ * Affects Program Pointer: NO
+ *
+ * Result in first register
+ */
 static void command_andir() {
 }
 
+
+/*
+ * Command:                 OR
+ * Parameters:              0
+ * Affects Program Pointer: NO
+ *
+ * Result in akku
+ */
 static void command_or() {
 }
 
+/*
+ * Command: 
+ * Parameters:              0
+ * Affects Program Pointer: NO
+ *
+ *
+ */
 static void command_ori() {
 }
 
+/*
+ * Command: 
+ * Parameters:              0
+ * Affects Program Pointer: NO
+ *
+ *
+ */
 static void command_orr() {
 }
 
+/*
+ * Command: 
+ * Parameters:              0
+ * Affects Program Pointer: NO
+ *
+ *
+ */
 static void command_orir() {
 }
 
+/*
+ * Command: 
+ * Parameters:              0
+ * Affects Program Pointer: NO
+ *
+ *
+ */
 static void command_dec() {
 }
 
+/*
+ * Command: 
+ * Parameters:              0
+ * Affects Program Pointer: NO
+ *
+ *
+ */
 static void command_inc() {
 }
 
+/*
+ * Command: 
+ * Parameters:              0
+ * Affects Program Pointer: NO
+ *
+ *
+ */
 static void command_lsh() {
 }
 
+/*
+ * Command: 
+ * Parameters:              0
+ * Affects Program Pointer: NO
+ *
+ *
+ */
 static void command_rsh() {
 }
 
+/*
+ * Command: 
+ * Parameters:              0
+ * Affects Program Pointer: NO
+ *
+ *
+ */
 static void command_push() {
 }
 
+/*
+ * Command: 
+ * Parameters:              0
+ * Affects Program Pointer: NO
+ *
+ *
+ */
 static void command_pop() {
 }
 
+/*
+ * Command: 
+ * Parameters:              0
+ * Affects Program Pointer: NO
+ *
+ *
+ */
 static void command_drop() {
 }
 
+/*
+ * Command: 
+ * Parameters:              0
+ * Affects Program Pointer: NO
+ *
+ *
+ */
 static void command_add() {
 }
 
+/*
+ * Command: 
+ * Parameters:              0
+ * Affects Program Pointer: NO
+ *
+ *
+ */
 static void command_addi() {
 }
 
+/*
+ * Command: 
+ * Parameters:              0
+ * Affects Program Pointer: NO
+ *
+ *
+ */
 static void command_addr() {
 }
 
+/*
+ * Command: 
+ * Parameters:              0
+ * Affects Program Pointer: NO
+ *
+ *
+ */
 static void command_addir() {
 }
 
+/*
+ * Command: 
+ * Parameters:              0
+ * Affects Program Pointer: NO
+ *
+ *
+ */
 static void command_jmp() {
 }
 
+/*
+ * Command: 
+ * Parameters:              0
+ * Affects Program Pointer: NO
+ *
+ *
+ */
 static void command_jmpiz() {
 }
 
+/*
+ * Command: 
+ * Parameters:              0
+ * Affects Program Pointer: NO
+ *
+ *
+ */
 static void command_jmpnz() {
 }
 
+/*
+ * Command: 
+ * Parameters:              0
+ * Affects Program Pointer: NO
+ *
+ *
+ */
 static void command_ifzjmp() {
 }
 
+/*
+ * Command: 
+ * Parameters:              0
+ * Affects Program Pointer: NO
+ *
+ *
+ */
 static void command_startat() {
 }
 
+/*
+ * Helper functions
+ */
+
+static void inc_program_pointer(uint64_t number_of_bytes) {
+    registers[0].value += number_of_bytes;
+}
