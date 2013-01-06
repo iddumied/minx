@@ -24,4 +24,24 @@ typedef struct {
     uint64_t * value;
 } Register;
 
+#define EXPLAIN_COMMAND(cmd,string) do{                                     \
+                                        printf("minx command: %s\n\t%s\n",  \
+                                                cmd, string );              \
+                                    } while( 0 );
+
+
+/* register aliases */
+
+#define program_pointer (registers[0x0000].value)
+#define akku            (registers[0x0002].value)
+
+
+/*
+ * command parameters parsing helper struct
+ */
+typedef struct {
+    uint64_t p1;
+    uint64_t p2;
+} CommandParameters;
+
 #endif //__MINX_VM_H__
