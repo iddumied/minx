@@ -81,7 +81,7 @@ static void         command_getpa();
 
 void minx_vm_run() {
     /* alloc standard registers */
-    for( registers_cnt = 0 ; registers_cnt < 8 ; registers_cnt++ ) {
+    for( registers_cnt = 0x0000 ; registers_cnt < 0x000F ; registers_cnt++ ) {
         new_register();
     }
 
