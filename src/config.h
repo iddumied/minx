@@ -4,8 +4,6 @@
 #include "map/map.h"
 
 typedef enum {
-    CONF_REGISTER_SIZE,
-    CONF_ADDRESS_SIZE,
 
 } ConfigurationType;
 
