@@ -1,6 +1,18 @@
 #include "binary_reader.h"
 
 /*
+ * Binary reader should only read until jump to 0xFFFF is read. But this is not
+ * possible, because the binary_reader does not know, what it's dealing with. It
+ * could be a variable value, huh?
+ *
+ * because of this, there is the 'read_until_end_of_file' variable. The pointer
+ * 'p' should never point to a location outside of the binary file. The binary
+ * must ensure that. 
+ * The VM has to ensure, that if there is a jump to 0xFFFF, the shutdown is
+ * initialized. 
+ */
+
+/*
  * static variables
  */
 
@@ -19,10 +31,10 @@ static FILE     *       file;
 static void     init_binary     (void);
 static void     read_until      (uint64_t p);
 
-
 /*
  * Functions
- */
+ */ 
+
 void minx_binary_init(FILE *f) {
     binary_init     = 0;
     binary_size     = 0;
@@ -88,7 +100,7 @@ signed int minx_binary_exists_at(uint64_t p) {
  */
 
 /*
- * init variable 'binary' with the first 'alloc_step_size' bytes from the file.
+ * Init variable 'binary' with the first 'alloc_step_size' bytes from the file.
  */
 static void init_binary() {
     binary_size += alloc_step_size;
@@ -100,6 +112,12 @@ static void init_binary() {
     read_until_end_of_file = read_size == 0 || read_size != alloc_step_size;
 }
 
+/*
+ * @param p the pointer to read until
+ *
+ * Read binary until 'p' points to a location inside of the binary or read until
+ * end of the binary and set the 'read_until_end_of_file' variable to true.
+ */
 static void read_until(uint64_t p) {
     size_t read_size;
     while( p > binary_size || !read_until_end_of_file ) {
