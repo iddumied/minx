@@ -1,4 +1,4 @@
 TODO:
 
-- (important!) the VM is 16-Bit right now. Patch to 64 Bit.
+- (important!) the VM is 16-Bit right now. Patch to 64 Bit, 24 Bit op codes.
 - overflow value is not set into overflow-value-register
