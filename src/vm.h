@@ -8,9 +8,7 @@
 #include "binary_reader.h"
 #include "config.h"
 #include "error.h"
-/*
-    #include "stack/stack.h"
-*/
+#include "stack/stack.h"
 
 /*
  * commands
