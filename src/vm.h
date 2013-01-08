@@ -8,8 +8,9 @@
 #include "binary_reader.h"
 #include "config.h"
 #include "error.h"
-
-#include "stack/stack.h"
+/*
+    #include "stack/stack.h"
+*/
 
 /*
  * commands
@@ -58,13 +59,22 @@
  * defines for size in bytes 
  */
 
-#define         COMMAND_SIZE    2
+#define         OPC_SIZE        2
 #define         VALUE_SIZE      8
 #define         ADDRESS_SIZE    8
 
 typedef struct {
-    uint64_t *  value;
+    uint64_t    addr;
+    uint64_t    value;
 } Register;
+
+typedef struct {
+    uint64_t    reg_count;
+    Register    *registers[];
+} RegisterMap;
+
+#define         DEFAULT_REGISTER_CNT            0xAF
+#define         DEFAULT_ADDITIONAL_REGISTERS    0x0F
 
 #define         OVERFLOW_BIT    0
 
