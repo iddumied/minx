@@ -160,115 +160,115 @@ static void run() {
 static void run_command(uint16_t cmd) {
     switch( cmd ) {
 
-        case C_RET: 
+        case OPC_RET: 
             command_return();
             break;
 
-        case C_MOV: 
+        case OPC_MOV: 
             command_mov();
             break;
 
-        case C_MOVI: 
+        case OPC_MOVI: 
             command_movi();
             break;
 
-        case C_NOT: 
+        case OPC_NOT: 
             command_not();
             break;
 
-        case C_NOTR: 
+        case OPC_NOTR: 
             command_notr();
             break;
 
-        case C_AND: 
+        case OPC_AND: 
             command_and();
             break;
 
-        case C_ANDI: 
+        case OPC_ANDI: 
             command_andi();
             break;
 
-        case C_ANDR: 
+        case OPC_ANDR: 
             command_andr();
             break;
 
-        case C_ANDIR: 
+        case OPC_ANDIR: 
             command_andir();
             break;
 
-        case C_OR: 
+        case OPC_OR: 
             command_or();
             break;
 
-        case C_ORI: 
+        case OPC_ORI: 
             command_ori();
             break;
 
-        case C_ORR: 
+        case OPC_ORR: 
             command_orr();
             break;
 
-        case C_ORIR: 
+        case OPC_ORIR: 
             command_orir();
             break;
 
-        case C_DEC: 
+        case OPC_DEC: 
             command_dec();
             break;
 
-        case C_INC: 
+        case OPC_INC: 
             command_inc();
             break;
 
-        case C_LSH: 
+        case OPC_LSH: 
             command_lsh();
             break;
 
-        case C_RSH: 
+        case OPC_RSH: 
             command_rsh();
             break;
 
-        case C_PUSH: 
+        case OPC_PUSH: 
             command_push();
             break;
 
-        case C_POP: 
+        case OPC_POP: 
             command_pop();
             break;
 
-        case C_DROP: 
+        case OPC_DROP: 
             command_drop();
             break;
 
-        case C_ADD: 
+        case OPC_ADD: 
             command_add();
             break;
 
-        case C_ADDI: 
+        case OPC_ADDI: 
             command_addi();
             break;
 
-        case C_ADDR: 
+        case OPC_ADDR: 
             command_addr();
             break;
 
-        case C_ADDIR: 
+        case OPC_ADDIR: 
             command_addir();
             break;
 
-        case C_JMP: 
+        case OPC_JMP: 
             command_jmp();
             break;
 
-        case C_JMPIZ: 
+        case OPC_JMPIZ: 
             command_jmpiz();
             break;
 
-        case C_JMPNZ: 
+        case OPC_JMPNZ: 
             command_jmpnz();
             break;
 
-        case C_IFZJMP: 
+        case OPC_IFZJMP: 
             command_ifzjmp();
             break;
 
