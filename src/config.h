@@ -19,7 +19,14 @@ typedef struct {
     ConfigurationValue      value;
 } Configuration;
 
-void        minx_config_parse   (unsigned int len, char *str);
+typedef struct {
+    ConfigurationType       type;
+    char                    *configkey;
+} ConfigurationKeyMap;
+
+void        minx_config_init    (void);
+void        minx_config_shutdown(void);
+void        minx_config_parse   (unsigned int argc, char ** argv);
 void *      minx_config_get     (ConfigurationType ct);
 
 #endif // __MINX_CONFIG_H__

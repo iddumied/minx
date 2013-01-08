@@ -3,8 +3,19 @@
 /*
  * Static variables
  */
+
+/*
+ * default config 
+ */
 static Configuration    configuration[] = {
     {   .type = VERBOSITY,  .value.i = 0  },
+};
+
+/*
+ * config keys 
+ */
+static ConfigurationKeyMap confkeys[] = {
+    {   .type   = VERBOSITY,    .configkey = "-v" },
 };
 
 static unsigned int     number_of_confs;
@@ -22,9 +33,10 @@ void minx_config_shutdown() {
 }
 
 /*
- *
+ * parse config 
  */
-void minx_config_parse(unsigned int len, char *str) {
+void minx_config_parse(unsigned int argc, char ** argv) {
+
 }
 
 void * minx_config_get(ConfigurationType ct) {
