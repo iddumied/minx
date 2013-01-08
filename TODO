@@ -1,11 +1,11 @@
 TODO:
 
-- reserve more status registers for internal use.
-- opcodes in a map (opcode -> function), not in a big switch.
-- (important!) the VM is 16-Bit right now. Patch to 64 Bit, 24 Bit op codes.
-- overflow value is not set into overflow-value-register
+1) reserve more status registers for internal use.
+2) opcodes in a map (opcode -> function), not in a big switch.
+3) (important!) the VM is 16-Bit right now. Patch to 64 Bit, 24 Bit op codes.
+4) overflow value is not set into overflow-value-register
 
-TODO op codes:
+5) TODO op codes:
 
 - define a op code for defining op-codes.
   Something like this:
