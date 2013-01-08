@@ -199,7 +199,11 @@ static void run() {
 }
 
 static void run_opcode(uint16_t cmd) {
-    opc_funcs[cmd]();
+    void (*opc_func)(void) = opc_funcs[cmd];
+    if( opc_func == NULL ) {
+        FATAL_DESC_ERROR("Tried to execute unknown opcode!");
+    }
+    opc_func();
 }
 
 /*
