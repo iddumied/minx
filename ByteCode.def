@@ -1,19 +1,22 @@
 Much simpler:
 
+opcode is 16 Bit
+registers, values and adresses are 64 bit
+
 special registers:
 ------------------
-Registers 0x00 to 0x0F are special, they are not useable for program data.
+Registers 0x00 to 0xAF are special, they are not useable for program data.
 
-- 0x0000	Programm-ptr, is zero at init and 0xFFFF at end of programm
-- 0x0001	(unused)
-- 0x0002	akku-register
-- 0x0003	status-register 
-	Bit	|	use 
-	----+-------
-	0	|	overflow 
-	1-7	|	not used yet
-- 0x0004	overflow value 
-- 0x0005-0x000F (unused yet)
+- 0x0000000000000000	Programm-ptr, is zero at init and 0xFFFF at end of programm
+- 0x0000000000000001	(unused)
+- 0x0000000000000002	akku-register
+- 0x0000000000000003	status-register 
+							Bit	|	use 
+							----+-------
+							0	|	overflow 
+							1-7	|	not used yet
+- 0x0000000000000004	overflow value 
+- 0x0000000000000005-0x00000000000000AF (unused yet)
 
 All other registers are available (if addressable with 64 bit)
 
@@ -24,8 +27,6 @@ stack
 
 codes
 -----
-
-A opcode is 16 Bit, registers, values and adresses are 64 bit
 
 'Register'	stands for 64 Bit register address 
 'Value'		stands for 64 Bit value

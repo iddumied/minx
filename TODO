@@ -1,4 +1,18 @@
 TODO:
 
-- (important!) the VM is 16-Bit right now. Patch to 64 Bit.
-- overflow value is not set into overflow-value-register
+4) overflow value is not set into overflow-value-register
+
+5) TODO op codes:
+
+- define a op code for defining op-codes.
+  Something like this:
+
+    DEF(opc, funcloc)
+
+  where opc is the opcode to define (or redefine). It will be automatically
+  masked for 24 bit.
+  The funcloc is a pointer to a function which is defined somewhere in the
+  binary. This function is read into the VM and stored there. If the op code
+  which was defined is used, the VM executes the stored procedure.
+
+  There should be some status registers reserved for statuses about the call.

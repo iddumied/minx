@@ -1,86 +1,138 @@
 #include "vm.h"
 
 /*
- * static variables
- * ----------------
- */
-
-static Register             *   registers       = NULL;
-static uint64_t                 registers_cnt   = 0x0000;
-
-static Stack                *   stack           = NULL;
-static CommandParameters    *   cmd_p           = NULL;
-
-/*
  * static functions prototypes
  * ---------------------------
  */
 
-static void         new_register                (void);
+static void         init_registers              (void);
+static Register*    new_register                (uint64_t addr);
 static void         run                         (void);
 
 static void         read_1_command_parameter    (unsigned int size1);
 static void         read_2_command_parameters   (unsigned int size1, 
                                                  unsigned int size2);
 
-// static void command_nop();
-static void         command_return              (void);
+static void         run_opcode              (uint16_t);
 
-static void         command_mov                 (void);
-static void         command_movi                (void);
+static void         opc_nop_func            (void);
+static void         opc_ret_func            (void);
 
-static void         command_not                 (void);
-static void         command_notr                (void);
+static void         opc_mov_func            (void);
+static void         opc_movi_func           (void);
 
-static void         command_and                 (void);
-static void         command_andi                (void);
-static void         command_andr                (void);
-static void         command_andir               (void);
+static void         opc_not_func            (void);
+static void         opc_notr_func           (void);
 
-static void         command_or                  (void);
-static void         command_ori                 (void);
-static void         command_orr                 (void);
-static void         command_orir                (void);
+static void         opc_and_func            (void);
+static void         opc_andi_func           (void);
+static void         opc_andr_func           (void);
+static void         opc_andir_func          (void);
 
-static void         command_dec                 (void);
-static void         command_inc                 (void);
+static void         opc_or_func             (void);
+static void         opc_ori_func            (void);
+static void         opc_orr_func            (void);
+static void         opc_orir_func           (void);
 
-static void         command_lsh                 (void);
-static void         command_rsh                 (void);
+static void         opc_dec_func            (void);
+static void         opc_inc_func            (void);
 
-static void         command_push                (void);
-static void         command_pop                 (void);
-static void         command_drop                (void);
+static void         opc_lsh_func            (void);
+static void         opc_rsh_func            (void);
 
-static void         command_add                 (void);
-static void         command_addi                (void);
-static void         command_addr                (void);
-static void         command_addir               (void);
+static void         opc_push_func           (void);
+static void         opc_pop_func            (void);
+static void         opc_drop_func           (void);
 
-static void         command_jmp                 (void);
-static void         command_jmpiz               (void);
-static void         command_jmpnz               (void);
-static void         command_ifzjmp              (void);
+static void         opc_add_func            (void);
+static void         opc_addi_func           (void);
+static void         opc_addr_func           (void);
+static void         opc_addir_func          (void);
 
-static void         command_startat             (void);
+static void         opc_jmp_func            (void);
+static void         opc_jmpiz_func          (void);
+static void         opc_jmpnz_func          (void);
+static void         opc_ifzjmp_func         (void);
+
+static void         opc_startat_func        (void);
 
 /* NOT SUPPORTED YET
-static void         command_lnreg();
-static void         command_lpreg();
+static void         opc_lnreg_func          (void);
+static void         opc_lpreg_func          (void);
 
-static void         command_getp();
-static void         command_getpa();
+static void         opc_getp_func           (void);
+static void         opc_getpa_func          (void);
 */
+
+/*
+ * static variables
+ * ----------------
+ */
+
+static RegisterMap          *   register_map    = NULL;
+
+//static Stack                *   stack           = NULL;
+static CommandParameters    *   opc_p           = NULL;
+
+static void ((*opc_funcs[])(void)) = {
+
+    [0x00] = opc_nop_func,
+    [0x01] = opc_ret_func,
+
+    [0x02] = opc_mov_func,
+    [0x03] = opc_movi_func,
+
+    [0x04] = opc_not_func,
+    [0x05] = opc_notr_func,
+
+    [0x06] = opc_and_func,
+    [0x07] = opc_andi_func,
+    [0x08] = opc_andr_func,
+    [0x09] = opc_andir_func,
+
+    [0x0A] = opc_or_func,
+    [0x0B] = opc_ori_func,
+    [0x0C] = opc_orr_func,
+    [0x0D] = opc_orir_func,
+
+    [0x0E] = opc_dec_func,
+    [0x0F] = opc_inc_func,
+
+    [0x10] = opc_lsh_func,
+    [0x11] = opc_rsh_func,
+
+    [0x20] = opc_push_func,
+    [0x21] = opc_pop_func,
+    [0x22] = opc_drop_func,
+
+    [0x30] = opc_add_func,
+    [0x31] = opc_addi_func,
+    [0x32] = opc_addr_func,
+    [0x33] = opc_addir_func,
+
+    [0x40] = opc_jmp_func,
+    [0x41] = opc_jmpiz_func,
+    [0x42] = opc_jmpnz_func,
+    [0x43] = opc_ifzjmp_func,
+/*
+    [0x60] = opc_lnreg_func,
+    [0x61] = opc_lpreg_func,
+
+    [0x70] = opc_getp_func,
+    [0x71] = opc_getpa_func,
+    [0x72] = opc_setp_func,
+*/
+};
 
 /*
  * "static" macros 
  * ---------------
  */ 
-#define program_pointer                 (registers[0x0000].value)
-#define akku                            (registers[0x0002].value)
-#define statusregister                  (registers[0x0003].value)
+#define program_pointer                 (register_map->registers[0x0000]->value)
+#define akku                            (register_map->registers[0x0002]->value)
+#define statusregister                  (register_map->registers[0x0003]->value)
 
-#define register_exists(addr)           (register_cnt >= addr)
+#define register_exists(addr)           (register_map->reg_count >= addr)
 #define program_pointer_is(val)         (program_pointer == val)
 
 /*
@@ -90,17 +142,15 @@ static void         command_getpa();
 
 void minx_vm_run() {
     /* alloc standard registers */
-    for( registers_cnt = 0x0000 ; registers_cnt < 0x000F ; registers_cnt++ ) {
-        new_register();
-    }
+    init_registers();
 
     stack = empty_stack();
-    cmd_p = (CommandParameters*) malloc( sizeof(*cmd_p) );
+    opc_p = (CommandParameters*) malloc( sizeof(*opc_p) );
 
     run();
 
-    free(registers);
-    free(cmd_p);
+    free(register_map);
+    free(opc_p);
     stackdelete(stack);
 }
 
@@ -109,36 +159,32 @@ void minx_vm_run() {
  * ----------------
  */
 
-static void new_register() {
-    if( registers == NULL ) {
-        registers = (Register*) malloc( sizeof(*registers) );
+static void init_registers() {
+#define DEF_REGS (DEFAULT_REGISTER_CNT+DEFAULT_ADDITIONAL_REGISTERS)
+
+    register_map = (RegisterMap*) malloc( sizeof(RegisterMap) + (DEF_REGS)*(sizeof(Register*)));
+
+    /* abuse register_map->reg_count as counter */
+    for(    register_map->reg_count = 0x00 ; 
+            register_map->reg_count < (DEF_REGS); 
+            register_map->reg_count++ ) {
+
+        register_map->registers[register_map->reg_count] = new_register(register_map->reg_count);
     }
-    else {
-        registers = (Register*) realloc( registers, sizeof(Register) * (registers_cnt+1) );
-    }
 
-#define curr_r (&(registers[registers_cnt]))
-    curr_r->value = (uint64_t*) malloc( sizeof(curr_r->value) );
+    /* map is sorted, reg_count is set */
 
-    if( curr_r->value == NULL ) 
-        FATAL_DESC_ERROR("Could not malloc() space for register");
-
-    memset( &curr_r->value, 0x0, sizeof(curr_r->value));
-#undef curr_r
-
-    registers_cnt++;
+#undef DEF_REGS
 }
 
-/*
- * Allocates registers until 'addr' exists
- */
-static void new_registers_until(uint64_t addr) {
-#ifdef DEBUG
-    EXPLAIN_FUNCTION();
-#endif 
-    while( !register_exists(addr) ) {
-        new_register();
-    }
+static Register* new_register(uint64_t addr) {
+    Register *res = (Register*) malloc( sizeof(Register) );
+    if (res == NULL) 
+        FATAL_DESC_ERROR("Cannot malloc() for new Register");
+
+    res->addr   = addr;
+    res->value  = 0x00;
+    return res;
 }
 
 /*
@@ -147,133 +193,17 @@ static void new_registers_until(uint64_t addr) {
  * runs the vm.  
  */
 static void run() {
-
-    uint16_t cmd;
-
     while( !program_pointer_is( 0xFFFF ) ) {
-        cmd    = *((uint16_t*)minx_binary_get_at(program_pointer, COMMAND_SIZE));
-        run_command(cmd);
+        run_opcode(*((uint16_t*)minx_binary_get_at(program_pointer, OPC_SIZE)));
     }
-
 }
 
-static void run_command(uint16_t cmd) {
-    switch( cmd ) {
-
-        case C_RET: 
-            command_return();
-            break;
-
-        case C_MOV: 
-            command_mov();
-            break;
-
-        case C_MOVI: 
-            command_movi();
-            break;
-
-        case C_NOT: 
-            command_not();
-            break;
-
-        case C_NOTR: 
-            command_notr();
-            break;
-
-        case C_AND: 
-            command_and();
-            break;
-
-        case C_ANDI: 
-            command_andi();
-            break;
-
-        case C_ANDR: 
-            command_andr();
-            break;
-
-        case C_ANDIR: 
-            command_andir();
-            break;
-
-        case C_OR: 
-            command_or();
-            break;
-
-        case C_ORI: 
-            command_ori();
-            break;
-
-        case C_ORR: 
-            command_orr();
-            break;
-
-        case C_ORIR: 
-            command_orir();
-            break;
-
-        case C_DEC: 
-            command_dec();
-            break;
-
-        case C_INC: 
-            command_inc();
-            break;
-
-        case C_LSH: 
-            command_lsh();
-            break;
-
-        case C_RSH: 
-            command_rsh();
-            break;
-
-        case C_PUSH: 
-            command_push();
-            break;
-
-        case C_POP: 
-            command_pop();
-            break;
-
-        case C_DROP: 
-            command_drop();
-            break;
-
-        case C_ADD: 
-            command_add();
-            break;
-
-        case C_ADDI: 
-            command_addi();
-            break;
-
-        case C_ADDR: 
-            command_addr();
-            break;
-
-        case C_ADDIR: 
-            command_addir();
-            break;
-
-        case C_JMP: 
-            command_jmp();
-            break;
-
-        case C_JMPIZ: 
-            command_jmpiz();
-            break;
-
-        case C_JMPNZ: 
-            command_jmpnz();
-            break;
-
-        case C_IFZJMP: 
-            command_ifzjmp();
-            break;
-
+static void run_opcode(uint16_t cmd) {
+    void (*opc_func)(void) = opc_funcs[cmd];
+    if( opc_func == NULL ) {
+        FATAL_DESC_ERROR("Tried to execute unknown opcode!");
     }
-
+    opc_func();
 }
 
 /*
@@ -290,8 +220,8 @@ static void run_command(uint16_t cmd) {
  *
  */
 static void read_1_command_parameter(unsigned int size1) {
-    uint64_t ptr1_location = program_pointer + COMMAND_SIZE;
-    cmd_p->p1 = *((uint64_t *) minx_binary_get_at( ptr1_location, size1 ));
+    uint64_t ptr1_location = program_pointer + OPC_SIZE;
+    opc_p->p1 = *((uint64_t *) minx_binary_get_at( ptr1_location, size1 ));
 }
 
 /*
@@ -306,23 +236,23 @@ static void read_1_command_parameter(unsigned int size1) {
  * ---
  *
  *  Reading the parameters from the binary is always the same procedure:
- *      - go to (program_pointer + COMMAND_SIZE )
+ *      - go to (program_pointer + OPC_SIZE )
  *      - read the value there, it could be a constant or a pointer, doesn't
  *      matter yet
- *      - go to (program_pointer + COMMAND_SIZE + <size of prev read data>)
+ *      - go to (program_pointer + OPC_SIZE + <size of prev read data>)
  *      - read the value there, it could be a constant or a pointer, doesn't
  *      matter yet
  *
  *  and then use this data. The upper part is done by this helper function, to
- *  simplify the work of the command_ functions.
+ *  simplify the work of the opc_ functions.
  */
 static void read_2_command_parameters(unsigned int size1, unsigned int size2) {
 
-    uint64_t ptr1_location = program_pointer + COMMAND_SIZE;
-    uint64_t ptr2_location = program_pointer + COMMAND_SIZE + size1;
+    uint64_t ptr1_location = program_pointer + OPC_SIZE;
+    uint64_t ptr2_location = program_pointer + OPC_SIZE + size1;
 
-    cmd_p->p1 = *((uint64_t *) minx_binary_get_at( ptr1_location, size1 ));
-    cmd_p->p2 = *((uint64_t *) minx_binary_get_at( ptr2_location, size2 ));
+    opc_p->p1 = *((uint64_t *) minx_binary_get_at( ptr1_location, size1 ));
+    opc_p->p2 = *((uint64_t *) minx_binary_get_at( ptr2_location, size2 ));
 }
 
 /*
@@ -349,15 +279,29 @@ static void read_2_command_parameters(unsigned int size1, unsigned int size2) {
  */
 
 /*
+ * Command:                 NOP
+ * Parameters:              0
+ * Affects Program Pointer: NO
+ *
+ *
+ */
+static void opc_nop_func() {
+#ifdef DEBUG
+    EXPLAIN_OPCODE();
+#endif
+    program_pointer += (OPC_SIZE);
+}
+
+/*
  * Command:                 RET
  * Parameters:              0
  * Affects Program Pointer: YES
  *
  *
  */
-static void command_return() {
+static void opc_ret_func() {
 #ifdef DEBUG
-    EXPLAIN_COMMAND();
+    EXPLAIN_OPCODE();
 #endif
 
     /*
@@ -374,15 +318,15 @@ static void command_return() {
  *
  *
  */
-static void command_mov() {
+static void opc_mov_func() {
 #ifdef DEBUG
-    EXPLAIN_COMMAND();
+    EXPLAIN_OPCODE();
 #endif
 
     read_2_command_parameters(ADDRESS_SIZE, ADDRESS_SIZE);
-    registers[cmd_p->p1].value = registers[cmd_p->p2];
+    register_map->registers[opc_p->p1]->value = register_map->registers[opc_p->p2]->value;
 
-    inc_program_pointer( COMMAND_SIZE + ADDRESS_SIZE + ADDRESS_SIZE );
+    program_pointer += ( OPC_SIZE + ADDRESS_SIZE + ADDRESS_SIZE );
 }
 
 /*
@@ -392,15 +336,15 @@ static void command_mov() {
  *
  *
  */
-static void command_movi() {
+static void opc_movi_func() {
 #ifdef DEBUG
-    EXPLAIN_COMMAND();
+    EXPLAIN_OPCODE();
 #endif
 
     read_2_command_parameters(ADDRESS_SIZE, VALUE_SIZE);
-    registers[cmd_p->p1].value  =   cmd_p->p2;
+    register_map->registers[opc_p->p1]->value  =   opc_p->p2;
 
-    inc_program_pointer( COMMAND_SIZE + ADDRESS_SIZE + VALUE_SIZE );
+    program_pointer += ( OPC_SIZE + ADDRESS_SIZE + VALUE_SIZE );
 }
 
 /*
@@ -410,15 +354,15 @@ static void command_movi() {
  *
  * Result in akku
  */
-static void command_not() {
+static void opc_not_func() {
 #ifdef DEBUG
-    EXPLAIN_COMMAND();
+    EXPLAIN_OPCODE();
 #endif
 
     read_1_command_parameter(ADDRESS_SIZE);
-    akku = ! registers[cmd_p->p1].value;
+    akku = ! register_map->registers[opc_p->p1]->value;
 
-    inc_program_pointer( COMMAND_SIZE + ADDRESS_SIZE );
+    program_pointer += ( OPC_SIZE + ADDRESS_SIZE );
 }
 
 /*
@@ -428,15 +372,15 @@ static void command_not() {
  *
  * Result in same register
  */
-static void command_notr() {
+static void opc_notr_func() {
 #ifdef DEBUG
-    EXPLAIN_COMMAND();
+    EXPLAIN_OPCODE();
 #endif
 
     read_1_command_parameter(ADDRESS_SIZE);
-    registers[cmd_p->p1].value = ! registers[cmd_p->p1].value;
+    register_map->registers[opc_p->p1]->value = ! register_map->registers[opc_p->p1]->value;
  
-    inc_program_pointer( COMMAND_SIZE + ADDRESS_SIZE );
+    program_pointer += ( OPC_SIZE + ADDRESS_SIZE );
 }
 
 /*
@@ -446,15 +390,15 @@ static void command_notr() {
  *
  * result in akku
  */
-static void command_and() {
+static void opc_and_func() {
 #ifdef DEBUG
-    EXPLAIN_COMMAND();
+    EXPLAIN_OPCODE();
 #endif
 
     read_2_command_parameters(ADDRESS_SIZE, ADDRESS_SIZE);
-    akku = registers[cmd_p->p1].value & registers[cmd_p->p2].value;
+    akku = register_map->registers[opc_p->p1]->value & register_map->registers[opc_p->p2]->value;
 
-    inc_program_pointer( COMMAND_SIZE + ADDRESS_SIZE + ADDRESS_SIZE );
+    program_pointer += ( OPC_SIZE + ADDRESS_SIZE + ADDRESS_SIZE );
 }
 
 /*
@@ -464,15 +408,15 @@ static void command_and() {
  *
  * Result in akku
  */
-static void command_andi() {
+static void opc_andi_func() {
 #ifdef DEBUG
-    EXPLAIN_COMMAND();
+    EXPLAIN_OPCODE();
 #endif
 
     read_2_command_parameters(ADDRESS_SIZE, VALUE_SIZE);
-    akku = registers[cmd_p->p1].value & cmd_p->p2;
+    akku = register_map->registers[opc_p->p1]->value & opc_p->p2;
 
-    inc_program_pointer( COMMAND_SIZE + ADDRESS_SIZE + ADDRESS_SIZE );
+    program_pointer += ( OPC_SIZE + ADDRESS_SIZE + ADDRESS_SIZE );
 }
 
 /*
@@ -482,15 +426,15 @@ static void command_andi() {
  *
  * Result in first register
  */
-static void command_andr() {
+static void opc_andr_func() {
 #ifdef DEBUG
-    EXPLAIN_COMMAND();
+    EXPLAIN_OPCODE();
 #endif
 
     read_2_command_parameters(ADDRESS_SIZE, ADDRESS_SIZE);
-    registers[cmd_p->p1].value &= registers[cmd_p->p2].value;
+    register_map->registers[opc_p->p1]->value &= register_map->registers[opc_p->p2]->value;
 
-    inc_program_pointer( COMMAND_SIZE + ADDRESS_SIZE + ADDRESS_SIZE );
+    program_pointer += ( OPC_SIZE + ADDRESS_SIZE + ADDRESS_SIZE );
 }
 
 /*
@@ -500,15 +444,15 @@ static void command_andr() {
  *
  * Result in first register
  */
-static void command_andir() {
+static void opc_andir_func() {
 #ifdef DEBUG
-    EXPLAIN_COMMAND();
+    EXPLAIN_OPCODE();
 #endif
 
     read_2_command_parameters(ADDRESS_SIZE, VALUE_SIZE);
-    registers[cmd_p->p1].value &= cmd_p->p2;
+    register_map->registers[opc_p->p1]->value &= opc_p->p2;
 
-    inc_program_pointer( COMMAND_SIZE + ADDRESS_SIZE + VALUE_SIZE);
+    program_pointer += ( OPC_SIZE + ADDRESS_SIZE + VALUE_SIZE);
 }
 
 
@@ -519,15 +463,15 @@ static void command_andir() {
  *
  * Result in akku
  */
-static void command_or() {
+static void opc_or_func() {
 #ifdef DEBUG
-    EXPLAIN_COMMAND();
+    EXPLAIN_OPCODE();
 #endif
 
     read_2_command_parameters(ADDRESS_SIZE, ADDRESS_SIZE);
-    akku = registers[cmd_p->p1].value | registers[cmd_p->p2].value;
+    akku = register_map->registers[opc_p->p1]->value | register_map->registers[opc_p->p2]->value;
 
-    inc_program_pointer( COMMAND_SIZE + ADDRESS_SIZE + ADDRESS_SIZE );
+    program_pointer += ( OPC_SIZE + ADDRESS_SIZE + ADDRESS_SIZE );
 }
 
 /*
@@ -537,15 +481,15 @@ static void command_or() {
  *
  *
  */
-static void command_ori() {
+static void opc_ori_func() {
 #ifdef DEBUG
-    EXPLAIN_COMMAND();
+    EXPLAIN_OPCODE();
 #endif
 
     read_2_command_parameters(ADDRESS_SIZE, VALUE_SIZE);
-    akku = registers[cmd_p->p1].value | cmd_p->p2;
+    akku = register_map->registers[opc_p->p1]->value | opc_p->p2;
 
-    inc_program_pointer( COMMAND_SIZE + ADDRESS_SIZE + VALUE_SIZE);
+    program_pointer += ( OPC_SIZE + ADDRESS_SIZE + VALUE_SIZE);
 }
 
 /*
@@ -555,15 +499,15 @@ static void command_ori() {
  *
  *
  */
-static void command_orr() {
+static void opc_orr_func() {
 #ifdef DEBUG
-    EXPLAIN_COMMAND();
+    EXPLAIN_OPCODE();
 #endif
 
     read_2_command_parameters(ADDRESS_SIZE, ADDRESS_SIZE);
-    registers[cmd_p->p1].value |= registers[cmd_p->p2].value;
+    register_map->registers[opc_p->p1]->value |= register_map->registers[opc_p->p2]->value;
 
-    inc_program_pointer( COMMAND_SIZE + ADDRESS_SIZE + ADDRESS_SIZE);
+    program_pointer += ( OPC_SIZE + ADDRESS_SIZE + ADDRESS_SIZE);
 }
 
 /*
@@ -573,15 +517,15 @@ static void command_orr() {
  *
  *
  */
-static void command_orir() {
+static void opc_orir_func() {
 #ifdef DEBUG
-    EXPLAIN_COMMAND();
+    EXPLAIN_OPCODE();
 #endif
 
     read_2_command_parameters(ADDRESS_SIZE, VALUE_SIZE);
-    registers[cmd_p->p1].value |= cmd_p->p2;
+    register_map->registers[opc_p->p1]->value |= opc_p->p2;
 
-    inc_program_pointer( COMMAND_SIZE + ADDRESS_SIZE + VALUE_SIZE);
+    program_pointer += ( OPC_SIZE + ADDRESS_SIZE + VALUE_SIZE);
 }
 
 /*
@@ -591,20 +535,20 @@ static void command_orir() {
  *
  *
  */
-static void command_dec() {
+static void opc_dec_func() {
 #ifdef DEBUG
-    EXPLAIN_COMMAND();
+    EXPLAIN_OPCODE();
 #endif
 
     read_1_command_parameter(ADDRESS_SIZE);
 
-    if( registers[cmd_p->p1].value == 0x0000 ) {
+    if( register_map->registers[opc_p->p1]->value == 0x0000 ) {
         setbit(statusregister, OVERFLOW_BIT);
     }
 
-    registers[cmd_p->p1].value--;
+    register_map->registers[opc_p->p1]->value--;
     
-    inc_program_pointer(COMMAND_SIZE + ADDRESS_SIZE);
+    program_pointer += (OPC_SIZE + ADDRESS_SIZE);
 }
 
 /*
@@ -614,19 +558,19 @@ static void command_dec() {
  *
  *
  */
-static void command_inc() {
+static void opc_inc_func() {
 #ifdef DEBUG
-    EXPLAIN_COMMAND();
+    EXPLAIN_OPCODE();
 #endif
     read_1_command_parameter(ADDRESS_SIZE);
 
-    if( registers[cmd_p->p1].value == 0xFFFF ) {
+    if( register_map->registers[opc_p->p1]->value == 0xFFFF ) {
         setbit(statusregister, OVERFLOW_BIT);
     }
 
-    registers[cmd_p->p1].value++;
+    register_map->registers[opc_p->p1]->value++;
     
-    inc_program_pointer(COMMAND_SIZE + ADDRESS_SIZE);
+    program_pointer += (OPC_SIZE + ADDRESS_SIZE);
 }
 
 /*
@@ -636,14 +580,14 @@ static void command_inc() {
  *
  *
  */
-static void command_lsh() {
+static void opc_lsh_func() {
 #ifdef DEBUG
-    EXPLAIN_COMMAND();
+    EXPLAIN_OPCODE();
 #endif
     read_1_command_parameter(ADDRESS_SIZE);
-    registers[cmd_p->p1].value<<1;
+    register_map->registers[opc_p->p1]->value<<1;
     
-    inc_program_pointer(COMMAND_SIZE + ADDRESS_SIZE);
+    program_pointer += (OPC_SIZE + ADDRESS_SIZE);
 }
 
 /*
@@ -653,14 +597,14 @@ static void command_lsh() {
  *
  *
  */
-static void command_rsh() {
+static void opc_rsh_func() {
 #ifdef DEBUG
-    EXPLAIN_COMMAND();
+    EXPLAIN_OPCODE();
 #endif
     read_1_command_parameter(ADDRESS_SIZE);
-    registers[cmd_p->p1].value>>1;
+    register_map->registers[opc_p->p1]->value>>1;
     
-    inc_program_pointer(COMMAND_SIZE + ADDRESS_SIZE);
+    program_pointer += (OPC_SIZE + ADDRESS_SIZE);
 }
 
 /*
@@ -670,14 +614,14 @@ static void command_rsh() {
  *
  *
  */
-static void command_push() {
+static void opc_push_func() {
 #ifdef DEBUG
-    EXPLAIN_COMMAND();
+    EXPLAIN_OPCODE();
 #endif
     read_1_command_parameter(ADDRESS_SIZE);
-    stackpush(stack, &(registers[cmd_p->p1].value), VALUE_SIZE) ;
+    stackpush(stack, &(register_map->registers[opc_p->p1]->value), VALUE_SIZE) ;
     
-    inc_program_pointer(COMMAND_SIZE + ADDRESS_SIZE);
+    program_pointer += (OPC_SIZE + ADDRESS_SIZE);
 }
 
 /*
@@ -687,18 +631,18 @@ static void command_push() {
  *
  *
  */
-static void command_pop() {
+static void opc_pop_func() {
 #ifdef DEBUG
-    EXPLAIN_COMMAND();
+    EXPLAIN_OPCODE();
 #endif
     if( stack_is_empty( stack ) ) {
         FATAL_DESC_ERROR("Cannot pop from empty stack!");
     }
 
     read_1_command_parameter(ADDRESS_SIZE);
-    registers[cmd_p->p1].value = *((uint64_t*)stackpop(stack));
+    register_map->registers[opc_p->p1]->value = *((uint64_t*)stackpop(stack));
     
-    inc_program_pointer(COMMAND_SIZE + ADDRESS_SIZE);
+    program_pointer += (OPC_SIZE + ADDRESS_SIZE);
 }
 
 /*
@@ -708,9 +652,9 @@ static void command_pop() {
  *
  *
  */
-static void command_drop() {
+static void opc_drop_func() {
 #ifdef DEBUG
-    EXPLAIN_COMMAND();
+    EXPLAIN_OPCODE();
 #endif
     if( stack_is_empty( stack ) ) {
         FATAL_DESC_ERROR("Cannot drop from empty stack!");
@@ -719,7 +663,7 @@ static void command_drop() {
     read_1_command_parameter(ADDRESS_SIZE);
     stackpop(stack);
     
-    inc_program_pointer(COMMAND_SIZE);
+    program_pointer += (OPC_SIZE);
 }
 
 /*
@@ -729,14 +673,14 @@ static void command_drop() {
  *
  * Result in akku
  */
-static void command_add() {
+static void opc_add_func() {
 #ifdef DEBUG
-    EXPLAIN_COMMAND();
+    EXPLAIN_OPCODE();
 #endif
     read_2_command_parameters(ADDRESS_SIZE, ADDRESS_SIZE);
-    akku = registers[cmd_p->p1].value + registers[cmd_p->p2].value;
+    akku = register_map->registers[opc_p->p1]->value + register_map->registers[opc_p->p2]->value;
 
-    inc_program_pointer(COMMAND_SIZE + ADDRESS_SIZE + ADDRESS_SIZE);
+    program_pointer += (OPC_SIZE + ADDRESS_SIZE + ADDRESS_SIZE);
 }
 
 /*
@@ -746,14 +690,14 @@ static void command_add() {
  *
  * Result in akku
  */
-static void command_addi() {
+static void opc_addi_func() {
 #ifdef DEBUG
-    EXPLAIN_COMMAND();
+    EXPLAIN_OPCODE();
 #endif
     read_2_command_parameters(ADDRESS_SIZE, VALUE_SIZE);
-    akku = registers[cmd_p->p1].value + cmd_p->p2;
+    akku = register_map->registers[opc_p->p1]->value + opc_p->p2;
 
-    inc_program_pointer(COMMAND_SIZE + ADDRESS_SIZE + VALUE_SIZE);
+    program_pointer += (OPC_SIZE + ADDRESS_SIZE + VALUE_SIZE);
 }
 
 /*
@@ -763,14 +707,14 @@ static void command_addi() {
  *
  * Result in register
  */
-static void command_addr() {
+static void opc_addr_func() {
 #ifdef DEBUG
-    EXPLAIN_COMMAND();
+    EXPLAIN_OPCODE();
 #endif
     read_2_command_parameters(ADDRESS_SIZE, ADDRESS_SIZE);
-    registers[cmd_p->p1].value += registers[cmd_p->p2].value;
+    register_map->registers[opc_p->p1]->value += register_map->registers[opc_p->p2]->value;
 
-    inc_program_pointer(COMMAND_SIZE + ADDRESS_SIZE + ADDRESS_SIZE);
+    program_pointer += (OPC_SIZE + ADDRESS_SIZE + ADDRESS_SIZE);
 }
 
 /*
@@ -780,14 +724,14 @@ static void command_addr() {
  *
  * Result in register
  */
-static void command_addir() {
+static void opc_addir_func() {
 #ifdef DEBUG
-    EXPLAIN_COMMAND();
+    EXPLAIN_OPCODE();
 #endif
     read_2_command_parameters(ADDRESS_SIZE, VALUE_SIZE);
-    registers[cmd_p->p1].value += cmd_p->p2;
+    register_map->registers[opc_p->p1]->value += opc_p->p2;
 
-    inc_program_pointer(COMMAND_SIZE + ADDRESS_SIZE + VALUE_SIZE);
+    program_pointer += (OPC_SIZE + ADDRESS_SIZE + VALUE_SIZE);
 }
 
 /*
@@ -797,13 +741,13 @@ static void command_addir() {
  *
  *
  */
-static void command_jmp() {
+static void opc_jmp_func() {
 #ifdef DEBUG
-    EXPLAIN_COMMAND();
+    EXPLAIN_OPCODE();
 #endif
     read_1_command_parameter(ADDRESS_SIZE);
-    if( minx_binary_exists_at(cmd_p->p1) ) {
-        program_pointer = cmd_p->p1;
+    if( minx_binary_exists_at(opc_p->p1) ) {
+        program_pointer = opc_p->p1;
     }
     else {
         FATAL_DESC_ERROR("Cannot jump");
@@ -817,17 +761,17 @@ static void command_jmp() {
  *
  *
  */
-static void command_jmpiz() {
+static void opc_jmpiz_func() {
 #ifdef DEBUG
-    EXPLAIN_COMMAND();
+    EXPLAIN_OPCODE();
 #endif
     read_2_command_parameters(ADDRESS_SIZE, ADDRESS_SIZE);
-    if( minx_binary_exists_at(cmp_p->p2) ) {
-        if( registers[cmd_p->p1].value == 0x0000 ) {
-            program_pointer = cmd_p->p2;
+    if( minx_binary_exists_at(opc_p->p2) ) {
+        if( register_map->registers[opc_p->p1]->value == 0x0000 ) {
+            program_pointer = opc_p->p2;
         }
         else {
-            inc_program_pointer( COMMAND_SIZE + ADDRESS_SIZE + ADDRESS_SIZE );
+            program_pointer += ( OPC_SIZE + ADDRESS_SIZE + ADDRESS_SIZE );
         }
     }
     else {
@@ -842,17 +786,17 @@ static void command_jmpiz() {
  *
  *
  */
-static void command_jmpnz() {
+static void opc_jmpnz_func() {
 #ifdef DEBUG
-    EXPLAIN_COMMAND();
+    EXPLAIN_OPCODE();
 #endif
     read_2_command_parameters(ADDRESS_SIZE, ADDRESS_SIZE);
-    if( minx_binary_exists_at(cmp_p->p2) ) {
-        if( registers[cmd_p->p1].value != 0x0000 ) {
-            program_pointer = cmd_p->p2;
+    if( minx_binary_exists_at(opc_p->p2) ) {
+        if( register_map->registers[opc_p->p1]->value != 0x0000 ) {
+            program_pointer = opc_p->p2;
         }
         else {
-            inc_program_pointer( COMMAND_SIZE + ADDRESS_SIZE + ADDRESS_SIZE );
+            program_pointer += ( OPC_SIZE + ADDRESS_SIZE + ADDRESS_SIZE );
         }
     } 
     else {
@@ -867,32 +811,23 @@ static void command_jmpnz() {
  *
  * if akku is zero then jump else jump
  */
-static void command_ifzjmp() {
+static void opc_ifzjmp_func() {
 #ifdef DEBUG
-    EXPLAIN_COMMAND();
+    EXPLAIN_OPCODE();
 #endif
     read_2_command_parameters(ADDRESS_SIZE, ADDRESS_SIZE);
-    if(minx_binary_exists_at(cmp_p->p1) && minx_binary_exists_at(cmd_p->p2)) {
+    if(minx_binary_exists_at(opc_p->p1) && minx_binary_exists_at(opc_p->p2)) {
         if( akku == 0x0000 ) {
-            program_pointer = cmd_p->p1;
+            program_pointer = opc_p->p1;
         }
         else {
-            program_pointer = cmd_p->p2;
+            program_pointer = opc_p->p2;
         }
     } 
     else {
         FATAL_DESC_ERROR("Cannot jump");
     }
 }
-
-/*
- * Helper functions
- */
-
-static void inc_program_pointer(uint64_t number_of_bytes) {
-    registers[0].value += number_of_bytes;
-}
-
 
 /*
  * "static" macros undef  
