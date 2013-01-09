@@ -7,7 +7,7 @@
 
 static void         init_registers              (void);
 static Register*    new_register                (uint64_t addr);
-static Register*    find_register               (uint64_t addr) {
+static Register*    find_register               (uint64_t addr);
 
 static void         run                         (void);
 
