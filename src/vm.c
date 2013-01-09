@@ -7,6 +7,8 @@
 
 static void         init_registers              (void);
 static Register*    new_register                (uint64_t addr);
+static Register*    find_register               (uint64_t addr) {
+
 static void         run                         (void);
 
 static void         read_1_command_parameter    (unsigned int size1);
@@ -187,6 +189,33 @@ static Register* new_register(uint64_t addr) {
     res->addr   = addr;
     res->value  = 0x00;
     return res;
+}
+
+/*
+ * function to add a register to the register map.
+ *
+ * resizes the array in the register_map,
+ * adds the register to the array,
+ * increments the reg_count
+ */
+static void add_register_to_map(Register *reg) {
+    size_t newsize = sizeof(RegisterMap) + (register_map->reg_count + 1)*sizeof(Register*);
+    register_map = (RegisterMap*) realloc(register_map, newsize);
+
+    register_map->registers[ register_map->reg_count ] = reg;
+    register_map->reg_count++;
+}
+
+/*
+ * find a register in the registermap by it's address.
+ */
+static Register* find_register(uint64_t addr) {
+    uint64_t i;
+    for(i = 0 ; 
+        i < register_map->reg_count && r == NULL && 
+        register_map->registers[i]->addr != addr; 
+        i++);
+    return &register_map->registers[i];
 }
 
 /*
