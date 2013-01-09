@@ -88,4 +88,10 @@ typedef struct {
     uint64_t    p2;
 } CommandParameters;
 
+/*
+ * Function prototypes 
+ */
+
+void    minx_vm_run(void);
+
 #endif //__MINX_VM_H__
