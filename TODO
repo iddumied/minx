@@ -2,17 +2,36 @@ TODO:
 
 4) overflow value is not set into overflow-value-register
 
-5) TODO op codes:
+5) define a op code for defining op-codes.
+	Something like this:
 
-- define a op code for defining op-codes.
-  Something like this:
+	DEF(opc, funcloc)
 
-    DEF(opc, funcloc)
+	where opc is the opcode to define (or redefine). It will be automatically
+	masked for 16 bit.
+	The funcloc is a pointer to a function which is defined somewhere in the
+	binary. This function is read into the VM and stored there. If the op code
+	which was defined is used, the VM executes the stored procedure.
 
-  where opc is the opcode to define (or redefine). It will be automatically
-  masked for 24 bit.
-  The funcloc is a pointer to a function which is defined somewhere in the
-  binary. This function is read into the VM and stored there. If the op code
-  which was defined is used, the VM executes the stored procedure.
+	There should be some status registers reserved for statuses about the call.
+		-	was a override
+		-	worked/error
 
-  There should be some status registers reserved for statuses about the call.
+5.1)define a op code ISDEV(reg, opc) for getting if a opcode is defined, result
+	in 'reg'
+
+6)	define a op code for undefine a register (will remove register from VM)
+
+7)  define special op codes for debugging:
+	- print stack
+	- print registers
+	- print program
+
+8)  define op codes for push/pop several registers to stack
+	push( reg, cnt )
+		- pushes reg and (cnt) next
+	pop( reg, cnt )
+		- pop into register and (cnd) next ones
+
+9)	File reader should read the file as linked list, with automatically removing 
+	"old" parts of the file from memory to keep memuse smart.
