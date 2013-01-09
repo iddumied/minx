@@ -55,8 +55,6 @@ static void         opc_jmpiz_func          (void);
 static void         opc_jmpnz_func          (void);
 static void         opc_ifzjmp_func         (void);
 
-static void         opc_startat_func        (void);
-
 /* NOT SUPPORTED YET
 static void         opc_lnreg_func          (void);
 static void         opc_lpreg_func          (void);
@@ -72,7 +70,7 @@ static void         opc_getpa_func          (void);
 
 static RegisterMap          *   register_map    = NULL;
 
-//static Stack                *   stack           = NULL;
+static Stack                *   stack           = NULL;
 static CommandParameters    *   opc_p           = NULL;
 
 static void ((*opc_funcs[])(void)) = {
