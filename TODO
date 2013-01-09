@@ -35,3 +35,6 @@ TODO:
 
 9)	File reader should read the file as linked list, with automatically removing 
 	"old" parts of the file from memory to keep memuse smart.
+
+10) !important!
+	implement quicksort for sorting registers in register_map

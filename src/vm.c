@@ -8,6 +8,10 @@
 static void         init_registers              (void);
 static Register*    new_register                (uint64_t addr);
 static Register*    find_register               (uint64_t addr);
+static Register*    find_or_add_register        (uint64_t addr);
+static int registers_sorted() {
+static void sort_registers() {
+static void regmap_quicksort(Register* list, uint64_t count) {
 
 static void         run                         (void);
 
@@ -207,21 +211,84 @@ static void add_register_to_map(Register *reg) {
 
     register_map->registers[ register_map->reg_count ] = reg;
     register_map->reg_count++;
+
+    if( !registers_sorted() )
+        sort_registers();
 }
 
 /*
- * find a register in the registermap by it's address.
+ * returns 1 if register_map is ordered, else 0
+ *
+ * cares about gaps in the order.
+ * So if there are in use 0x00-0x10, 0x20, 0x30 and 0xFF, it returns true,
+ * but not if there are 0x00-0x10, 0x30, 0x20 and 0xFF.
+ */
+static int registers_sorted() {
+    uint64_t i, currpos;
+    int is_ordered = 1;
+    for(i = 0, currpos = 0; is_ordered && i < register_map->reg_count && i++ ) {
+        if( register_map->registers[i]->addr == currpos ) 
+            currpos++;
+
+        else if( register_map->registers[i]->addr > currpos )
+            currpos = register_map->registers[i]->addr;
+
+        else 
+            is_ordered = 0;
+
+    }
+    return is_ordered;
+}
+
+/*
+ * Sort register_map 
+ *
+ * This is just a helper to start the quicksort. Could be a macro in the next
+ * versions.
+ *
+ */
+static void sort_registers() {
+    regmap_quicksort(register_map->registers, register_map->reg_count);
+}
+
+/*
+ * quicksort because if all standard-registers are used, there are more then ten
+ * registers are in use. And as we all know, quicksort is the fastest if count
+ * of elements is greater 10.
+ *
+ * Take NOT element 0 as pivot element, because element 0 will always be 0x0000,
+ * because it is allocated in init_registers(). 
+ * Take last element as pivot instead.
+ */
+static void regmap_quicksort(Register* list, uint64_t count) {
+    /* implementation required */
+}
+
+/*
+ * find a register in the register_map by it's address.
  */
 static Register* find_register(uint64_t addr) {
     if( !register_exists(addr) )
-        FATAL_DESC_ERROR("Cannot find register!");
+        return NULL;
 
+    /*
+     * Linear search, could be improved to binary search
+     */
     uint64_t i;
     for(i = 0 ; 
         i < register_map->reg_count && r == NULL && 
         register_map->registers[i]->addr != addr; 
         i++);
     return &register_map->registers[i];
+}
+
+static Register* find_or_add_register(uint64_t addr) {
+    Register *r = find_register(addr);
+    if( r == NULL ) {
+        r = new_register(addr);
+        add_register_to_map(r);
+    }
+    return r;
 }
 
 /*
@@ -375,7 +442,7 @@ static void opc_mov_func() {
     EXPLAIN_OPCODE();
 #endif
     read_2_command_parameters(ADDRESS_SIZE, ADDRESS_SIZE);
-    find_register(opc_p->p1)->value = find_register(opc_p->p2)->value;
+    find_or_add_register(opc_p->p1)->value = find_or_add_register(opc_p->p2)->value;
     program_pointer += ( OPC_SIZE + ADDRESS_SIZE + ADDRESS_SIZE );
 }
 
@@ -392,7 +459,7 @@ static void opc_movi_func() {
 #endif
 
     read_2_command_parameters(ADDRESS_SIZE, VALUE_SIZE);
-    find_register(opc_p->p1)->value = opc_p->p2;
+    find_or_add_register(opc_p->p1)->value = opc_p->p2;
 
     program_pointer += ( OPC_SIZE + ADDRESS_SIZE + VALUE_SIZE );
 }
@@ -410,7 +477,7 @@ static void opc_not_func() {
 #endif
 
     read_1_command_parameter(ADDRESS_SIZE);
-    AKKU = ! find_register(opc_p->p1)->value;
+    AKKU = ! find_or_add_register(opc_p->p1)->value;
 
     program_pointer += ( OPC_SIZE + ADDRESS_SIZE );
 }
@@ -428,7 +495,7 @@ static void opc_notr_func() {
 #endif
 
     read_1_command_parameter(ADDRESS_SIZE);
-    find_register(opc_p->p1)->value = ! find_register(opc_p->p1)->value;
+    find_or_add_register(opc_p->p1)->value = ! find_register(opc_p->p1)->value;
  
     program_pointer += ( OPC_SIZE + ADDRESS_SIZE );
 }
@@ -446,7 +513,7 @@ static void opc_and_func() {
 #endif
 
     read_2_command_parameters(ADDRESS_SIZE, ADDRESS_SIZE);
-    akku = find_register(opc_p->p1)->value & find_register(opc_p->p2)->value;
+    akku = find_or_add_register(opc_p->p1)->value & find_register(opc_p->p2)->value;
 
     program_pointer += ( OPC_SIZE + ADDRESS_SIZE + ADDRESS_SIZE );
 }
@@ -464,7 +531,7 @@ static void opc_andi_func() {
 #endif
 
     read_2_command_parameters(ADDRESS_SIZE, VALUE_SIZE);
-    akku = find_register(opc_p->p1)->value & opc_p->p2;
+    akku = find_or_add_register(opc_p->p1)->value & opc_p->p2;
 
     program_pointer += ( OPC_SIZE + ADDRESS_SIZE + ADDRESS_SIZE );
 }
@@ -482,7 +549,7 @@ static void opc_andr_func() {
 #endif
 
     read_2_command_parameters(ADDRESS_SIZE, ADDRESS_SIZE);
-    find_register(opc_p->p1)->value &= find_register(opc_p->p2)->value;
+    find_or_add_register(opc_p->p1)->value &= find_register(opc_p->p2)->value;
 
     program_pointer += ( OPC_SIZE + ADDRESS_SIZE + ADDRESS_SIZE );
 }
@@ -500,7 +567,7 @@ static void opc_andir_func() {
 #endif
 
     read_2_command_parameters(ADDRESS_SIZE, VALUE_SIZE);
-    find_register(opc_p->p1)->value &= opc_p->p2;
+    find_or_add_register(opc_p->p1)->value &= opc_p->p2;
 
     program_pointer += ( OPC_SIZE + ADDRESS_SIZE + VALUE_SIZE);
 }
@@ -519,7 +586,7 @@ static void opc_or_func() {
 #endif
 
     read_2_command_parameters(ADDRESS_SIZE, ADDRESS_SIZE);
-    akku = find_register(opc_p->p1)->value | find_register(opc_p->p2)->value;
+    akku = find_or_add_register(opc_p->p1)->value | find_register(opc_p->p2)->value;
 
     program_pointer += ( OPC_SIZE + ADDRESS_SIZE + ADDRESS_SIZE );
 }
@@ -537,7 +604,7 @@ static void opc_ori_func() {
 #endif
 
     read_2_command_parameters(ADDRESS_SIZE, VALUE_SIZE);
-    akku = find_register(opc_p->p1)->value | opc_p->p2;
+    akku = find_or_add_register(opc_p->p1)->value | opc_p->p2;
 
     program_pointer += ( OPC_SIZE + ADDRESS_SIZE + VALUE_SIZE);
 }
@@ -555,7 +622,7 @@ static void opc_orr_func() {
 #endif
 
     read_2_command_parameters(ADDRESS_SIZE, ADDRESS_SIZE);
-    find_register(opc_p->p1)->value |= find_register(opc_p->p2)->value;
+    find_or_add_register(opc_p->p1)->value |= find_register(opc_p->p2)->value;
 
     program_pointer += ( OPC_SIZE + ADDRESS_SIZE + ADDRESS_SIZE);
 }
@@ -573,7 +640,7 @@ static void opc_orir_func() {
 #endif
 
     read_2_command_parameters(ADDRESS_SIZE, VALUE_SIZE);
-    find_register(opc_p->p1)->value |= opc_p->p2;
+    find_or_add_register(opc_p->p1)->value |= opc_p->p2;
 
     program_pointer += ( OPC_SIZE + ADDRESS_SIZE + VALUE_SIZE);
 }
@@ -592,11 +659,11 @@ static void opc_dec_func() {
 
     read_1_command_parameter(ADDRESS_SIZE);
 
-    if( find_register(opc_p->p1)->value == 0x0000 ) {
+    if( find_or_add_register(opc_p->p1)->value == 0x0000 ) {
         setbit(statusregister, OVERFLOW_BIT);
     }
 
-    find_register(opc_p->p1)->value--;
+    find_or_add_register(opc_p->p1)->value--;
     
     program_pointer += (OPC_SIZE + ADDRESS_SIZE);
 }
@@ -614,11 +681,11 @@ static void opc_inc_func() {
 #endif
     read_1_command_parameter(ADDRESS_SIZE);
 
-    if( find_register(opc_p->p1)->value == 0xFFFF ) {
+    if( find_or_add_register(opc_p->p1)->value == 0xFFFF ) {
         setbit(statusregister, OVERFLOW_BIT);
     }
 
-    find_register(opc_p->p1)->value++;
+    find_or_add_register(opc_p->p1)->value++;
     
     program_pointer += (OPC_SIZE + ADDRESS_SIZE);
 }
@@ -635,7 +702,7 @@ static void opc_lsh_func() {
     EXPLAIN_OPCODE();
 #endif
     read_1_command_parameter(ADDRESS_SIZE);
-    find_register(opc_p->p1)->value<<1;
+    find_or_add_register(opc_p->p1)->value<<1;
     
     program_pointer += (OPC_SIZE + ADDRESS_SIZE);
 }
@@ -652,7 +719,7 @@ static void opc_rsh_func() {
     EXPLAIN_OPCODE();
 #endif
     read_1_command_parameter(ADDRESS_SIZE);
-    find_register(opc_p->p1)->value>>1;
+    find_or_add_register(opc_p->p1)->value>>1;
     
     program_pointer += (OPC_SIZE + ADDRESS_SIZE);
 }
@@ -669,7 +736,7 @@ static void opc_push_func() {
     EXPLAIN_OPCODE();
 #endif
     read_1_command_parameter(ADDRESS_SIZE);
-    stackpush(stack, &(find_register(opc_p->p1)->value), VALUE_SIZE) ;
+    stackpush(stack, &(find_or_add_register(opc_p->p1)->value), VALUE_SIZE) ;
     
     program_pointer += (OPC_SIZE + ADDRESS_SIZE);
 }
@@ -690,7 +757,7 @@ static void opc_pop_func() {
     }
 
     read_1_command_parameter(ADDRESS_SIZE);
-    find_register(opc_p->p1)->value = *((uint64_t*)stackpop(stack));
+    find_or_add_register(opc_p->p1)->value = *((uint64_t*)stackpop(stack));
     
     program_pointer += (OPC_SIZE + ADDRESS_SIZE);
 }
@@ -728,7 +795,7 @@ static void opc_add_func() {
     EXPLAIN_OPCODE();
 #endif
     read_2_command_parameters(ADDRESS_SIZE, ADDRESS_SIZE);
-    akku = find_register(opc_p->p1)->value + find_register(opc_p->p2)->value;
+    akku = find_or_add_register(opc_p->p1)->value + find_register(opc_p->p2)->value;
 
     program_pointer += (OPC_SIZE + ADDRESS_SIZE + ADDRESS_SIZE);
 }
@@ -745,7 +812,7 @@ static void opc_addi_func() {
     EXPLAIN_OPCODE();
 #endif
     read_2_command_parameters(ADDRESS_SIZE, VALUE_SIZE);
-    akku = find_register(opc_p->p1)->value + opc_p->p2;
+    akku = find_or_add_register(opc_p->p1)->value + opc_p->p2;
 
     program_pointer += (OPC_SIZE + ADDRESS_SIZE + VALUE_SIZE);
 }
@@ -762,7 +829,7 @@ static void opc_addr_func() {
     EXPLAIN_OPCODE();
 #endif
     read_2_command_parameters(ADDRESS_SIZE, ADDRESS_SIZE);
-    find_register(opc_p->p1)->value += find_register(opc_p->p2)->value;
+    find_or_add_register(opc_p->p1)->value += find_register(opc_p->p2)->value;
 
     program_pointer += (OPC_SIZE + ADDRESS_SIZE + ADDRESS_SIZE);
 }
@@ -779,7 +846,7 @@ static void opc_addir_func() {
     EXPLAIN_OPCODE();
 #endif
     read_2_command_parameters(ADDRESS_SIZE, VALUE_SIZE);
-    find_register(opc_p->p1)->value += opc_p->p2;
+    find_or_add_register(opc_p->p1)->value += opc_p->p2;
 
     program_pointer += (OPC_SIZE + ADDRESS_SIZE + VALUE_SIZE);
 }
@@ -817,7 +884,7 @@ static void opc_jmpiz_func() {
 #endif
     read_2_command_parameters(ADDRESS_SIZE, ADDRESS_SIZE);
     if( minx_binary_exists_at(opc_p->p2) ) {
-        if( find_register(opc_p->p1)->value == 0x0000 ) {
+        if( find_or_add_register(opc_p->p1)->value == 0x0000 ) {
             program_pointer = opc_p->p2;
         }
         else {
@@ -842,7 +909,7 @@ static void opc_jmpnz_func() {
 #endif
     read_2_command_parameters(ADDRESS_SIZE, ADDRESS_SIZE);
     if( minx_binary_exists_at(opc_p->p2) ) {
-        if( find_register(opc_p->p1)->value != 0x0000 ) {
+        if( find_or_add_register(opc_p->p1)->value != 0x0000 ) {
             program_pointer = opc_p->p2;
         }
         else {
