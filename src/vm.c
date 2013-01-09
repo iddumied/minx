@@ -16,6 +16,7 @@ static void         read_2_command_parameters   (unsigned int size1,
 static void         run_opcode              (uint16_t);
 
 static void         opc_nop_func            (void);
+static void         opc_call_func           (void);
 static void         opc_ret_func            (void);
 
 static void         opc_mov_func            (void);
@@ -77,29 +78,30 @@ static CommandParameters    *   opc_p           = NULL;
 static void ((*opc_funcs[])(void)) = {
 
     [0x00] = opc_nop_func,
-    [0x01] = opc_ret_func,
+    [0x01] = opc_call_func,
+    [0x02] = opc_ret_func,
 
-    [0x02] = opc_mov_func,
-    [0x03] = opc_movi_func,
+    [0x03] = opc_mov_func,
+    [0x04] = opc_movi_func,
 
-    [0x04] = opc_not_func,
-    [0x05] = opc_notr_func,
+    [0x05] = opc_not_func,
+    [0x06] = opc_notr_func,
 
-    [0x06] = opc_and_func,
-    [0x07] = opc_andi_func,
-    [0x08] = opc_andr_func,
-    [0x09] = opc_andir_func,
+    [0x07] = opc_and_func,
+    [0x08] = opc_andi_func,
+    [0x09] = opc_andr_func,
+    [0x0A] = opc_andir_func,
 
-    [0x0A] = opc_or_func,
-    [0x0B] = opc_ori_func,
-    [0x0C] = opc_orr_func,
-    [0x0D] = opc_orir_func,
+    [0x0B] = opc_or_func,
+    [0x0C] = opc_ori_func,
+    [0x0D] = opc_orr_func,
+    [0x0E] = opc_orir_func,
 
-    [0x0E] = opc_dec_func,
-    [0x0F] = opc_inc_func,
+    [0x0F] = opc_dec_func,
+    [0x10] = opc_inc_func,
 
-    [0x10] = opc_lsh_func,
-    [0x11] = opc_rsh_func,
+    [0x11] = opc_lsh_func,
+    [0x12] = opc_rsh_func,
 
     [0x20] = opc_push_func,
     [0x21] = opc_pop_func,
@@ -290,6 +292,23 @@ static void opc_nop_func() {
     EXPLAIN_OPCODE();
 #endif
     program_pointer += (OPC_SIZE);
+}
+
+/*
+ * Command:                 CALL
+ * Parameters:              1
+ * Affects Program Pointer: YES
+ *
+ * get current program_pointer, add enough for the next opcode, push it to stack,
+ * set the program_pointer to the value of the argument of the opc.
+ */
+static void opc_call_func() {
+#ifdef DEBUG
+    EXPLAIN_OPCODE();
+#endif
+    read_1_command_parameter(ADDRESS_SIZE);
+    stackpush(stack, program_pointer + OPC_SIZE + ADDRESS_SIZE );
+    program_pointer = opc_p->p1;
 }
 
 /*

@@ -15,29 +15,30 @@
  */
 
 #define         OPC_NOP			    0x00
-#define         OPC_RET			    0x01
+#define         OPC_CALL            0x01
+#define         OPC_RET			    0x02
 
-#define         OPC_MOV			    0x02
-#define         OPC_MOVI		    0x03
+#define         OPC_MOV			    0x03
+#define         OPC_MOVI		    0x04
 
-#define         OPC_NOT			    0x04
-#define         OPC_NOTR		    0x05
+#define         OPC_NOT			    0x05
+#define         OPC_NOTR		    0x06
 
-#define         OPC_AND			    0x06
-#define         OPC_ANDI		    0x07
-#define         OPC_ANDR		    0x08
-#define         OPC_ANDIR		    0x09
+#define         OPC_AND			    0x07
+#define         OPC_ANDI		    0x08
+#define         OPC_ANDR		    0x09
+#define         OPC_ANDIR		    0x0A
 
-#define         OPC_OR			    0x0A
-#define         OPC_ORI			    0x0B
-#define         OPC_ORR			    0x0C
-#define         OPC_ORIR		    0x0D
+#define         OPC_OR			    0x0B
+#define         OPC_ORI			    0x0C
+#define         OPC_ORR			    0x0D
+#define         OPC_ORIR		    0x0E
 
-#define         OPC_DEC			    0x0E
-#define         OPC_INC			    0x0F
+#define         OPC_DEC			    0x0F
+#define         OPC_INC			    0x10
 
-#define         OPC_LSH			    0x10
-#define         OPC_RSH			    0x11
+#define         OPC_LSH			    0x11
+#define         OPC_RSH			    0x12
 
 #define         OPC_PUSH		    0x20
 #define         OPC_POP			    0x21

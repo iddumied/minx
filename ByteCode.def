@@ -35,29 +35,30 @@ codes
 code	|	Short expl.	|	arguments				|	Expl.
 --------+---------------+---------------------------+---------------------------
 0x00	|	NOP			|	none					|
-0x01	|	RET			|	none					| Jump to $(stack pop)
+0x01	|	CALL		|	Adress					| Push current addr to Stack, jump to address
+0x02	|	RET			|	none					| Jump to $(stack pop)
 
-0x02	|	MOV			|	Register, Register		|
-0x03	|	MOVI		|	Register, Value			|
+0x03	|	MOV			|	Register, Register		|
+0x04	|	MOVI		|	Register, Value			|
 
-0x04	|	NOT			|	Register				| result in akku
-0x05	|	NOTR		|	Register				| result in register
+0x05	|	NOT			|	Register				| result in akku
+0x06	|	NOTR		|	Register				| result in register
 
-0x06	|	AND			|	Register, Register		| result in akku
-0x07	|	ANDI		|	Register, Value			| result in akku
-0x08	|	ANDR		|	Register, Register		| result in register 
-0x09	|	ANDIR		|	Register, Value			| result in register
+0x07	|	AND			|	Register, Register		| result in akku
+0x08	|	ANDI		|	Register, Value			| result in akku
+0x09	|	ANDR		|	Register, Register		| result in register 
+0x0A	|	ANDIR		|	Register, Value			| result in register
 
-0x0A	|	OR			|	Register, Register		| result in akku 
-0x0B	|	ORI			|	Register, Value			| result in akku 
-0x0C	|	ORR			|	Register, Register		| result in register 
-0x0D	|	ORIR		|	Register, Value			| result in register
+0x0B	|	OR			|	Register, Register		| result in akku 
+0x0C	|	ORI			|	Register, Value			| result in akku 
+0x0D	|	ORR			|	Register, Register		| result in register 
+0x0E	|	ORIR		|	Register, Value			| result in register
 
-0x0E	|	DEC			|	Register				| result in register 
-0x0F	|	INC			|	Register				| result in register 
+0x0F	|	DEC			|	Register				| result in register 
+0x10	|	INC			|	Register				| result in register 
 
-0x10	|	LSH			|	Register				| result in register 
-0x11	|	RSH			|	Register				| result in register 
+0x11	|	LSH			|	Register				| result in register 
+0x12	|	RSH			|	Register				| result in register 
 
 0x20	|	PUSH		|	Register				| push register to stack
 0x21	|	POP			|	Register				| pop from stack into register
