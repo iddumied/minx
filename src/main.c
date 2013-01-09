@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-int main(unsigned int argc, char **args) {
+int main(int argc, char **args) {
     if( argc != 2 )
         printf("No Binary given!\n");
     FILE *f = fopen(args[1], "r");
