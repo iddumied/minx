@@ -31,6 +31,8 @@ HEADERS= -I${SRC} -I${UTILC_HEADERS_LOCATIONS}
 #
 #
 CFLAGS += -Wall 
+CFLAGS += -std=c99
+
 #
 #
 # Compiling the VM
