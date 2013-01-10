@@ -200,6 +200,9 @@ static Register* find_register(uint64_t addr) {
  */
 static void run() {
     while( !program_pointer_is( 0xFFFF ) ) {
+#ifdef DEBUG
+        fflush(stdout);
+#endif 
         run_opcode(*((uint16_t*)minx_binary_get_at(program_pointer, OPC_SIZE)));
     }
 }
