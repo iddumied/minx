@@ -30,9 +30,9 @@ stack
 codes
 -----
 
-'Register'	stands for 16 Bit register address 
-'Value'		stands for 64 Bit value
-'Adress'	stands for 64 Bit code address
+'Register'	stands for 16 Bit (2 Byte) register address 
+'Value'		stands for 64 Bit (8 Byte) value
+'Adress'	stands for 64 Bit (8 Byte) code address
 
 code	|	Short expl.	|	arguments				|	Expl.
 --------+---------------+---------------------------+---------------------------
