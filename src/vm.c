@@ -199,7 +199,7 @@ static Register* find_register(uint64_t addr) {
  * runs the vm.  
  */
 static void run() {
-    while( !program_pointer_is( 0xFFFF ) ) {
+    while( !program_pointer_is(END_OF_PROGRAM) ) {
 #ifdef DEBUG
         fflush(stdout);
 #endif 
