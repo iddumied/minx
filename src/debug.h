@@ -15,7 +15,7 @@
 
 #define EXPLAIN_OPCODE_WITH(opc,format,val)                                 \
     do {                                                                    \
-        printf("[minx][vm] opcode: %s ("format")\n", opc, val );            \ 
+        printf("[minx][vm] opcode: %s ("format")\n", opc, val );            \
     } while(0)
 
 #endif //__MINX_DEBUG_H__
