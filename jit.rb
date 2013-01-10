@@ -61,8 +61,7 @@ loop do
 
   break unless @ops.keys.include? code
 
-  puts "Code: #{@ops[code]} #{nodes.join(' ')}"
-  @code << [@ops[code].opc].pack("Q")
+  @code << [@ops[code].opc].pack("S")
   @code << args
 
 end
