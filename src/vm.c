@@ -618,7 +618,8 @@ static void opc_lsh_func() {
     EXPLAIN_OPCODE("lsh");
 #endif
     read_1_command_parameter(REGISTER_ADDRESS_SIZE);
-    find_register(opc_p->p1)->value<<1;
+    Register *r = find_register(opc_p->p1);
+    r->value = r->value<<1;
     
     program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE);
 }
@@ -635,7 +636,8 @@ static void opc_rsh_func() {
     EXPLAIN_OPCODE("rsh");
 #endif
     read_1_command_parameter(REGISTER_ADDRESS_SIZE);
-    find_register(opc_p->p1)->value>>1;
+    Register *r = find_register(opc_p->p1);
+    r->value = r->value>>1;
     
     program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE);
 }
