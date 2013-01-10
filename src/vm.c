@@ -209,7 +209,7 @@ static void run() {
 
 static void run_opcode(uint16_t cmd) {
 #ifdef DEBUG
-    printf("Running opcode: %"SCNd16"\n", cmd);
+    printf("Running opcode: %"PRIu16"\n", cmd);
     fflush(stdout);
 #endif 
 
@@ -218,6 +218,10 @@ static void run_opcode(uint16_t cmd) {
         FATAL_DESC_ERROR("Tried to execute unknown opcode!");
     }
     opc_func();
+
+#ifdef DEBUG
+    printf("[minx][vm]:\tPROG_POINTER: %"PRIu64"\n", program_pointer);
+#endif 
 }
 
 /*
@@ -359,12 +363,14 @@ static void opc_ret_func() {
  *
  */
 static void opc_mov_func() {
-#ifdef DEBUG
-    EXPLAIN_OPCODE("mov");
-#endif
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE);
+
+#ifdef DEBUG
+    EXPLAIN_OPCODE_WITH("mov", "from: %"PRIu64", to: %"PRIu64, opc_p->p2, opc_p->p1);
+#endif 
+
     find_register(opc_p->p1)->value = find_register(opc_p->p2)->value;
-    program_pointer += ( OPC_SIZE + REGISTER_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE);
+    program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE);
 }
 
 /*
