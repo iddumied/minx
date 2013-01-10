@@ -12,6 +12,7 @@ UTILC_HEADERS_LOCATIONS=${UTILC_DIR}/src/
 #
 SRC=./src
 BIN=./bin
+CC=/usr/bin/gcc
 
 MAIN_SRC=${SRC}/main.c
 VM_SRC=${SRC}/vm.c
@@ -32,6 +33,8 @@ HEADERS= -I${SRC} -I${UTILC_HEADERS_LOCATIONS}
 #
 CFLAGS += -Wall 
 CFLAGS += -std=c99
+CFLAGS += -g
+CFLAGS += -D DEBUG
 
 #
 #
@@ -63,13 +66,16 @@ compile_binary_reader:
 #
 #
 
-utilc: compile_utilc_stack get_utilc_stack
+utilc: setup_utilc compile_utilc_stack get_utilc_stack clean_utilc
 
+setup_utilc:
+	mkdir -p ${UTILC_DIR}/bin
 
 compile_utilc_stack:
-	cd ${UTILC_DIR}
-	make stack
-	cd -
+	make -C ${UTILC_DIR} stack 
 
 get_utilc_stack:
 	cp -v ${UTILC_BIN_DIR}/${UTILC_STACK_OUT} ${BIN}/${UTILC_STACK_OUT}
+
+clean_utilc:
+	rm -r ${UTILC_DIR}/bin
