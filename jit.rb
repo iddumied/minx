@@ -53,22 +53,49 @@ end
 
 @code = ""
 
-loop do 
-  line = gets
-  nodes = line.split(" ")
-  code = nodes.shift
-  args = create_args(code, nodes)
+def process_line(line)
+    nodes = line.split(" ")
+    code = nodes.shift
+    args = create_args(code, nodes)
 
-  break unless @ops.keys.include? code
+    fail "UNALLOWED OPCODE #{code}" unless @ops.keys.include? code
 
-  @code << [@ops[code].opc].pack("S")
-  @code << args
+    @code << [@ops[code].opc].pack("S")
+    @code << args
+end
 
+def read_stdin
+  loop do 
+    process_line(gets)
+  end
+end
+
+def read_file f
+  lines = File.readlines(f)
+  lines.each do |line| 
+    next if line.start_with? ";" or line.start_with? "#"
+    process_line(line)
+  end
+end
+
+if ARGV.empty?
+  read_stdin
+else
+  read_file( ARGV.first )
 end
 
 puts "code is: \"#{@code}\""
+sleep 0.5
 puts "write to file: "
-filename = gets.chop
-f = File.new(filename, "w")
+
+if ARGV.empty?
+  filename = gets.chop
+  f = File.new(filename, "w")
+else
+  filename = ARGV.first + ".out"
+  f = File.open(filename, "w")
+end
+
+puts filename
 IO.write(f, @code)
 f.close
