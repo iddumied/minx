@@ -20,8 +20,6 @@ TODO:
 5.1)define a op code ISDEV(reg, opc) for getting if a opcode is defined, result
 	in 'reg'
 
-6)	define a op code for undefine a register (will remove register from VM)
-
 7)  define special op codes for debugging:
 	- print stack
 	- print registers
@@ -36,5 +34,5 @@ TODO:
 9)	File reader should read the file as linked list, with automatically removing 
 	"old" parts of the file from memory to keep memuse smart.
 
-10) !important!
-	implement quicksort for sorting registers in register_map
+11) Register downgrade: Don't use 2^64 Registers, use 2^8 (1 Byte addresses),
+	but reserve 16 Bit for addresses (for upgrade later)
