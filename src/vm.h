@@ -5,6 +5,11 @@
 #include <string.h>
 #include <stdint.h>
 
+#ifdef DEBUG
+#include <inttypes.h>
+#include <stdio.h>
+#endif
+
 #include "binary_reader.h"
 #include "config.h"
 #include "error.h"
