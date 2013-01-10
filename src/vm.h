@@ -114,8 +114,12 @@ void    minx_vm_run(void);
 #ifdef DEBUG
 
 #define EXPLAIN_OPCODE(opc) do {                                            \
-                                printf("[minx] opcode: %s", opc);           \
+                                printf("[minx] opcode: %s\n", opc);           \
                             } while(0)
+#define EXPLAIN_OPCODE_WITH(opc,format,val) do {                            \
+                                                printf("[minx] opcode: %s ("format")\n",\
+                                                        opc, val );         \
+                                            } while(0)
 
 #endif //DEBUG
 

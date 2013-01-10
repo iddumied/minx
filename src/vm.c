@@ -781,11 +781,13 @@ static void opc_addir_func() {
  *
  */
 static void opc_jmp_func() {
-#ifdef DEBUG
-    EXPLAIN_OPCODE("jmp");
-#endif
     read_1_command_parameter(PROGRAM_ADDRESS_SIZE);
-    if( minx_binary_exists_at(opc_p->p1) ) {
+
+#ifdef DEBUG
+    EXPLAIN_OPCODE_WITH("jmp", "to %"PRIu64, opc_p->p1);
+#endif 
+
+    if( minx_binary_exists_at(opc_p->p1) || opc_p->p1 == END_OF_PROGRAM) {
         program_pointer = opc_p->p1;
     }
     else {
