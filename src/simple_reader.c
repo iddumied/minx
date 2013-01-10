@@ -20,6 +20,12 @@ static long get_file_size(FILE *f);
 void minx_binary_init(FILE *f) {
     filesize = get_file_size(f);
     binary = (char*) malloc( sizeof(char) * filesize );
+    size_t readsize = 1024;
+    size_t lastreadsize;
+    unsigned int readcount = 0;
+    do {
+        lastreadsize = fread( &(binary[readcount * readsize]), sizeof(char), readsize, f);
+    } while( readsize == lastreadsize );
 } 
 
 void minx_binary_shutdown() {
