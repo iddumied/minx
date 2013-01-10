@@ -58,12 +58,12 @@
  * defines for size in bytes 
  */
 
-#define         OPC_SIZE        2
-#define         VALUE_SIZE      8
-#define         ADDRESS_SIZE    8
+#define         OPC_SIZE                2 /*16 bit*/
+#define         VALUE_SIZE              8 /*64 bit*/
+#define         REGISTER_ADDRESS_SIZE   2 /*16 bit*/
+#define         PROGRAM_ADDRESS_SIZE    8 /*64 bit, because program_pointer is 64 bit*/
 
 typedef struct {
-    uint64_t    addr;
     uint64_t    value;
 } Register;
 
@@ -72,8 +72,12 @@ typedef struct {
     Register    *registers[];
 } RegisterMap;
 
-#define         DEFAULT_REGISTER_CNT            0xAF
-#define         DEFAULT_ADDITIONAL_REGISTERS    0x0F
+/*
+ * currently, registers are addressed with 1 byte addresses.
+ * But the addresses are read from the binary as 2 byte, because if we want to
+ * upgrade later, we do not have to change the compiler so much.
+ */
+#define         MAX_REGISTERS       (0x00FF+1) /* 256 */
 
 #define         OVERFLOW_BIT    0
 
