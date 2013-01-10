@@ -98,4 +98,18 @@ typedef struct {
 
 void    minx_vm_run(void);
 
+/*
+ *
+ * Debugging helpers
+ *
+ *
+ */
+#ifdef DEBUG
+
+#define EXPLAIN_OPCODE(opc) do {                                            \
+                                printf("[minx] opcode: %s", opc);           \
+                            } while(0)
+
+#endif //DEBUG
+
 #endif //__MINX_VM_H__

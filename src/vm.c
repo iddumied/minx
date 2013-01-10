@@ -296,7 +296,7 @@ static void read_2_command_parameters(unsigned int size1, unsigned int size2) {
  */
 static void opc_nop_func() {
 #ifdef DEBUG
-    EXPLAIN_OPCODE();
+    EXPLAIN_OPCODE("nop");
 #endif
     program_pointer += (OPC_SIZE);
 }
@@ -311,7 +311,7 @@ static void opc_nop_func() {
  */
 static void opc_call_func() {
 #ifdef DEBUG
-    EXPLAIN_OPCODE();
+    EXPLAIN_OPCODE("call");
 #endif
     read_1_command_parameter(PROGRAM_ADDRESS_SIZE);
     /*
@@ -335,7 +335,7 @@ static void opc_call_func() {
  */
 static void opc_ret_func() {
 #ifdef DEBUG
-    EXPLAIN_OPCODE();
+    EXPLAIN_OPCODE("ret");
 #endif
     if (stack_is_empty(stack))
         FATAL_DESC_ERROR("Cannot RET, stack is empty!");
@@ -352,7 +352,7 @@ static void opc_ret_func() {
  */
 static void opc_mov_func() {
 #ifdef DEBUG
-    EXPLAIN_OPCODE();
+    EXPLAIN_OPCODE("mov");
 #endif
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE);
     find_register(opc_p->p1)->value = find_register(opc_p->p2)->value;
@@ -368,7 +368,7 @@ static void opc_mov_func() {
  */
 static void opc_movi_func() {
 #ifdef DEBUG
-    EXPLAIN_OPCODE();
+    EXPLAIN_OPCODE("movi");
 #endif
 
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, VALUE_SIZE);
@@ -386,7 +386,7 @@ static void opc_movi_func() {
  */
 static void opc_not_func() {
 #ifdef DEBUG
-    EXPLAIN_OPCODE();
+    EXPLAIN_OPCODE("not");
 #endif
 
     read_1_command_parameter(REGISTER_ADDRESS_SIZE);
@@ -404,7 +404,7 @@ static void opc_not_func() {
  */
 static void opc_notr_func() {
 #ifdef DEBUG
-    EXPLAIN_OPCODE();
+    EXPLAIN_OPCODE("notr");
 #endif
 
     read_1_command_parameter(REGISTER_ADDRESS_SIZE);
@@ -422,7 +422,7 @@ static void opc_notr_func() {
  */
 static void opc_and_func() {
 #ifdef DEBUG
-    EXPLAIN_OPCODE();
+    EXPLAIN_OPCODE("and");
 #endif
 
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE);
@@ -440,7 +440,7 @@ static void opc_and_func() {
  */
 static void opc_andi_func() {
 #ifdef DEBUG
-    EXPLAIN_OPCODE();
+    EXPLAIN_OPCODE("andi");
 #endif
 
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, VALUE_SIZE);
@@ -458,7 +458,7 @@ static void opc_andi_func() {
  */
 static void opc_andr_func() {
 #ifdef DEBUG
-    EXPLAIN_OPCODE();
+    EXPLAIN_OPCODE("andr");
 #endif
 
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE);
@@ -476,7 +476,7 @@ static void opc_andr_func() {
  */
 static void opc_andir_func() {
 #ifdef DEBUG
-    EXPLAIN_OPCODE();
+    EXPLAIN_OPCODE("andir");
 #endif
 
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, VALUE_SIZE);
@@ -495,7 +495,7 @@ static void opc_andir_func() {
  */
 static void opc_or_func() {
 #ifdef DEBUG
-    EXPLAIN_OPCODE();
+    EXPLAIN_OPCODE("or");
 #endif
 
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE);
@@ -513,7 +513,7 @@ static void opc_or_func() {
  */
 static void opc_ori_func() {
 #ifdef DEBUG
-    EXPLAIN_OPCODE();
+    EXPLAIN_OPCODE("ori");
 #endif
 
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, VALUE_SIZE);
@@ -531,7 +531,7 @@ static void opc_ori_func() {
  */
 static void opc_orr_func() {
 #ifdef DEBUG
-    EXPLAIN_OPCODE();
+    EXPLAIN_OPCODE("orr");
 #endif
 
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE);
@@ -549,7 +549,7 @@ static void opc_orr_func() {
  */
 static void opc_orir_func() {
 #ifdef DEBUG
-    EXPLAIN_OPCODE();
+    EXPLAIN_OPCODE("orir");
 #endif
 
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, VALUE_SIZE);
@@ -567,7 +567,7 @@ static void opc_orir_func() {
  */
 static void opc_dec_func() {
 #ifdef DEBUG
-    EXPLAIN_OPCODE();
+    EXPLAIN_OPCODE("dec");
 #endif
 
     read_1_command_parameter(REGISTER_ADDRESS_SIZE);
@@ -590,7 +590,7 @@ static void opc_dec_func() {
  */
 static void opc_inc_func() {
 #ifdef DEBUG
-    EXPLAIN_OPCODE();
+    EXPLAIN_OPCODE("inc");
 #endif
     read_1_command_parameter(REGISTER_ADDRESS_SIZE);
 
@@ -612,7 +612,7 @@ static void opc_inc_func() {
  */
 static void opc_lsh_func() {
 #ifdef DEBUG
-    EXPLAIN_OPCODE();
+    EXPLAIN_OPCODE("lsh");
 #endif
     read_1_command_parameter(REGISTER_ADDRESS_SIZE);
     find_register(opc_p->p1)->value<<1;
@@ -629,7 +629,7 @@ static void opc_lsh_func() {
  */
 static void opc_rsh_func() {
 #ifdef DEBUG
-    EXPLAIN_OPCODE();
+    EXPLAIN_OPCODE("rsh");
 #endif
     read_1_command_parameter(REGISTER_ADDRESS_SIZE);
     find_register(opc_p->p1)->value>>1;
@@ -646,7 +646,7 @@ static void opc_rsh_func() {
  */
 static void opc_push_func() {
 #ifdef DEBUG
-    EXPLAIN_OPCODE();
+    EXPLAIN_OPCODE("push");
 #endif
     read_1_command_parameter(REGISTER_ADDRESS_SIZE);
     stackpush(stack, &(find_register(opc_p->p1)->value), VALUE_SIZE) ;
@@ -663,7 +663,7 @@ static void opc_push_func() {
  */
 static void opc_pop_func() {
 #ifdef DEBUG
-    EXPLAIN_OPCODE();
+    EXPLAIN_OPCODE("pop");
 #endif
     if( stack_is_empty( stack ) ) {
         FATAL_DESC_ERROR("Cannot pop from empty stack!");
@@ -685,7 +685,7 @@ static void opc_pop_func() {
  */
 static void opc_drop_func() {
 #ifdef DEBUG
-    EXPLAIN_OPCODE();
+    EXPLAIN_OPCODE("drop");
 #endif
     if( stack_is_empty( stack ) ) {
         FATAL_DESC_ERROR("Cannot drop from empty stack!");
@@ -704,7 +704,7 @@ static void opc_drop_func() {
  */
 static void opc_add_func() {
 #ifdef DEBUG
-    EXPLAIN_OPCODE();
+    EXPLAIN_OPCODE("add");
 #endif
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE);
     akku = find_register(opc_p->p1)->value + find_register(opc_p->p2)->value;
@@ -721,7 +721,7 @@ static void opc_add_func() {
  */
 static void opc_addi_func() {
 #ifdef DEBUG
-    EXPLAIN_OPCODE();
+    EXPLAIN_OPCODE("addi");
 #endif
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, VALUE_SIZE);
     akku = find_register(opc_p->p1)->value + opc_p->p2;
@@ -738,7 +738,7 @@ static void opc_addi_func() {
  */
 static void opc_addr_func() {
 #ifdef DEBUG
-    EXPLAIN_OPCODE();
+    EXPLAIN_OPCODE("addr");
 #endif
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE);
     find_register(opc_p->p1)->value += find_register(opc_p->p2)->value;
@@ -755,7 +755,7 @@ static void opc_addr_func() {
  */
 static void opc_addir_func() {
 #ifdef DEBUG
-    EXPLAIN_OPCODE();
+    EXPLAIN_OPCODE("addir");
 #endif
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, VALUE_SIZE);
     find_register(opc_p->p1)->value += opc_p->p2;
@@ -772,7 +772,7 @@ static void opc_addir_func() {
  */
 static void opc_jmp_func() {
 #ifdef DEBUG
-    EXPLAIN_OPCODE();
+    EXPLAIN_OPCODE("jmp");
 #endif
     read_1_command_parameter(PROGRAM_ADDRESS_SIZE);
     if( minx_binary_exists_at(opc_p->p1) ) {
@@ -792,7 +792,7 @@ static void opc_jmp_func() {
  */
 static void opc_jmpiz_func() {
 #ifdef DEBUG
-    EXPLAIN_OPCODE();
+    EXPLAIN_OPCODE("jmpiz");
 #endif
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, PROGRAM_ADDRESS_SIZE);
     if( minx_binary_exists_at(opc_p->p2) ) {
@@ -817,7 +817,7 @@ static void opc_jmpiz_func() {
  */
 static void opc_jmpnz_func() {
 #ifdef DEBUG
-    EXPLAIN_OPCODE();
+    EXPLAIN_OPCODE("jmpnz");
 #endif
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, PROGRAM_ADDRESS_SIZE);
     if( minx_binary_exists_at(opc_p->p2) ) {
@@ -842,7 +842,7 @@ static void opc_jmpnz_func() {
  */
 static void opc_ifzjmp_func() {
 #ifdef DEBUG
-    EXPLAIN_OPCODE();
+    EXPLAIN_OPCODE("ifzjmp");
 #endif
     read_2_command_parameters(PROGRAM_ADDRESS_SIZE, PROGRAM_ADDRESS_SIZE);
     if(minx_binary_exists_at(opc_p->p1) && minx_binary_exists_at(opc_p->p2)) {
