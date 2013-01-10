@@ -1,10 +1,29 @@
+#
+# This is a minimalistic compiler for the minx virtual machine.!
+#
+# it does not provide automatic jumps, aliases for registers or other heavy
+# stuff. It just translates simple pseudo-asm to binary which can be run on minx.
+#
+# You can pass a argument which should be a file with opcodes in it. As you
+# might notice: there are just opcodes because I am friendly and nobody wants to
+# write HEX, anyway, arguments are still hex.
+#
+
+#
+# Sizes of ...
+#
 REGISTER  = 2
 VALUE     = 8
 ADDRESS   = 8
 
+# helper to store stuff
 class Op < Struct.new :opc, :args; end
 
+#
+# These are the opcodes. You can also read them in the ByteCode.def file.
+#
 @ops = { 
+# opcode  =>         op    args
   "NOP" =>    Op.new(0x00, [] ), 
   "CALL" =>   Op.new(0x01, [ADDRESS] ), 
   "RET" =>    Op.new(0x02, [] ), 
@@ -37,8 +56,9 @@ class Op < Struct.new :opc, :args; end
   "IFZJMP" => Op.new(0x43, [ADDRESS, ADDRESS] ), 
 }
 
-
-
+#
+# decode arguments to binary
+#
 def create_args(opc, args)
   res = ""
   args.each_with_index do |arg, i| 
@@ -53,6 +73,9 @@ end
 
 @code = ""
 
+#
+# compile a line
+# 
 def process_line(line)
     nodes = line.split(" ")
     code = nodes.shift
@@ -64,12 +87,18 @@ def process_line(line)
     @code << args
 end
 
+#
+# read stdin and compile just in time to binary
+#
 def read_stdin
   loop do 
     process_line(gets)
   end
 end
 
+#
+# read file f and compile lines to binary
+#
 def read_file f
   lines = File.readlines(f)
   lines.each do |line| 
@@ -77,6 +106,10 @@ def read_file f
     process_line(line)
   end
 end
+
+#
+# run the stuff...
+#
 
 if ARGV.empty?
   read_stdin
