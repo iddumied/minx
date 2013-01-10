@@ -8,6 +8,8 @@
 #ifdef DEBUG
 #include <inttypes.h>
 #include <stdio.h>
+
+#include "debug.h"
 #endif
 
 #include "binary_reader.h"
@@ -104,23 +106,5 @@ typedef struct {
  */
 
 void    minx_vm_run(void);
-
-/*
- *
- * Debugging helpers
- *
- *
- */
-#ifdef DEBUG
-
-#define EXPLAIN_OPCODE(opc) do {                                            \
-                                printf("[minx] opcode: %s\n", opc);           \
-                            } while(0)
-#define EXPLAIN_OPCODE_WITH(opc,format,val) do {                            \
-                                                printf("[minx] opcode: %s ("format")\n",\
-                                                        opc, val );         \
-                                            } while(0)
-
-#endif //DEBUG
 
 #endif //__MINX_VM_H__
