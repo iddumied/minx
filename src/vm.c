@@ -381,11 +381,12 @@ static void opc_mov_func() {
  *
  */
 static void opc_movi_func() {
-#ifdef DEBUG
-    EXPLAIN_OPCODE("movi");
-#endif
-
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, VALUE_SIZE);
+
+#ifdef DEBUG
+    EXPLAIN_OPCODE_WITH("movi", "val: %"PRIu64", to: %"PRIu64, opc_p->p2, opc_p->p1);
+#endif 
+
     find_register(opc_p->p1)->value = opc_p->p2;
 
     program_pointer += ( OPC_SIZE + REGISTER_ADDRESS_SIZE + VALUE_SIZE );
@@ -399,11 +400,12 @@ static void opc_movi_func() {
  * Result in akku
  */
 static void opc_not_func() {
-#ifdef DEBUG
-    EXPLAIN_OPCODE("not");
-#endif
-
     read_1_command_parameter(REGISTER_ADDRESS_SIZE);
+
+#ifdef DEBUG
+    EXPLAIN_OPCODE_WITH("not", "register: %"PRIu64, opc_p->p1);
+#endif 
+
     akku = ! find_register(opc_p->p1)->value;
 
     program_pointer += ( OPC_SIZE + REGISTER_ADDRESS_SIZE );
@@ -417,11 +419,12 @@ static void opc_not_func() {
  * Result in same register
  */
 static void opc_notr_func() {
-#ifdef DEBUG
-    EXPLAIN_OPCODE("notr");
-#endif
-
     read_1_command_parameter(REGISTER_ADDRESS_SIZE);
+
+#ifdef DEBUG
+    EXPLAIN_OPCODE_WITH("not", "register: %"PRIu64, opc_p->p1);
+#endif 
+
     find_register(opc_p->p1)->value = ! find_register(opc_p->p1)->value;
  
     program_pointer += ( OPC_SIZE + REGISTER_ADDRESS_SIZE );
