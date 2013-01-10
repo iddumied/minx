@@ -25,7 +25,27 @@ void minx_binary_init(FILE *f) {
     unsigned int readcount = 0;
     do {
         lastreadsize = fread( &(binary[readcount * readsize]), sizeof(char), readsize, f);
+        readcount++;
     } while( readsize == lastreadsize );
+
+#ifdef DEBUG
+    printf("Binary:\n");
+    unsigned int i;
+    for( i = 0 ; i < filesize; i++ ) {
+        if( (int)binary[i] < 10 && (int)binary[i] >= 0) {
+            printf(" %i ", (int)binary[i]);
+        }
+        else {
+            printf("%i ", (int)binary[i]);
+        }
+
+        if( i % 8 == 0 ) {
+            printf("\n");
+        }
+    }
+    printf("\n");
+#endif 
+
 } 
 
 void minx_binary_shutdown() {
