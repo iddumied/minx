@@ -135,9 +135,9 @@ static void ((*opc_funcs[])(void)) = {
  * These macros are always valid, also if the register_map was reordered,
  * because there are in a row and defined as so.
  */
-#define program_pointer                 (registers[0x0000]->value)
-#define akku                            (registers[0x0002]->value)
-#define statusregister                  (registers[0x0003]->value)
+#define program_pointer                 (registers[0x0000].value)
+#define akku                            (registers[0x0002].value)
+#define statusregister                  (registers[0x0003].value)
 
 #define register_exists(addr)           (register_count >= addr)
 #define program_pointer_is(val)         (program_pointer == val)
@@ -156,7 +156,7 @@ void minx_vm_run() {
 
     run();
 
-    free(register_map);
+    free(registers);
     free(opc_p);
     stackdelete(stack);
 }
@@ -174,7 +174,7 @@ static void init_registers() {
             register_count < MAX_REGISTERS; 
             register_count++ ) {
 
-        registers[register_count]->value = 0x00;
+        registers[register_count].value = 0x00;
     }
 }
 
@@ -187,9 +187,10 @@ static void init_registers() {
  * saved in 64 bit and passed to this function if necessary.
  */
 static Register* find_register(uint64_t addr) {
-    if( !register_exists(addr) )
+    if( !register_exists(addr) ) {
         FATAL_DESC_ERROR("Register does not exist");
-    return &registers[ addr | REGISTER_REGISTER_ADDRESS_SIZE ]; 
+    }
+    return &registers[ addr | REGISTER_ADDRESS_SIZE ]; 
 }
 
 /*
@@ -313,7 +314,15 @@ static void opc_call_func() {
     EXPLAIN_OPCODE();
 #endif
     read_1_command_parameter(PROGRAM_ADDRESS_SIZE);
-    stackpush(stack, program_pointer + OPC_SIZE + PROGRAM_ADDRESS_SIZE);
+    /*
+     * push to stack
+     *
+     * push the address of the next opcode to the stack,
+     * the address has size (PROGRAM_ADDRESS_SIZE) (in this case this is 8 Byte)
+     */
+    stackpush(  stack,
+                (void*)(program_pointer + OPC_SIZE + PROGRAM_ADDRESS_SIZE), 
+                (size_t)PROGRAM_ADDRESS_SIZE);
     program_pointer = opc_p->p1;
 }
 
@@ -331,7 +340,7 @@ static void opc_ret_func() {
     if (stack_is_empty(stack))
         FATAL_DESC_ERROR("Cannot RET, stack is empty!");
      
-    program_pointer = (uint64_t) stackpop();
+    program_pointer = (uint64_t) stackpop(stack);
 }
 
 /*
@@ -419,7 +428,7 @@ static void opc_and_func() {
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE);
     akku = find_register(opc_p->p1)->value & find_register(opc_p->p2)->value;
 
-    program_pointer += ( OPC_SIZE + REGISTER_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE )
+    program_pointer += ( OPC_SIZE + REGISTER_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE );
 }
 
 /*
