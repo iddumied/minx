@@ -583,11 +583,11 @@ static void opc_orir_func() {
  *
  */
 static void opc_dec_func() {
-#ifdef DEBUG
-    EXPLAIN_OPCODE("dec");
-#endif
-
     read_1_command_parameter(REGISTER_ADDRESS_SIZE);
+
+#ifdef DEBUG
+    EXPLAIN_OPCODE_WITH("dec", "reg: %"PRIu64, opc_p->p1);
+#endif 
 
     if( find_register(opc_p->p1)->value == 0x0000 ) {
         setbit(statusregister, OVERFLOW_BIT);
@@ -606,10 +606,11 @@ static void opc_dec_func() {
  *
  */
 static void opc_inc_func() {
-#ifdef DEBUG
-    EXPLAIN_OPCODE("inc");
-#endif
     read_1_command_parameter(REGISTER_ADDRESS_SIZE);
+
+#ifdef DEBUG
+    EXPLAIN_OPCODE_WITH("inc", "reg: %"PRIu64, opc_p->p1);
+#endif 
 
     if( find_register(opc_p->p1)->value == 0xFFFF ) {
         setbit(statusregister, OVERFLOW_BIT);
