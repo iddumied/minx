@@ -5,8 +5,10 @@
 #include <stdio.h>
 
 int main(int argc, char **args) {
-    if( argc != 2 )
+    if( argc != 2 ) {
         printf("No Binary given!\n");
+        exit(1);
+    }
     FILE *f = fopen(args[1], "r");
 
     minx_binary_init(f);
