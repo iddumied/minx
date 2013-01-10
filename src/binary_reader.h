@@ -7,6 +7,11 @@
 
 #include "error.h"
 
+#ifdef DEBUG
+#include <stdio.h>
+#include "debug.h"
+#endif
+
 void            minx_binary_init        ( FILE *f );
 void            minx_binary_shutdown    (void);
 void *          minx_binary_get_at      (uint64_t p, unsigned int number_of_bytes);
