@@ -1,7 +1,9 @@
 Much simpler:
 
 opcode is 16 Bit
-registers, values and adresses are 64 bit
+registers are addressed with 16 Bit
+values are 64 bit 
+Program-adresses are 64 bit
 
 special registers:
 ------------------
@@ -28,7 +30,7 @@ stack
 codes
 -----
 
-'Register'	stands for 64 Bit register address 
+'Register'	stands for 16 Bit register address 
 'Value'		stands for 64 Bit value
 'Adress'	stands for 64 Bit code address
 

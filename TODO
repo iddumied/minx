@@ -35,6 +35,3 @@ TODO:
 
 9)	File reader should read the file as linked list, with automatically removing 
 	"old" parts of the file from memory to keep memuse smart.
-
-11) Register downgrade: Don't use 2^64 Registers, use 2^8 (1 Byte addresses),
-	but reserve 16 Bit for addresses (for upgrade later)
