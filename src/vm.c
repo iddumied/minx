@@ -463,7 +463,7 @@ static void opc_andi_func() {
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, VALUE_SIZE);
     akku = find_register(opc_p->p1)->value & opc_p->p2;
 
-    program_pointer += ( OPC_SIZE + REGISTER_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE );
+    program_pointer += ( OPC_SIZE + REGISTER_ADDRESS_SIZE + VALUE_SIZE);
 }
 
 /*
@@ -817,7 +817,7 @@ static void opc_jmpiz_func() {
     EXPLAIN_OPCODE("jmpiz");
 #endif
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, PROGRAM_ADDRESS_SIZE);
-    if( minx_binary_exists_at(opc_p->p2) ) {
+    if( minx_binary_exists_at(opc_p->p2) || opc_p->p2 == END_OF_PROGRAM) {
         if( find_register(opc_p->p1)->value == 0x0000 ) {
             program_pointer = opc_p->p2;
         }
@@ -842,7 +842,7 @@ static void opc_jmpnz_func() {
     EXPLAIN_OPCODE("jmpnz");
 #endif
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, PROGRAM_ADDRESS_SIZE);
-    if( minx_binary_exists_at(opc_p->p2) ) {
+    if( minx_binary_exists_at(opc_p->p2) || opc_p->p2 == END_OF_PROGRAM) {
         if( find_register(opc_p->p1)->value != 0x0000 ) {
             program_pointer = opc_p->p2;
         }
@@ -867,7 +867,9 @@ static void opc_ifzjmp_func() {
     EXPLAIN_OPCODE("ifzjmp");
 #endif
     read_2_command_parameters(PROGRAM_ADDRESS_SIZE, PROGRAM_ADDRESS_SIZE);
-    if(minx_binary_exists_at(opc_p->p1) && minx_binary_exists_at(opc_p->p2)) {
+    if( (minx_binary_exists_at(opc_p->p1) || opc_p->p1 == END_OF_PROGRAM) && 
+        (minx_binary_exists_at(opc_p->p2) || opc_p->p2 == END_OF_PROGRAM)) {
+
         if( akku == 0x0000 ) {
             program_pointer = opc_p->p1;
         }
