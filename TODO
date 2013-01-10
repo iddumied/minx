@@ -24,6 +24,8 @@ TODO:
 	- print stack
 	- print registers
 	- print program
+	But do they compile only if DEBUG compile flag is set, otherwise ignore them
+	and only increment program pointer as much as required.
 
 8)  define op codes for push/pop several registers to stack
 	push( reg, cnt )
