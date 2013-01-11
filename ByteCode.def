@@ -1,26 +1,39 @@
-Much simpler:
+minx virtual machine specification
+----------------------------------
 
-opcode is 16 Bit
-registers are addressed with 16 Bit
-values are 64 bit 
-Program-adresses are 64 bit
+- opcode is 16 Bit
+- registers are addressed with 16 Bit
+- values are 64 bit 
+- Program-adresses are 64 bit
+
+The minx vm is _stupid_. You can jump to _every_ location in the binary, if it
+exists. So you or your compiler has to care about the jumps, the machine
+does not. It only checks, if the code position exists. If not, it stops
+executing.
 
 special registers:
 ------------------
-Registers 0x00 to 0xAF are special, they are not useable for program data.
+Registers 0x00 to 0xAF are special, they are not useable for program data, but
+anyway accessible for the program.
 
-- 0x0000	Programm-ptr, is zero at init and 0xFFFF at end of programm
-- 0x0001	(unused)
+- 0x0000	Programm-ptr, is zero at init and (uint64_t)-1 at end of programm
+- 0x0001	(unused yet)
 - 0x0002	akku-register
 - 0x0003	status-register 
-							Bit	|	use 
-							----+-------
-							0	|	overflow 
-							1-7	|	not used yet
+				Bit	|	use 
+				----+-------
+				0	|	overflow 
+				1-7	|	not used yet
 - 0x0004	overflow value 
-- 0x0005-0x00AF (unused yet)
+- 0x0005-0x00AF (unused yet, will be used for more status registers and stuff)
 
-All other registers are available (if addressable with 64 bit)
+So, 0x00B0 is the first register which should be used for program data. With
+current implementation, there are 2^8 registers, so 0x0000FFFF is the last
+register. Registers are addressed with 16 bit because if the machine should
+provide more registers later on, there are just small changes.
+
+So, 176 Registers for special use, 256 Registers all in all, makes 82 Registers
+for program data.
 
 stack 
 -----
