@@ -1,7 +1,14 @@
-#ifdef DEBUG
+#if (defined DEBUG || defined DEBUGGING)
 
 #ifndef __MINX_DEBUG_H__
 #define __MINX_DEBUG_H__
+
+#define minxvmdbgprint(f,...)                                               \
+    do {                                                                    \
+        if(minx_config_is_set(CONF_MVM_DEBUGGING)) {                        \
+            printf("[minx][vm] "f,__VA_ARGS__);                             \
+        }                                                                   \
+    }while(0)
 
 #define EXPLAIN_FUNCTION()                                                  \
     do{                                                                     \
