@@ -1,11 +1,11 @@
 This is the first implementation of the minx virtual machine.
 For more information, have a look at the ByteCode.def file.
 
-The first implementation of the VM will support 64 Bit addresses for both 
-internal registers and length of the binary. Op codes will have 24 Bit 
-(4096 possible op codes).
+This first implementation comes with the simple reader, which reads the complete
+binary into ram. Later on there will be another reader, which will check the
+binary for size and just read the actual required parts into ram (and so on).
 
-Version 2.3.3 of utilc is required.
+Version 2.3.3 of utilc is required (see submodule).
 
 Compile with DEBUG to be able to debug the VM, compile with DEBUGGING to be able 
 to debug both the VM and the source its running.
