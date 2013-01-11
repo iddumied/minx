@@ -48,14 +48,23 @@ void minx_config_parse(unsigned int argc, char ** argv) {
     for( i = 0 ; i < argc; i++ ) {
         for( j = 0 ; j < (sizeof(*confkeys)/sizeof(confkeys[0])); j++ ) {
             if( 0 == strcmp( confkeys[j].configkey, argv[i] )) {
+                /*
                 switch(confkeys[j].type) {
                     case CONF_VERBOSITY:
                     case CONF_MVM_DEBUGGING:
                     case CONF_SRC_DEBUGGING:
                     case CONF_PRINT_REGS_AT_EOP:
+                    */
+
+
+                /* currently, there are only bool configs, but later on there
+                 * maybe are some more, key-value-pair type configurations
+                 */
                         set_config(confkeys[j].type);
+                        /*
                         break;
                 }
+                */
             }
         }
     }
