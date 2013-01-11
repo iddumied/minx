@@ -227,6 +227,12 @@ static void run() {
     }
 }
 
+/*
+ * runs the opcode, passed to the function by finding it in the opc_funcs array.
+ *
+ * @param cmd the opcode to run.
+ *
+ */
 static void run_opcode(uint16_t cmd) {
 #ifdef DEBUGGING
     if(minx_config_is_set(CONF_SRC_DEBUGGING)) {
@@ -241,9 +247,12 @@ static void run_opcode(uint16_t cmd) {
     }
     opc_func();
 
-#ifdef DEBUGGING
-    if(minx_config_is_set(CONF_SRC_DEBUGGING)) {
+#ifdef DEBUG
+    if ( program_pointer != END_OF_PROGRAM ) {
         printf("[minx][vm]:\tPROG_POINTER: %"PRIu64"\n", program_pointer);
+    }
+    else {
+        printf("[minx][vm]: END OF PROGRAM\n");
     }
 #endif 
 }

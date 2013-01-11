@@ -24,6 +24,7 @@ TODO:
 	- print stack
 	- print registers
 	- print program
+	- print registers
 	But do they compile only if DEBUG compile flag is set, otherwise ignore them
 	and only increment program pointer as much as required.
 
