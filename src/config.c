@@ -35,7 +35,7 @@ static ConfigurationKeyMap confkeys[] = {
 
 void minx_config_init() {
 #if (defined DEBUG | defined DEBUGGING)
-    minxconfdbgprint("init");
+    minxconfdbgprint("init",0);
 #endif 
 }
 
@@ -48,7 +48,7 @@ void minx_config_shutdown() {
  */
 void minx_config_parse(unsigned int argc, char ** argv) {
 #if (defined DEBUG | defined DEBUGGING)
-    minxconfdbgprint("parse args");
+    minxconfdbgprint("parse args",0);
 #endif 
 
     unsigned int i, j;
