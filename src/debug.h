@@ -5,11 +5,19 @@
 
 #include <stdio.h>
 
-#define minxvmdbgprint(f,...)                                               \
+#define minxvmdbgprintf(f,...)                                              \
     do {                                                                    \
         ConfigurationValue *cv = minx_config_get(CONF_MVM_DEBUGGING);       \
         if(cv != NULL && cv->b) {                                           \
             printf("[minx][vm] "f,__VA_ARGS__);                             \
+        }                                                                   \
+    }while(0)
+
+#define minxvmdbgprint(f)                                                   \
+    do {                                                                    \
+        ConfigurationValue *cv = minx_config_get(CONF_MVM_DEBUGGING);       \
+        if(cv != NULL && cv->b) {                                           \
+            printf("[minx][vm] "f);                                         \
         }                                                                   \
     }while(0)
 
