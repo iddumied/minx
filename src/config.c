@@ -13,9 +13,10 @@ static void         set_config          (ConfigurationType ct);
  * default config 
  */
 static Configuration    configuration[] = {
-    {   .type = CONF_VERBOSITY,     .value.i = 0    },
-    {   .type = CONF_MVM_DEBUGGING, .value.i = 0    },
-    {   .type = CONF_SRC_DEBUGGING, .value.i = 0    },
+    {   .type = CONF_VERBOSITY,             .value.i = 0    },
+    {   .type = CONF_MVM_DEBUGGING,         .value.i = 0    },
+    {   .type = CONF_SRC_DEBUGGING,         .value.i = 0    },
+    {   .type = CONF_PRINT_REGS_AT_EOP,     .value.i = 0    },
 };
 
 /*
@@ -25,6 +26,7 @@ static ConfigurationKeyMap confkeys[] = {
     {   .type   = CONF_VERBOSITY,               .configkey = "-v"           },
     {   .type   = CONF_MVM_DEBUGGING,           .configkey = "--vm-debug"   },
     {   .type   = CONF_SRC_DEBUGGING,           .configkey = "-d"           },
+    {   .type   = CONF_PRINT_REGS_AT_EOP,       .configkey = "--regs"       },
 };
 
 static unsigned int     number_of_confs;
@@ -53,6 +55,7 @@ void minx_config_parse(unsigned int argc, char ** argv) {
                     case CONF_VERBOSITY:
                     case CONF_MVM_DEBUGGING:
                     case CONF_SRC_DEBUGGING:
+                    case CONF_PRINT_REGS_AT_EOP:
                         set_config(confkeys[j].type);
                         break;
                 }
