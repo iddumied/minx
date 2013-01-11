@@ -226,7 +226,12 @@ static void run_opcode(uint16_t cmd) {
     opc_func();
 
 #ifdef DEBUG
-    printf("[minx][vm]:\tPROG_POINTER: %"PRIu64"\n", program_pointer);
+    if ( program_pointer != END_OF_PROGRAM ) {
+        printf("[minx][vm]:\tPROG_POINTER: %"PRIu64"\n", program_pointer);
+    }
+    else {
+        printf("[minx][vm]: END OF PROGRAM\n");
+    }
 #endif 
 }
 
