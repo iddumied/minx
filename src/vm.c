@@ -148,7 +148,7 @@ static void ((*opc_funcs[])(void)) = {
  */
 
 void minx_vm_run() {
-#ifdef DEBUGGING
+#if (defined DEBUGGING | defined DEBUG)
     if(minx_config_is_set(CONF_MVM_DEBUGGING)) {
         printf("[minx][vm]: Starting VM\n");
     }
@@ -173,7 +173,7 @@ void minx_vm_run() {
  */
 
 static void init_registers() {
-#ifdef DEBUGGING
+#if (defined DEBUGGING | defined DEBUG)
     minxvmdbgprint("init %i registers\n", MAX_REGISTERS);
 #endif
 
@@ -197,7 +197,7 @@ static void init_registers() {
  * saved in 64 bit and passed to this function if necessary.
  */
 static Register* find_register(uint64_t addr) {
-#ifdef DEBUGGING
+#if (defined DEBUGGING | defined DEBUG)
     minxvmdbgprint("find register: %"PRIu64"\n", addr);
 #endif 
 
@@ -213,7 +213,7 @@ static Register* find_register(uint64_t addr) {
  * runs the vm.  
  */
 static void run() {
-#ifdef DEBUGGING
+#if (defined DEBUGGING | defined DEBUG)
     minxvmdbgprint("run");
 #endif //DEBUGGING
 
@@ -234,7 +234,7 @@ static void run() {
  *
  */
 static void run_opcode(uint16_t cmd) {
-#ifdef DEBUGGING
+#if (defined DEBUGGING | defined DEBUG)
     if(minx_config_is_set(CONF_SRC_DEBUGGING)) {
         printf("Running opcode: %"PRIu16"\n", cmd);
         fflush(stdout);
@@ -247,7 +247,7 @@ static void run_opcode(uint16_t cmd) {
     }
     opc_func();
 
-#ifdef DEBUG
+#if (defined DEBUGGING | defined DEBUG)
     if ( program_pointer != END_OF_PROGRAM ) {
         printf("[minx][vm]:\tPROG_POINTER: %"PRIu64"\n", program_pointer);
     }
