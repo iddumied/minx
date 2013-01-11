@@ -38,9 +38,6 @@ static ConfigurationKeyMap confkeys[] = {
  */
 
 void minx_config_init() {
-#if (defined DEBUG | defined DEBUGGING)
-    printf("[minx][conf]: init\n");
-#endif 
 }
 
 void minx_config_shutdown() {
@@ -51,10 +48,6 @@ void minx_config_shutdown() {
  * parse config 
  */
 void minx_config_parse(unsigned int argc, char ** argv) {
-#if (defined DEBUG | defined DEBUGGING)
-    printf("[minx][conf]: parsing args\n");
-#endif 
-
     unsigned int i, j;
     for( i = 0 ; i < argc; i++ ) {
         for( j = 0 ; j < (sizeof(confkeys)/sizeof(confkeys[0])); j++ ) {
@@ -80,16 +73,19 @@ void minx_config_parse(unsigned int argc, char ** argv) {
         }
     }
 
+    /*
+     * here, the config is parsed. So do the checks
+     */
 #if (defined DEBUG | defined DEBUGGING)
-    print_config();
+    ConfigurationValue *cv = minx_config_get(CONF_MVM_DEBUGGING);
+    if( cv != NULL && cv->b ) {
+        printf("[minx][conf]: parsing args\n");
+        print_config();
+    }
 #endif 
 }
 
 ConfigurationValue* minx_config_get(ConfigurationType ct) {
-#if (defined DEBUG | defined DEBUGGING)
-    printf("[minx][conf]: conf get\n");
-#endif 
-
     unsigned int i;
     for(i = 0 ; i < (sizeof(configuration)/sizeof(configuration[0])); i++)
         if(configuration[i].type == ct)
@@ -108,7 +104,10 @@ int minx_config_is_set(ConfigurationType ct) {
  */
 static void set_config(ConfigurationType ct) {
 #if (defined DEBUG | defined DEBUGGING)
-    printf("[minx][conf]: conf set\n");
+    ConfigurationValue *cv = minx_config_get(CONF_MVM_DEBUGGING);
+    if( cv != NULL && cv->b ) {
+        printf("[minx][conf]: conf set\n");
+    }
 #endif 
 
     unsigned int i;
