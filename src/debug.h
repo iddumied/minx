@@ -3,6 +3,8 @@
 #ifndef __MINX_DEBUG_H__
 #define __MINX_DEBUG_H__
 
+#include <stdio.h>
+
 #define minxvmdbgprint(f,...)                                               \
     do {                                                                    \
         if(minx_config_is_set(CONF_MVM_DEBUGGING)) {                        \
