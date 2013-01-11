@@ -148,6 +148,12 @@ static void ((*opc_funcs[])(void)) = {
  */
 
 void minx_vm_run() {
+#ifdef DEBUGGING
+    if(minx_config_is_set(CONF_MVM_DEBUGGING)) {
+        printf("[minx][vm]: Starting VM\n");
+    }
+#endif
+
     /* alloc standard registers */
     init_registers();
 
@@ -167,6 +173,10 @@ void minx_vm_run() {
  */
 
 static void init_registers() {
+#ifdef DEBUGGING
+    minxvmdbgprint("init %i registers\n", MAX_REGISTERS);
+#endif
+
     registers = (Register*) malloc( sizeof(Register) * MAX_REGISTERS);
 
     /* abuse register_map->reg_count as counter */
@@ -187,6 +197,10 @@ static void init_registers() {
  * saved in 64 bit and passed to this function if necessary.
  */
 static Register* find_register(uint64_t addr) {
+#ifdef DEBUGGING
+    minxvmdbgprint("find register: %"PRIu64"\n", addr);
+#endif 
+
     if( !register_exists(addr) ) {
         FATAL_DESC_ERROR("Register does not exist");
     }
@@ -199,18 +213,26 @@ static Register* find_register(uint64_t addr) {
  * runs the vm.  
  */
 static void run() {
+#ifdef DEBUGGING
+    minxvmdbgprint("run");
+#endif //DEBUGGING
+
     while( !program_pointer_is(END_OF_PROGRAM) ) {
-#ifdef DEBUG
+
+#if (defined DEBUGGING || defined DEBUG)
         fflush(stdout);
-#endif 
+#endif // (defined DEBUGGING || defined DEBUG)
+
         run_opcode(*((uint16_t*)minx_binary_get_at(program_pointer, OPC_SIZE)));
     }
 }
 
 static void run_opcode(uint16_t cmd) {
-#ifdef DEBUG
-    printf("Running opcode: %"PRIu16"\n", cmd);
-    fflush(stdout);
+#ifdef DEBUGGING
+    if(minx_config_is_set(CONF_SRC_DEBUGGING)) {
+        printf("Running opcode: %"PRIu16"\n", cmd);
+        fflush(stdout);
+    }
 #endif 
 
     void (*opc_func)(void) = opc_funcs[cmd];
@@ -219,8 +241,10 @@ static void run_opcode(uint16_t cmd) {
     }
     opc_func();
 
-#ifdef DEBUG
-    printf("[minx][vm]:\tPROG_POINTER: %"PRIu64"\n", program_pointer);
+#ifdef DEBUGGING
+    if(minx_config_is_set(CONF_SRC_DEBUGGING)) {
+        printf("[minx][vm]:\tPROG_POINTER: %"PRIu64"\n", program_pointer);
+    }
 #endif 
 }
 
@@ -307,8 +331,10 @@ static void read_2_command_parameters(unsigned int size1, unsigned int size2) {
  *
  */
 static void opc_nop_func() {
-#ifdef DEBUG
-    EXPLAIN_OPCODE("nop");
+#ifdef DEBUGGING
+    if(minx_config_is_set(CONF_SRC_DEBUGGING)) {
+        EXPLAIN_OPCODE("nop");
+    }
 #endif
     program_pointer += (OPC_SIZE);
 }
@@ -322,8 +348,10 @@ static void opc_nop_func() {
  * set the program_pointer to the value of the argument of the opc.
  */
 static void opc_call_func() {
-#ifdef DEBUG
-    EXPLAIN_OPCODE("call");
+#ifdef DEBUGGING
+    if(minx_config_is_set(CONF_SRC_DEBUGGING)) {
+        EXPLAIN_OPCODE("call");
+    }
 #endif
     read_1_command_parameter(PROGRAM_ADDRESS_SIZE);
     /*
@@ -346,8 +374,10 @@ static void opc_call_func() {
  *
  */
 static void opc_ret_func() {
-#ifdef DEBUG
-    EXPLAIN_OPCODE("ret");
+#ifdef DEBUGGING
+    if(minx_config_is_set(CONF_SRC_DEBUGGING)) {
+        EXPLAIN_OPCODE("ret");
+    }
 #endif
     if (stack_is_empty(stack))
         FATAL_DESC_ERROR("Cannot RET, stack is empty!");
@@ -365,8 +395,10 @@ static void opc_ret_func() {
 static void opc_mov_func() {
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE);
 
-#ifdef DEBUG
-    EXPLAIN_OPCODE_WITH("mov", "from: %"PRIu64", to: %"PRIu64, opc_p->p2, opc_p->p1);
+#ifdef DEBUGGING
+    if(minx_config_is_set(CONF_SRC_DEBUGGING)) {
+        EXPLAIN_OPCODE_WITH("mov", "from: %"PRIu64", to: %"PRIu64, opc_p->p2, opc_p->p1);
+    }
 #endif 
 
     find_register(opc_p->p1)->value = find_register(opc_p->p2)->value;
@@ -383,8 +415,10 @@ static void opc_mov_func() {
 static void opc_movi_func() {
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, VALUE_SIZE);
 
-#ifdef DEBUG
-    EXPLAIN_OPCODE_WITH("movi", "val: %"PRIu64", to: %"PRIu64, opc_p->p2, opc_p->p1);
+#ifdef DEBUGGING
+    if(minx_config_is_set(CONF_SRC_DEBUGGING)) {
+        EXPLAIN_OPCODE_WITH("movi", "val: %"PRIu64", to: %"PRIu64, opc_p->p2, opc_p->p1);
+    }
 #endif 
 
     find_register(opc_p->p1)->value = opc_p->p2;
@@ -402,8 +436,10 @@ static void opc_movi_func() {
 static void opc_not_func() {
     read_1_command_parameter(REGISTER_ADDRESS_SIZE);
 
-#ifdef DEBUG
-    EXPLAIN_OPCODE_WITH("not", "register: %"PRIu64, opc_p->p1);
+#ifdef DEBUGGING
+    if(minx_config_is_set(CONF_SRC_DEBUGGING)) {
+        EXPLAIN_OPCODE_WITH("not", "register: %"PRIu64, opc_p->p1);
+    }
 #endif 
 
     akku = ! find_register(opc_p->p1)->value;
@@ -421,8 +457,10 @@ static void opc_not_func() {
 static void opc_notr_func() {
     read_1_command_parameter(REGISTER_ADDRESS_SIZE);
 
-#ifdef DEBUG
-    EXPLAIN_OPCODE_WITH("not", "register: %"PRIu64, opc_p->p1);
+#ifdef DEBUGGING
+    if(minx_config_is_set(CONF_SRC_DEBUGGING)) {
+        EXPLAIN_OPCODE_WITH("not", "register: %"PRIu64, opc_p->p1);
+    }
 #endif 
 
     find_register(opc_p->p1)->value = ! find_register(opc_p->p1)->value;
@@ -438,8 +476,10 @@ static void opc_notr_func() {
  * result in akku
  */
 static void opc_and_func() {
-#ifdef DEBUG
-    EXPLAIN_OPCODE("and");
+#ifdef DEBUGGING
+    if(minx_config_is_set(CONF_SRC_DEBUGGING)) {
+        EXPLAIN_OPCODE("and");
+    }
 #endif
 
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE);
@@ -456,8 +496,10 @@ static void opc_and_func() {
  * Result in akku
  */
 static void opc_andi_func() {
-#ifdef DEBUG
-    EXPLAIN_OPCODE("andi");
+#ifdef DEBUGGING
+    if(minx_config_is_set(CONF_SRC_DEBUGGING)) {
+        EXPLAIN_OPCODE("andi");
+    }
 #endif
 
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, VALUE_SIZE);
@@ -474,8 +516,10 @@ static void opc_andi_func() {
  * Result in first register
  */
 static void opc_andr_func() {
-#ifdef DEBUG
-    EXPLAIN_OPCODE("andr");
+#ifdef DEBUGGING
+    if(minx_config_is_set(CONF_SRC_DEBUGGING)) {
+        EXPLAIN_OPCODE("andr");
+    }
 #endif
 
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE);
@@ -492,8 +536,10 @@ static void opc_andr_func() {
  * Result in first register
  */
 static void opc_andir_func() {
-#ifdef DEBUG
-    EXPLAIN_OPCODE("andir");
+#ifdef DEBUGGING
+    if(minx_config_is_set(CONF_SRC_DEBUGGING)) {
+        EXPLAIN_OPCODE("andir");
+    }
 #endif
 
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, VALUE_SIZE);
@@ -511,8 +557,10 @@ static void opc_andir_func() {
  * Result in akku
  */
 static void opc_or_func() {
-#ifdef DEBUG
-    EXPLAIN_OPCODE("or");
+#ifdef DEBUGGING
+    if(minx_config_is_set(CONF_SRC_DEBUGGING)) {
+        EXPLAIN_OPCODE("or");
+    }
 #endif
 
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE);
@@ -529,8 +577,10 @@ static void opc_or_func() {
  *
  */
 static void opc_ori_func() {
-#ifdef DEBUG
-    EXPLAIN_OPCODE("ori");
+#ifdef DEBUGGING
+    if(minx_config_is_set(CONF_SRC_DEBUGGING)) {
+        EXPLAIN_OPCODE("ori");
+    }
 #endif
 
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, VALUE_SIZE);
@@ -547,8 +597,10 @@ static void opc_ori_func() {
  *
  */
 static void opc_orr_func() {
-#ifdef DEBUG
-    EXPLAIN_OPCODE("orr");
+#ifdef DEBUGGING
+    if(minx_config_is_set(CONF_SRC_DEBUGGING)) {
+        EXPLAIN_OPCODE("orr");
+    }
 #endif
 
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE);
@@ -565,8 +617,10 @@ static void opc_orr_func() {
  *
  */
 static void opc_orir_func() {
-#ifdef DEBUG
-    EXPLAIN_OPCODE("orir");
+#ifdef DEBUGGING
+    if(minx_config_is_set(CONF_SRC_DEBUGGING)) {
+        EXPLAIN_OPCODE("orir");
+    }
 #endif
 
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, VALUE_SIZE);
@@ -585,8 +639,10 @@ static void opc_orir_func() {
 static void opc_dec_func() {
     read_1_command_parameter(REGISTER_ADDRESS_SIZE);
 
-#ifdef DEBUG
-    EXPLAIN_OPCODE_WITH("dec", "reg: %"PRIu64, opc_p->p1);
+#ifdef DEBUGGING
+    if(minx_config_is_set(CONF_SRC_DEBUGGING)) {
+        EXPLAIN_OPCODE_WITH("dec", "reg: %"PRIu64, opc_p->p1);
+    }
 #endif 
 
     if( find_register(opc_p->p1)->value == 0x0000 ) {
@@ -608,8 +664,10 @@ static void opc_dec_func() {
 static void opc_inc_func() {
     read_1_command_parameter(REGISTER_ADDRESS_SIZE);
 
-#ifdef DEBUG
-    EXPLAIN_OPCODE_WITH("inc", "reg: %"PRIu64, opc_p->p1);
+#ifdef DEBUGGING
+    if(minx_config_is_set(CONF_SRC_DEBUGGING)) {
+        EXPLAIN_OPCODE_WITH("inc", "reg: %"PRIu64, opc_p->p1);
+    }
 #endif 
 
     if( find_register(opc_p->p1)->value == 0xFFFF ) {
@@ -629,8 +687,10 @@ static void opc_inc_func() {
  *
  */
 static void opc_lsh_func() {
-#ifdef DEBUG
-    EXPLAIN_OPCODE("lsh");
+#ifdef DEBUGGING
+    if(minx_config_is_set(CONF_SRC_DEBUGGING)) {
+        EXPLAIN_OPCODE("lsh");
+    }
 #endif
     read_1_command_parameter(REGISTER_ADDRESS_SIZE);
     Register *r = find_register(opc_p->p1);
@@ -647,8 +707,10 @@ static void opc_lsh_func() {
  *
  */
 static void opc_rsh_func() {
-#ifdef DEBUG
-    EXPLAIN_OPCODE("rsh");
+#ifdef DEBUGGING
+    if(minx_config_is_set(CONF_SRC_DEBUGGING)) {
+        EXPLAIN_OPCODE("rsh");
+    }
 #endif
     read_1_command_parameter(REGISTER_ADDRESS_SIZE);
     Register *r = find_register(opc_p->p1);
@@ -665,8 +727,10 @@ static void opc_rsh_func() {
  *
  */
 static void opc_push_func() {
-#ifdef DEBUG
-    EXPLAIN_OPCODE("push");
+#ifdef DEBUGGING
+    if(minx_config_is_set(CONF_SRC_DEBUGGING)) {
+        EXPLAIN_OPCODE("push");
+    }
 #endif
     read_1_command_parameter(REGISTER_ADDRESS_SIZE);
     stackpush(stack, &(find_register(opc_p->p1)->value), VALUE_SIZE) ;
@@ -682,8 +746,10 @@ static void opc_push_func() {
  *
  */
 static void opc_pop_func() {
-#ifdef DEBUG
-    EXPLAIN_OPCODE("pop");
+#ifdef DEBUGGING
+    if(minx_config_is_set(CONF_SRC_DEBUGGING)) {
+        EXPLAIN_OPCODE("pop");
+    }
 #endif
     if( stack_is_empty( stack ) ) {
         FATAL_DESC_ERROR("Cannot pop from empty stack!");
@@ -704,8 +770,10 @@ static void opc_pop_func() {
  *
  */
 static void opc_drop_func() {
-#ifdef DEBUG
-    EXPLAIN_OPCODE("drop");
+#ifdef DEBUGGING
+    if(minx_config_is_set(CONF_SRC_DEBUGGING)) {
+        EXPLAIN_OPCODE("drop");
+    }
 #endif
     if( stack_is_empty( stack ) ) {
         FATAL_DESC_ERROR("Cannot drop from empty stack!");
@@ -723,8 +791,10 @@ static void opc_drop_func() {
  * Result in akku
  */
 static void opc_add_func() {
-#ifdef DEBUG
-    EXPLAIN_OPCODE("add");
+#ifdef DEBUGGING
+    if(minx_config_is_set(CONF_SRC_DEBUGGING)) {
+        EXPLAIN_OPCODE("add");
+    }
 #endif
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE);
     akku = find_register(opc_p->p1)->value + find_register(opc_p->p2)->value;
@@ -740,8 +810,10 @@ static void opc_add_func() {
  * Result in akku
  */
 static void opc_addi_func() {
-#ifdef DEBUG
-    EXPLAIN_OPCODE("addi");
+#ifdef DEBUGGING
+    if(minx_config_is_set(CONF_SRC_DEBUGGING)) {
+        EXPLAIN_OPCODE("addi");
+    }
 #endif
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, VALUE_SIZE);
     akku = find_register(opc_p->p1)->value + opc_p->p2;
@@ -757,8 +829,10 @@ static void opc_addi_func() {
  * Result in register
  */
 static void opc_addr_func() {
-#ifdef DEBUG
-    EXPLAIN_OPCODE("addr");
+#ifdef DEBUGGING
+    if(minx_config_is_set(CONF_SRC_DEBUGGING)) {
+        EXPLAIN_OPCODE("addr");
+    }
 #endif
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE);
     find_register(opc_p->p1)->value += find_register(opc_p->p2)->value;
@@ -774,8 +848,10 @@ static void opc_addr_func() {
  * Result in register
  */
 static void opc_addir_func() {
-#ifdef DEBUG
-    EXPLAIN_OPCODE("addir");
+#ifdef DEBUGGING
+    if(minx_config_is_set(CONF_SRC_DEBUGGING)) {
+        EXPLAIN_OPCODE("addir");
+    }
 #endif
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, VALUE_SIZE);
     find_register(opc_p->p1)->value += opc_p->p2;
@@ -793,8 +869,10 @@ static void opc_addir_func() {
 static void opc_jmp_func() {
     read_1_command_parameter(PROGRAM_ADDRESS_SIZE);
 
-#ifdef DEBUG
-    EXPLAIN_OPCODE_WITH("jmp", "to %"PRIu64, opc_p->p1);
+#ifdef DEBUGGING
+    if(minx_config_is_set(CONF_SRC_DEBUGGING)) {
+        EXPLAIN_OPCODE_WITH("jmp", "to %"PRIu64, opc_p->p1);
+    }
 #endif 
 
     if( minx_binary_exists_at(opc_p->p1) || opc_p->p1 == END_OF_PROGRAM) {
@@ -813,8 +891,10 @@ static void opc_jmp_func() {
  *
  */
 static void opc_jmpiz_func() {
-#ifdef DEBUG
-    EXPLAIN_OPCODE("jmpiz");
+#ifdef DEBUGGING
+    if(minx_config_is_set(CONF_SRC_DEBUGGING)) {
+        EXPLAIN_OPCODE("jmpiz");
+    }
 #endif
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, PROGRAM_ADDRESS_SIZE);
     if( minx_binary_exists_at(opc_p->p2) || opc_p->p2 == END_OF_PROGRAM) {
@@ -838,8 +918,10 @@ static void opc_jmpiz_func() {
  *
  */
 static void opc_jmpnz_func() {
-#ifdef DEBUG
-    EXPLAIN_OPCODE("jmpnz");
+#ifdef DEBUGGING
+    if(minx_config_is_set(CONF_SRC_DEBUGGING)) {
+        EXPLAIN_OPCODE("jmpnz");
+    }
 #endif
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, PROGRAM_ADDRESS_SIZE);
     if( minx_binary_exists_at(opc_p->p2) || opc_p->p2 == END_OF_PROGRAM) {
@@ -863,8 +945,10 @@ static void opc_jmpnz_func() {
  * if akku is zero then jump else jump
  */
 static void opc_ifzjmp_func() {
-#ifdef DEBUG
-    EXPLAIN_OPCODE("ifzjmp");
+#ifdef DEBUGGING
+    if(minx_config_is_set(CONF_SRC_DEBUGGING)) {
+        EXPLAIN_OPCODE("ifzjmp");
+    }
 #endif
     read_2_command_parameters(PROGRAM_ADDRESS_SIZE, PROGRAM_ADDRESS_SIZE);
     if( (minx_binary_exists_at(opc_p->p1) || opc_p->p1 == END_OF_PROGRAM) && 
