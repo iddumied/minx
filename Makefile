@@ -17,10 +17,12 @@ CC=/usr/bin/gcc
 MAIN_SRC=${SRC}/main.c
 VM_SRC=${SRC}/vm.c
 SIMPLE_READER_SRC=${SRC}/simple_reader.c
+CONFIG_SRC=${SRC}/config.c
 
 MAIN_OUT=${BIN}/main.o
 VM_OUT=${BIN}/vm.o
 SIMPLE_READER_OUT=${BIN}/simple_reader.o
+CONFIG_OUT=${BIN}/config.o
 
 BINARY=${BIN}/minx
 
@@ -41,30 +43,39 @@ MINX_FLAGS = -D DEBUG -D DEBUGGING
 CFLAGS += -Wall 
 CFLAGS += -std=c99
 CFLAGS += -g
-CFLAGS += -D DEBUG
+CFLAGS += -c
 
 #
 #
 # Compiling the VM
 #
 # 
-simple_vm: compile_main compile_vm compile_simple_reader
+simple_vm: compile_config compile_main compile_vm compile_simple_reader
 	echo "simple_vm:"
 	echo "linking..."
-	${CC} ${MAIN_OUT} ${VM_OUT} ${SIMPLE_READER_OUT} ${BIN}/${UTILC_STACK_OUT} -o ${BINARY}
+	${CC}\
+		${CONFIG_OUT}\
+		${MAIN_OUT}\
+		${VM_OUT}\
+		${SIMPLE_READER_OUT}\
+		${BIN}/${UTILC_STACK_OUT} -o ${BINARY}
 	echo "ready!"
 
 compile_main:
 	echo "compile_main:"
-	${CC} -c ${CFLAGS} ${MINX_FLAGS} ${HEADERS} ${MAIN_SRC} -o ${MAIN_OUT}
+	${CC} ${CFLAGS} ${MINX_FLAGS} ${HEADERS} ${MAIN_SRC} -o ${MAIN_OUT}
 
 compile_vm:
 	echo "compile_vm:"
-	${CC} -c ${CFLAGS} ${MINX_FLAGS} ${HEADERS} ${VM_SRC} -o ${VM_OUT}
+	${CC} ${CFLAGS} ${MINX_FLAGS} ${HEADERS} ${VM_SRC} -o ${VM_OUT}
 
 compile_simple_reader:
 	echo "compile_simple_reader:"
-	${CC} -c ${CFLAGS} ${MINX_FLAGS} ${HEADERS} ${SIMPLE_READER_SRC} -o ${SIMPLE_READER_OUT}
+	${CC} ${CFLAGS} ${MINX_FLAGS} ${HEADERS} ${SIMPLE_READER_SRC} -o ${SIMPLE_READER_OUT}
+
+compile_config:
+	echo "compile_config:"
+	${CC} ${CFLAGS} ${MINX_FLAGS} ${HEADERS} ${CONFIG_SRC} -o ${CONFIG_OUT}
 
 compile_binary_reader:
 	echo "compile_binary_reader:"
