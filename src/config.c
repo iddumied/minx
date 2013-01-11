@@ -34,6 +34,9 @@ static ConfigurationKeyMap confkeys[] = {
  */
 
 void minx_config_init() {
+#if (defined DEBUG | defined DEBUGGING)
+    minxconfdbgprint("init");
+#endif 
 }
 
 void minx_config_shutdown() {
@@ -44,6 +47,10 @@ void minx_config_shutdown() {
  * parse config 
  */
 void minx_config_parse(unsigned int argc, char ** argv) {
+#if (defined DEBUG | defined DEBUGGING)
+    minxconfdbgprint("parse args");
+#endif 
+
     unsigned int i, j;
     for( i = 0 ; i < argc; i++ ) {
         for( j = 0 ; j < (sizeof(*confkeys)/sizeof(confkeys[0])); j++ ) {
@@ -71,6 +78,10 @@ void minx_config_parse(unsigned int argc, char ** argv) {
 }
 
 ConfigurationValue* minx_config_get(ConfigurationType ct) {
+#if (defined DEBUG | defined DEBUGGING)
+    minxconfdbgprint("get config %i",ct);
+#endif 
+
     unsigned int i;
     for(i = 0 ; i < (sizeof(*configuration)/sizeof(configuration[0])); i++)
         if(configuration[i].type == ct)
@@ -88,6 +99,10 @@ int minx_config_is_set(ConfigurationType ct) {
  *
  */
 static void set_config(ConfigurationType ct) {
+#if (defined DEBUG | defined DEBUGGING)
+    minxconfdbgprint("set config %i",ct);
+#endif 
+
     unsigned int i;
     for(i = 0;
         i < (sizeof(*configuration)/sizeof(configuration[0])) &&

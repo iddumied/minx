@@ -10,6 +10,13 @@
         }                                                                   \
     }while(0)
 
+#define minxconfdbgprint(f,...)                                             \
+    do {                                                                    \
+        if(minx_config_is_set(CONF_MVM_DEBUGGING)) {                        \
+            printf("[minx][conf] "f,__VA_ARGS__);                           \
+        }                                                                   \
+    }while(0)
+
 #define EXPLAIN_FUNCTION()                                                  \
     do{                                                                     \
         printf("[minx][vm] func: %s, line %s\n", __func__, __LINE__);       \
