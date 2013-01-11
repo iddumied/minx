@@ -5,8 +5,9 @@
 #include <string.h>
 
 typedef enum {
-    VERBOSITY,
-    DEBUGGING,
+    CONF_VERBOSITY,         /* only if compiled with DEBUG */
+    CONF_MVM_DEBUGGING,     /* only if compiled with DEBUGGING */
+    CONF_SRC_DEBUGGING,     /* only if compiled with DEBUGGING */
 } ConfigurationType;
 
 typedef union {
@@ -29,5 +30,6 @@ void        minx_config_init    (void);
 void        minx_config_shutdown(void);
 void        minx_config_parse   (unsigned int argc, char ** argv);
 void *      minx_config_get     (ConfigurationType ct);
+int         minx_config_is_set  (ConfigurationType ct);
 
 #endif // __MINX_CONFIG_H__
