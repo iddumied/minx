@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 int main(int argc, char **args) {
-    if( argc != 2 ) {
+    if( argc < 2 ) {
         printf("No Binary given!\n");
         exit(1);
     }
