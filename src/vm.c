@@ -207,6 +207,12 @@ static void run() {
     }
 }
 
+/*
+ * runs the opcode, passed to the function by finding it in the opc_funcs array.
+ *
+ * @param cmd the opcode to run.
+ *
+ */
 static void run_opcode(uint16_t cmd) {
 #ifdef DEBUG
     printf("Running opcode: %"PRIu16"\n", cmd);
