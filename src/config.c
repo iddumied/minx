@@ -29,14 +29,11 @@ static ConfigurationKeyMap confkeys[] = {
     {   .type   = CONF_PRINT_REGS_AT_EOP,       .configkey = "--regs"       },
 };
 
-static unsigned int     number_of_confs;
-
 /*
  * Functions
  */
 
 void minx_config_init() {
-    number_of_confs = (unsigned int) sizeof(configuration)/sizeof(configuration[0]);
 }
 
 void minx_config_shutdown() {
@@ -66,7 +63,7 @@ void minx_config_parse(unsigned int argc, char ** argv) {
 
 void * minx_config_get(ConfigurationType ct) {
     unsigned int i;
-    for(i = 0 ; i < number_of_confs; i++)
+    for(i = 0 ; i < (sizeof(*configuration)/sizeof(configuration[0])); i++)
         if(configuration[i].type == ct)
             return &configuration[i].value;
     return NULL;
