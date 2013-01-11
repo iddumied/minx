@@ -149,9 +149,7 @@ static void ((*opc_funcs[])(void)) = {
 
 void minx_vm_run() {
 #if (defined DEBUGGING | defined DEBUG)
-    if(minx_config_is_set(CONF_MVM_DEBUGGING)) {
-        printf("[minx][vm]: Starting VM\n");
-    }
+    minxvmdbgprint("Starting\n",0);
 #endif
 
     /* alloc standard registers */
