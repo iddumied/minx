@@ -28,7 +28,14 @@ HEADERS= -I${SRC} -I${UTILC_HEADERS_LOCATIONS}
 
 #
 #
-# modifying
+# modifying vm 
+#
+#
+MINX_FLAGS = -D DEBUG -D DEBUGGING
+
+#
+#
+# modifying c flags
 #
 #
 CFLAGS += -Wall 
@@ -43,19 +50,21 @@ CFLAGS += -D DEBUG
 # 
 simple_vm: compile_main compile_vm compile_simple_reader
 	echo "simple_vm:"
+	echo "linking..."
 	${CC} ${MAIN_OUT} ${VM_OUT} ${SIMPLE_READER_OUT} ${BIN}/${UTILC_STACK_OUT} -o ${BINARY}
+	echo "ready!"
 
 compile_main:
 	echo "compile_main:"
-	${CC} -c ${CFLAGS} ${HEADERS} ${MAIN_SRC} -o ${MAIN_OUT}
+	${CC} -c ${CFLAGS} ${MINX_FLAGS} ${HEADERS} ${MAIN_SRC} -o ${MAIN_OUT}
 
 compile_vm:
 	echo "compile_vm:"
-	${CC} -c ${CFLAGS} ${HEADERS} ${VM_SRC} -o ${VM_OUT}
+	${CC} -c ${CFLAGS} ${MINX_FLAGS} ${HEADERS} ${VM_SRC} -o ${VM_OUT}
 
 compile_simple_reader:
 	echo "compile_simple_reader:"
-	${CC} -c ${CFLAGS} ${HEADERS} ${SIMPLE_READER_SRC} -o ${SIMPLE_READER_OUT}
+	${CC} -c ${CFLAGS} ${MINX_FLAGS} ${HEADERS} ${SIMPLE_READER_SRC} -o ${SIMPLE_READER_OUT}
 
 compile_binary_reader:
 	echo "compile_binary_reader:"
