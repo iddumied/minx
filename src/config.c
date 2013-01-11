@@ -70,7 +70,7 @@ void minx_config_parse(unsigned int argc, char ** argv) {
     }
 }
 
-void * minx_config_get(ConfigurationType ct) {
+ConfigurationValue* minx_config_get(ConfigurationType ct) {
     unsigned int i;
     for(i = 0 ; i < (sizeof(*configuration)/sizeof(configuration[0])); i++)
         if(configuration[i].type == ct)
