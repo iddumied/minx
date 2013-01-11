@@ -6,6 +6,7 @@
 
 typedef enum {
     VERBOSITY,
+    DEBUGGING,
 } ConfigurationType;
 
 typedef union {
