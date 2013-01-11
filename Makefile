@@ -50,7 +50,7 @@ CFLAGS += -c
 # Compiling the VM
 #
 # 
-simple_vm: compile_config compile_main compile_vm compile_simple_reader
+simple_vm: utilc compile_config compile_main compile_vm compile_simple_reader
 	echo "simple_vm:"
 	echo "linking..."
 	${CC}\
