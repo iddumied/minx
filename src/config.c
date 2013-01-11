@@ -13,10 +13,10 @@ static void         set_config          (ConfigurationType ct);
  * default config 
  */
 static Configuration    configuration[] = {
-    {   .type = CONF_VERBOSITY,             .value.i = 0    },
-    {   .type = CONF_MVM_DEBUGGING,         .value.i = 0    },
-    {   .type = CONF_SRC_DEBUGGING,         .value.i = 0    },
-    {   .type = CONF_PRINT_REGS_AT_EOP,     .value.i = 0    },
+    {   .type = CONF_VERBOSITY,             .value.b = 0    },
+    {   .type = CONF_MVM_DEBUGGING,         .value.b = 0    },
+    {   .type = CONF_SRC_DEBUGGING,         .value.b = 0    },
+    {   .type = CONF_PRINT_REGS_AT_EOP,     .value.b = 0    },
 };
 
 /*
