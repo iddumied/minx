@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "debug.h"
+
 typedef enum {
     CONF_VERBOSITY,         /* only if compiled with DEBUG */
     CONF_MVM_DEBUGGING,     /* only if compiled with DEBUGGING */
