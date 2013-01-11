@@ -149,7 +149,7 @@ static void ((*opc_funcs[])(void)) = {
 
 void minx_vm_run() {
 #if (defined DEBUGGING | defined DEBUG)
-    minxvmdbgprint("Starting\n",0);
+    minxvmdbgprint("Starting\n");
 #endif
 
     /* alloc standard registers */
@@ -172,7 +172,7 @@ void minx_vm_run() {
 
 static void init_registers() {
 #if (defined DEBUGGING | defined DEBUG)
-    minxvmdbgprint("init %i registers\n", MAX_REGISTERS);
+    minxvmdbgprintf("init %i registers\n", MAX_REGISTERS);
 #endif
 
     registers = (Register*) malloc( sizeof(Register) * MAX_REGISTERS);
@@ -196,7 +196,7 @@ static void init_registers() {
  */
 static Register* find_register(uint64_t addr) {
 #if (defined DEBUGGING | defined DEBUG)
-    minxvmdbgprint("find register: %"PRIu64"\n", addr);
+    minxvmdbgprintf("find register: %"PRIu64"\n", addr);
 #endif 
 
     if( !register_exists(addr) ) {
@@ -212,7 +212,7 @@ static Register* find_register(uint64_t addr) {
  */
 static void run() {
 #if (defined DEBUGGING | defined DEBUG)
-    minxvmdbgprint("run",0);
+    minxvmdbgprint("run");
 #endif //DEBUGGING
 
     while( !program_pointer_is(END_OF_PROGRAM) ) {
@@ -233,10 +233,8 @@ static void run() {
  */
 static void run_opcode(uint16_t cmd) {
 #if (defined DEBUGGING | defined DEBUG)
-    if(minx_config_is_set(CONF_SRC_DEBUGGING)) {
-        printf("Running opcode: %"PRIu16"\n", cmd);
-        fflush(stdout);
-    }
+    minxvmdbgprintf("Running opcode: %"PRIu16"\n", cmd);
+    fflush(stdout);
 #endif 
 
     void (*opc_func)(void) = opc_funcs[cmd];
@@ -247,10 +245,10 @@ static void run_opcode(uint16_t cmd) {
 
 #if (defined DEBUGGING | defined DEBUG)
     if ( program_pointer != END_OF_PROGRAM ) {
-        printf("[minx][vm]:\tPROG_POINTER: %"PRIu64"\n", program_pointer);
+        minxvmdbgprintf("[minx][vm]:\tPROG_POINTER: %"PRIu64"\n", program_pointer);
     }
     else {
-        printf("[minx][vm]: END OF PROGRAM\n");
+        minxvmdbgprint("[minx][vm]: END OF PROGRAM\n");
     }
 #endif 
 }
