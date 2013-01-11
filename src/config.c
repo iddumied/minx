@@ -5,6 +5,10 @@
  */
 static void         set_config          (ConfigurationType ct);
 
+#if (defined DEBUG | defined DEBUGGING)
+static void         print_config        (void);
+#endif
+
 /*
  * Static variables
  */
@@ -75,6 +79,10 @@ void minx_config_parse(unsigned int argc, char ** argv) {
             }
         }
     }
+
+#if (defined DEBUG | defined DEBUGGING)
+    print_config();
+#endif 
 }
 
 ConfigurationValue* minx_config_get(ConfigurationType ct) {
@@ -110,3 +118,12 @@ static void set_config(ConfigurationType ct) {
         i++ );
     configuration[i].value.i = 1;
 }
+
+#if (defined DEBUG | defined DEBUGGING)
+static void print_config() {
+    unsigned int i;
+    for( i = 0 ; i < (sizeof(configuration)/sizeof(configuration[0])); i++) {
+        printf("[minx][conf]: config %s = %i\n", confkeys[i].configkey, configuration[i].value.b);
+    }
+}
+#endif
