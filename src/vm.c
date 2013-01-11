@@ -214,7 +214,7 @@ static Register* find_register(uint64_t addr) {
  */
 static void run() {
 #if (defined DEBUGGING | defined DEBUG)
-    minxvmdbgprint("run");
+    minxvmdbgprint("run",0);
 #endif //DEBUGGING
 
     while( !program_pointer_is(END_OF_PROGRAM) ) {
