@@ -53,7 +53,7 @@ void minx_config_parse(unsigned int argc, char ** argv) {
 
     unsigned int i, j;
     for( i = 0 ; i < argc; i++ ) {
-        for( j = 0 ; j < (sizeof(*confkeys)/sizeof(confkeys[0])); j++ ) {
+        for( j = 0 ; j < (sizeof(confkeys)/sizeof(confkeys[0])); j++ ) {
             if( 0 == strcmp( confkeys[j].configkey, argv[i] )) {
                 /*
                 switch(confkeys[j].type) {
@@ -83,7 +83,7 @@ ConfigurationValue* minx_config_get(ConfigurationType ct) {
 #endif 
 
     unsigned int i;
-    for(i = 0 ; i < (sizeof(*configuration)/sizeof(configuration[0])); i++)
+    for(i = 0 ; i < (sizeof(configuration)/sizeof(configuration[0])); i++)
         if(configuration[i].type == ct)
             return &configuration[i].value;
     return NULL;
@@ -105,7 +105,7 @@ static void set_config(ConfigurationType ct) {
 
     unsigned int i;
     for(i = 0;
-        i < (sizeof(*configuration)/sizeof(configuration[0])) &&
+        i < (sizeof(configuration)/sizeof(configuration[0])) &&
         configuration[i].type != ct;
         i++ );
     configuration[i].value.i = 1;
