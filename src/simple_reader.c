@@ -62,6 +62,20 @@ signed int minx_binary_exists_at(uint64_t p) {
     return filesize > p;
 }
 
+#ifdef DEBUGGING
+void minx_binary_print() {
+    long i;
+    unsigned int line = 0;
+    printf("0x00000000 : ");
+    for(i = 0 ; i < filesize ; i++ ) {
+        printf("%#010x ", binary[i]);
+        if((i+1) % 8 == 0) {
+            printf("\n%#010x : ", ++line);
+        }
+    } 
+}
+#endif //DEBGUGGING
+
 /*
  * Static functions implementations
  */

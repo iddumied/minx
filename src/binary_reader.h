@@ -7,8 +7,11 @@
 
 #include "error.h"
 
-#ifdef DEBUG
+#if (defined DEBUGGING | defined DEBUG)
 #include <stdio.h>
+#endif 
+
+#ifdef DEBUG
 #include "debug.h"
 #endif
 
@@ -21,6 +24,8 @@ void *          minx_binary_get_at      (   uint64_t p,
 uint16_t *      minx_get_opcode         (uint64_t p);
 signed int      minx_binary_exists_at   (uint64_t p);
 
+#ifdef DEBUGGING
 void            minx_binary_print       (void);
+#endif //DEBGUGGING
 
 #endif // __MINX_BINARY_READER_H__
