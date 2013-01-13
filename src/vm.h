@@ -5,9 +5,14 @@
 #include <string.h>
 #include <stdint.h>
 
+#if (defined DEBUG | defined VERBOSITY)
+#include <stdio.h>
+
+#include "minx.h"
+#endif //if (defined DEBUG | defined VERBOSITY)
+
 #ifdef DEBUG
 #include <inttypes.h>
-#include <stdio.h>
 
 #include "debug.h"
 #endif
