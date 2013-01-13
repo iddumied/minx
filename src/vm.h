@@ -71,6 +71,10 @@
 #define         OPC_JMPNZ		    0x42
 #define         OPC_IFZJMP		    0x43
 
+#define         OPC_PSTACK          0x50
+#define         OPC_PREGS           0x51
+#define         OPC_PPROG           0x52
+
 /* 
  * defines for size in bytes 
  */

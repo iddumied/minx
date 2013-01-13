@@ -61,17 +61,13 @@ static void         opc_jmpiz_func          (void);
 static void         opc_jmpnz_func          (void);
 static void         opc_ifzjmp_func         (void);
 
+static void         opc_pstack_func         (void);
+static void         opc_pregs_func          (void);
+static void         opc_pprog_func          (void);
+
 #ifdef VERBOSITY
 static void         print_register          (unsigned int i);
 #endif 
-
-/* NOT SUPPORTED YET
-static void         opc_lnreg_func          (void);
-static void         opc_lpreg_func          (void);
-
-static void         opc_getp_func           (void);
-static void         opc_getpa_func          (void);
-*/
 
 /*
  * static variables
@@ -130,14 +126,10 @@ static void ((*opc_funcs[])(void)) = {
     [OPC_JMPIZ]     = opc_jmpiz_func,
     [OPC_JMPNZ]     = opc_jmpnz_func,
     [OPC_IFZJMP]    = opc_ifzjmp_func,
-/*
-    [0x60] = opc_lnreg_func,
-    [0x61] = opc_lpreg_func,
 
-    [0x70] = opc_getp_func,
-    [0x71] = opc_getpa_func,
-    [0x72] = opc_setp_func,
-*/
+    [OPC_PSTACK]    = opc_pstack_func,
+    [OPC_PREGS]     = opc_pregs_func,
+    [OPC_PPROG]     = opc_pprog_func
 };
 
 /*
@@ -1038,11 +1030,63 @@ static void opc_ifzjmp_func() {
     }
 }
 
-#ifdef VERBOSITY
+/*
+ * Command:                 PSTACK
+ * Parameters:              0
+ * Affects Program Pointer: NO 
+ */
+static void opc_pstack_func (void) {
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE("pstack");
+    if( minx_config_get(CONF_SRC_DEBUGGING)->b ) {
+        stack_print_binary(stack);
+    }
+
+#endif //DEBUGGING
+    program_pointer += OPC_SIZE;
+}
+
+/*
+ * Command:                 PREGS
+ * Parameters:              0
+ * Affects Program Pointer: NO 
+ */
+static void opc_pregs_func (void) {
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE("pregs");
+
+    if( minx_config_get(CONF_SRC_DEBUGGING)->b ) {
+        unsigned int i;
+        for( i = 0; i < register_count ; i++ ) {
+            print_register(i);
+        }
+    }
+#endif //DEBUGGING
+    program_pointer += OPC_SIZE;
+}
+
+/*
+ * Command:                 PPROG
+ * Parameters:              0
+ * Affects Program Pointer: NO 
+ */
+static void opc_pprog_func (void) {
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE("pprog");
+
+    if( minx_config_get(CONF_SRC_DEBUGGING)->b ) {
+        minx_binary_print();
+    }
+
+#endif //DEBUGGING
+    program_pointer += OPC_SIZE;
+}
+
+#if (defined VERBOSITY | defined DEBUGGING)
 static void print_register(unsigned int i) {
     printf( MINX_VM_PRINT_PREFIX"[register][%03i] = %"PRIu64"\n", i, registers[i].value );
 }
-#endif //VERBOSITY
+#endif //(defined VERBOSITY | defined DEBUGGING)
 
 /*
  * "static" macros undef  
