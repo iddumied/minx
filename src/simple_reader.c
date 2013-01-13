@@ -48,11 +48,17 @@ void minx_binary_print() {
     unsigned int line = 0;
     printf("0x00000000 : ");
     for(i = 0 ; i < filesize ; i++ ) {
-        printf("%#010x ", binary[i]);
+        if( binary[i] = 0 ) {
+            printf("0x00000000 ");
+        }
+        else {
+            printf("%#010x ", binary[i]);
+        }
         if((i+1) % 8 == 0) {
             printf("\n%#010x : ", ++line);
         }
     } 
+    printf("\n");
 }
 #endif //DEBGUGGING
 
