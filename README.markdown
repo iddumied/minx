@@ -5,7 +5,7 @@ This first implementation comes with the simple reader, which reads the complete
 binary into ram. Later on there will be another reader, which will check the
 binary for size and just read the actual required parts into ram (and so on).
 
-Version 2.3.3 of utilc is required (see submodule).
+Version 2.3.4 of utilc is required (see submodule).
 
 Compile with DEBUG to be able to debug the VM, compile with DEBUGGING to be able 
 to debug both the VM and the source its running.
