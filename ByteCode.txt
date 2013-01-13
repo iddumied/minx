@@ -75,6 +75,11 @@ code	|	Short expl.	|	arguments				|	Expl.
 0x11	|	LSH			|	Register				| result in register 
 0x12	|	RSH			|	Register				| result in register 
 
+0x13    |   CMP         |   Register, Register      | compare, result in akku, 1 if first is bigger, 2 if second is bigger, zero if equal
+0x14    |   CMPI        |   Register, Value         | see opcode CMP
+0x15    |   EQL         |   Register, Register      | 1 in akku if val equal
+0x16    |   EQLI        |   Register, Value         | 1 if akku if equal
+
 0x20	|	PUSH		|	Register				| push register to stack
 0x21	|	POP			|	Register				| pop from stack into register
 0x22	|	DROP		|	none					| pop from stack and drop
