@@ -9,7 +9,7 @@ minx virtual machine specification
 The minx vm is _stupid_. You can jump to _every_ location in the binary, if it
 exists. So you or your compiler has to care about the jumps, the machine
 does not. It only checks, if the code position exists. If not, it stops
-executing.
+executing with printing a fatal error message.
 
 special registers:
 ------------------
@@ -40,8 +40,8 @@ stack
 - infinite size (only limited by your system)
 - used for both function calls and pushing values
 
-codes
------
+opcodes
+-------
 
 'Register'	stands for 16 Bit (2 Byte) register address 
 'Value'		stands for 64 Bit (8 Byte) value
