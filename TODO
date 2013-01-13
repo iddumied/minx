@@ -20,14 +20,6 @@ TODO:
 5.1)define a op code ISDEV(reg, opc) for getting if a opcode is defined, result
 	in 'reg'
 
-7)  define special op codes for debugging:
-	- print stack
-	- print registers
-	- print program
-	- print registers
-	But do they compile only if DEBUG compile flag is set, otherwise ignore them
-	and only increment program pointer as much as required.
-
 8)  define op codes for push/pop several registers to stack
 	push( reg, cnt )
 		- pushes reg and (cnt) next
