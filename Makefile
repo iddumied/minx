@@ -17,11 +17,13 @@ CC=/usr/bin/gcc
 MAIN_SRC=${SRC}/main.c
 VM_SRC=${SRC}/vm.c
 SIMPLE_READER_SRC=${SRC}/simple_reader.c
+BINARY_READER_SRC=${SRC}/binary_reader.c
 CONFIG_SRC=${SRC}/config.c
 
 MAIN_OUT=${BIN}/main.o
 VM_OUT=${BIN}/vm.o
 SIMPLE_READER_OUT=${BIN}/simple_reader.o
+BINARY_READER_OUT=${BIN}/binary_reader.o
 CONFIG_OUT=${BIN}/config.o
 
 BINARY=${BIN}/minx
@@ -50,6 +52,17 @@ CFLAGS += -c
 # Compiling the VM
 #
 # 
+minx: utilc compile_config compile_main compile_vm compile_binary_reader
+	echo "simple_vm:"
+	echo "linking..."
+	${CC}\
+		${CONFIG_OUT}\
+		${MAIN_OUT}\
+		${VM_OUT}\
+		${BINARY_READER_OUT}\
+		${BIN}/${UTILC_STACK_OUT} -o ${BINARY}
+	echo "ready!"
+
 simple_vm: utilc compile_config compile_main compile_vm compile_simple_reader
 	echo "simple_vm:"
 	echo "linking..."
@@ -79,7 +92,7 @@ compile_config:
 
 compile_binary_reader:
 	echo "compile_binary_reader:"
-	echo "Not setup yet"
+	${CC} ${CFLAGS} ${MINX_FLAGS} ${HEADERS} ${BINARY_READER_SRC} -o ${BINARY_READER_OUT}
 #
 #
 # compiling utilc

@@ -53,10 +53,9 @@ void minx_binary_shutdown() {
     free(binary);
 }
 
-void * minx_binary_get_at(uint64_t p, unsigned int number_of_bytes) {
-    char *res = malloc( sizeof(char) * number_of_bytes );
-    memcpy(res, &binary[p], number_of_bytes);
-    return res;
+void * minx_binary_get_at(uint64_t p, unsigned int number_of_bytes, void *dest) {
+    memcpy(dest, &binary[p], number_of_bytes);
+    return dest;
 }
 
 signed int minx_binary_exists_at(uint64_t p) {
