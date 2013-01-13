@@ -5,11 +5,13 @@
 
 #include <stdio.h>
 
+#include "minx.h"
+
 #define minxvmdbgprintf(f,...)                                              \
     do {                                                                    \
         ConfigurationValue *cv = minx_config_get(CONF_MVM_DEBUGGING);       \
         if(cv != NULL && cv->b) {                                           \
-            printf("[minx][vm] "f,__VA_ARGS__);                             \
+            printf(MINX_VM_PRINT_PREFIX" "f,__VA_ARGS__);                   \
         }                                                                   \
     }while(0)
 
@@ -17,7 +19,7 @@
     do {                                                                    \
         ConfigurationValue *cv = minx_config_get(CONF_MVM_DEBUGGING);       \
         if(cv != NULL && cv->b) {                                           \
-            printf("[minx][vm] "f);                                         \
+            printf(MINX_VM_PRINT_PREFIX" "f);                               \
         }                                                                   \
     }while(0)
 
@@ -25,7 +27,8 @@
     do{                                                                     \
         ConfigurationValue *cv = minx_config_get(CONF_SRC_DEBUGGING);       \
         if(cv != NULL && cv->b) {                                           \
-            printf("[minx][vm] func: %s, line %s\n", __func__, __LINE__);   \
+            printf(MINX_VM_FUNC_PRINT_PREFIX": %s, line %s\n", __func__,    \
+                    __LINE__);                                              \
         }                                                                   \
     } while(0)
 
@@ -33,7 +36,7 @@
     do {                                                                    \
         ConfigurationValue *cv = minx_config_get(CONF_SRC_DEBUGGING);       \
         if(cv != NULL && cv->b) {                                           \
-            printf("[minx][vm] opcode: %s\n", opc);                         \
+            printf(MINX_VM_OP_PRINT_PREFIX": %s\n", opc);                   \
         }                                                                   \
     } while(0)
 
@@ -41,7 +44,8 @@
     do {                                                                    \
         ConfigurationValue *cv = minx_config_get(CONF_SRC_DEBUGGING);       \
         if(cv != NULL && cv->b) {                                           \
-            printf("[minx][vm] opcode: %s ("format")\n", opc, __VA_ARGS__); \
+            printf(MINX_VM_OP_PRINT_PREFIX": %s ("format")\n", opc,         \
+                    __VA_ARGS__);                                           \
         }                                                                   \
     } while(0)
 
