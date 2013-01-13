@@ -53,13 +53,7 @@ void minx_binary_shutdown() {
  * returns 'number_of_bytes' bytes 
  *  (currently, the vm needs 2 for commands and 8 for parameters)
  */
-void * minx_binary_get_at(uint64_t p, unsigned int number_of_bytes) {
-
-    void * result = (void*) malloc( sizeof(char) * number_of_bytes );
-    
-    if ( number_of_bytes > 8 ) {
-        FATAL_DESC_ERROR("The VM supports only 64 Bit");
-    }
+void * minx_binary_get_at(uint64_t p, unsigned int number_of_bytes, void *dest) {
 
     if( !binary_init ) {
         init_binary();
@@ -72,10 +66,9 @@ void * minx_binary_get_at(uint64_t p, unsigned int number_of_bytes) {
         read_until(p);
     }
 
-    result = memcpy(result, &(binary[p]), sizeof(char)*number_of_bytes); 
-    return result;
+    dest = memcpy(dest, &(binary[p]), sizeof(char)*number_of_bytes); 
+    return dest;
 }
-
 
 /*
  * returns true if binary exists at address 'p'

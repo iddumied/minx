@@ -229,13 +229,16 @@ static void run() {
     minxvmdbgprint("run");
 #endif //DEBUGGING
 
+    uint16_t *opcode;
+
     while( !program_pointer_is(END_OF_PROGRAM) ) {
 
 #if (defined DEBUGGING || defined DEBUG)
         fflush(stdout);
 #endif // (defined DEBUGGING || defined DEBUG)
-
-        run_opcode(*((uint16_t*)minx_binary_get_at(program_pointer, OPC_SIZE)));
+        opcode = minx_binary_get_at(program_pointer, OPC_SIZE, opcode);
+        run_opcode(*opcode);
+        free(opcode);
     }
 
 #if (defined VERBOSITY)
@@ -246,7 +249,7 @@ static void run() {
         }
     }
 #endif //if (defined VERBOSITY)
-}
+} //static void run()
 
 /*
  * runs the opcode, passed to the function by finding it in the opc_funcs array.
@@ -291,7 +294,7 @@ static void run_opcode(uint16_t cmd) {
  */
 static void read_1_command_parameter(unsigned int size1) {
     uint64_t ptr1_location = program_pointer + OPC_SIZE;
-    opc_p->p1 = *((uint64_t *) minx_binary_get_at( ptr1_location, size1 ));
+    opc_p->p1 = *((uint64_t *) minx_binary_get_at( ptr1_location, size1 ), opc_p->p1);
 }
 
 /*
@@ -321,8 +324,8 @@ static void read_2_command_parameters(unsigned int size1, unsigned int size2) {
     uint64_t ptr1_location = program_pointer + OPC_SIZE;
     uint64_t ptr2_location = program_pointer + OPC_SIZE + size1;
 
-    opc_p->p1 = *((uint64_t *) minx_binary_get_at( ptr1_location, size1 ));
-    opc_p->p2 = *((uint64_t *) minx_binary_get_at( ptr2_location, size2 ));
+    opc_p->p1 = *((uint64_t *) minx_binary_get_at( ptr1_location, size1 ), opc_p->p1);
+    opc_p->p2 = *((uint64_t *) minx_binary_get_at( ptr2_location, size2 ), opc_p->p2);
 }
 
 /*
