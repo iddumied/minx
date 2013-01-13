@@ -42,6 +42,11 @@ static void         opc_inc_func            (void);
 static void         opc_lsh_func            (void);
 static void         opc_rsh_func            (void);
 
+static void         opc_cmp_func            (void);
+static void         opc_cmpi_func           (void);
+static void         opc_eql_func            (void);
+static void         opc_eqli_func           (void);
+
 static void         opc_push_func           (void);
 static void         opc_pop_func            (void);
 static void         opc_drop_func           (void);
