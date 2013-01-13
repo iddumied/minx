@@ -56,6 +56,10 @@ static void         opc_jmpiz_func          (void);
 static void         opc_jmpnz_func          (void);
 static void         opc_ifzjmp_func         (void);
 
+#ifdef VERBOSITY
+static void         print_register          (unsigned int i);
+#endif 
+
 /* NOT SUPPORTED YET
 static void         opc_lnreg_func          (void);
 static void         opc_lpreg_func          (void);
@@ -223,6 +227,15 @@ static void run() {
 
         run_opcode(*((uint16_t*)minx_binary_get_at(program_pointer, OPC_SIZE)));
     }
+
+#if (defined VERBOSITY)
+    if( minx_config_get(CONF_PRINT_REGS_AT_EOP)->b ) {
+        unsigned int i;
+        for( i = 0; i < register_count ; i++ ) {
+            print_register(i);
+        }
+    }
+#endif //if (defined VERBOSITY)
 }
 
 /*
@@ -910,6 +923,12 @@ static void opc_ifzjmp_func() {
         FATAL_DESC_ERROR("Cannot jump");
     }
 }
+
+#ifdef VERBOSITY
+static void print_register(unsigned int i) {
+    printf( MINX_VM_PRINT_PREFIX"[register][%03i] = %"PRIu64"\n", i, registers[i].value );
+}
+#endif //VERBOSITY
 
 /*
  * "static" macros undef  
