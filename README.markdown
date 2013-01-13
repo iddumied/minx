@@ -13,7 +13,7 @@ to debug both the VM and the source its running.
 Arguments, the VM takes:
 first Argument _has to be_ the binary you want to run,
 then:
-	-v for verbosity (not supported yet, requires VERBOSITY)
+	-v for verbosity (does nothing yet, requires VERBOSITY)
 	-d for debugging the source it is running
 	--vm-debug for debugging the VM internals
 	--regs for printing registers at end of program (this is much output!, requires VERBOSITY)
