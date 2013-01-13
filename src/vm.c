@@ -221,7 +221,7 @@ static void run() {
     minxvmdbgprint("run");
 #endif //DEBUGGING
 
-    uint16_t *opcode;
+    uint16_t *opcode = (uint16_t*) malloc(sizeof(*opcode));
 
     while( !program_pointer_is(END_OF_PROGRAM) ) {
 
@@ -230,7 +230,6 @@ static void run() {
 #endif // (defined DEBUGGING || defined DEBUG)
         opcode = minx_binary_get_at(program_pointer, OPC_SIZE, opcode);
         run_opcode(*opcode);
-        free(opcode);
     }
 
 #if (defined VERBOSITY)

@@ -120,5 +120,6 @@ typedef struct {
  */
 
 void    minx_vm_run(void);
+extern void stack_print_binary(Stack*);
 
 #endif //__MINX_VM_H__
