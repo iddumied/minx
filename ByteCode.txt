@@ -100,5 +100,4 @@ Not supported yet:
 
 0x70	|	GETP		|	Register				| Write current program pointer to register
 0x71	|	GETPA		|	Adress, Register		| Write adress to register
-0x72	|	SETP		|	Register				| Set current programm pointer to address(register)
 
