@@ -94,3 +94,11 @@ code	|	Short expl.	|	arguments				|	Expl.
 0x42	|	JMPNZ		|	Register, Adress		| jump if register is not zero
 0x43	|	IFZJMP		|	Adress, Adress			| if akku is zero jump, else jump
 
+These are special debugging opcodes and are only print when compiled with 
+DEBUGGING and started with "-d" flag. If not compiled with DEBUGGING, they
+will be ignored automatically!
+
+The 0x5? block is reserved for them.
+0x50    |   PSTACK      |   none                    | print stack
+0x51    |   PREGS       |   none                    | print registers
+0x52    |   PPROG       |   none                    | print program
