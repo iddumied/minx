@@ -368,10 +368,13 @@ static void opc_nop_func() {
  * set the program_pointer to the value of the argument of the opc.
  */
 static void opc_call_func() {
+
+    read_1_command_parameter(PROGRAM_ADDRESS_SIZE);
+
 #ifdef DEBUGGING
     EXPLAIN_OPCODE("call");
+    EXPLAIN_OPCODE_WITH("call", "%"PRIu64, opc_p->p1);
 #endif
-    read_1_command_parameter(PROGRAM_ADDRESS_SIZE);
     /*
      * push to stack
      *
@@ -412,7 +415,7 @@ static void opc_mov_func() {
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("mov", "from: %"PRIu64", to: %"PRIu64, opc_p->p2, opc_p->p1);
+    EXPLAIN_OPCODE_WITH("mov", "%"PRIu64" <- %"PRIu64, opc_p->p1, opc_p->p2);
 #endif 
 
     find_register(opc_p->p1)->value = find_register(opc_p->p2)->value;
@@ -430,7 +433,7 @@ static void opc_movi_func() {
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, VALUE_SIZE);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("movi", "val: %"PRIu64", to: %"PRIu64, opc_p->p2, opc_p->p1);
+    EXPLAIN_OPCODE_WITH("movi", "%"PRIu64" <- %"PRIu64, opc_p->p1, opc_p->p2);
 #endif 
 
     find_register(opc_p->p1)->value = opc_p->p2;
@@ -449,7 +452,7 @@ static void opc_not_func() {
     read_1_command_parameter(REGISTER_ADDRESS_SIZE);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("not", "register: %"PRIu64, opc_p->p1);
+    EXPLAIN_OPCODE_WITH("not", "reg: %"PRIu64, opc_p->p1);
 #endif 
 
     akku = ! find_register(opc_p->p1)->value;
@@ -468,7 +471,7 @@ static void opc_notr_func() {
     read_1_command_parameter(REGISTER_ADDRESS_SIZE);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("not", "register: %"PRIu64, opc_p->p1);
+    EXPLAIN_OPCODE_WITH("not", "reg: %"PRIu64, opc_p->p1);
 #endif 
 
     find_register(opc_p->p1)->value = ! find_register(opc_p->p1)->value;
@@ -484,11 +487,13 @@ static void opc_notr_func() {
  * result in akku
  */
 static void opc_and_func() {
-#ifdef DEBUGGING
-    EXPLAIN_OPCODE("and");
-#endif
 
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE);
+
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE_WITH("and", "reg %"PRIu64" & reg %"PRIu64, opc_p->p1, opc_p->p2);
+#endif
+
     akku = find_register(opc_p->p1)->value & find_register(opc_p->p2)->value;
 
     program_pointer += ( OPC_SIZE + REGISTER_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE );
@@ -502,11 +507,13 @@ static void opc_and_func() {
  * Result in akku
  */
 static void opc_andi_func() {
+    
+    read_2_command_parameters(REGISTER_ADDRESS_SIZE, VALUE_SIZE);
+
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE("andi");
+    EXPLAIN_OPCODE_WITH("andi", "reg %"PRIu64" & %"PRIu64, opc_p->p1, opc_p->p2);
 #endif
 
-    read_2_command_parameters(REGISTER_ADDRESS_SIZE, VALUE_SIZE);
     akku = find_register(opc_p->p1)->value & opc_p->p2;
 
     program_pointer += ( OPC_SIZE + REGISTER_ADDRESS_SIZE + VALUE_SIZE);
@@ -520,11 +527,13 @@ static void opc_andi_func() {
  * Result in first register
  */
 static void opc_andr_func() {
-#ifdef DEBUGGING
-    EXPLAIN_OPCODE("andr");
-#endif
 
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE);
+
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE_WITH("andr", "reg %"PRIu64" & reg%"PRIu64, opc_p->p1, opc_p->p2);
+#endif
+
     find_register(opc_p->p1)->value &= find_register(opc_p->p2)->value;
 
     program_pointer += ( OPC_SIZE + REGISTER_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE );
@@ -538,11 +547,13 @@ static void opc_andr_func() {
  * Result in first register
  */
 static void opc_andir_func() {
-#ifdef DEBUGGING
-    EXPLAIN_OPCODE("andir");
-#endif
 
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, VALUE_SIZE);
+
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE_WITH("andir", "reg %"PRIu64" & %"PRIu64, opc_p->p1, opc_p->p2);
+#endif
+
     find_register(opc_p->p1)->value &= opc_p->p2;
 
     program_pointer += ( OPC_SIZE + REGISTER_ADDRESS_SIZE + VALUE_SIZE);
@@ -557,11 +568,13 @@ static void opc_andir_func() {
  * Result in akku
  */
 static void opc_or_func() {
-#ifdef DEBUGGING
-    EXPLAIN_OPCODE("or");
-#endif
 
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE);
+
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE_WITH("or", "reg %"PRIu64" | reg %"PRIu64, opc_p->p1, opc_p->p2);
+#endif 
+
     akku = find_register(opc_p->p1)->value | find_register(opc_p->p2)->value;
 
     program_pointer += ( OPC_SIZE + REGISTER_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE );
@@ -575,11 +588,13 @@ static void opc_or_func() {
  *
  */
 static void opc_ori_func() {
-#ifdef DEBUGGING
-    EXPLAIN_OPCODE("ori");
-#endif
 
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, VALUE_SIZE);
+
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE_WITH("ori", "reg %"PRIu64" | %"PRIu64, opc_p->p1, opc_p->p2);
+#endif 
+
     akku = find_register(opc_p->p1)->value | opc_p->p2;
 
     program_pointer += ( OPC_SIZE + REGISTER_ADDRESS_SIZE + VALUE_SIZE);
@@ -593,11 +608,13 @@ static void opc_ori_func() {
  *
  */
 static void opc_orr_func() {
-#ifdef DEBUGGING
-    EXPLAIN_OPCODE("orr");
-#endif
 
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE);
+
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE_WITH("orr", "reg %"PRIu64" | reg %"PRIu64, opc_p->p1, opc_p->p2);
+#endif 
+
     find_register(opc_p->p1)->value |= find_register(opc_p->p2)->value;
 
     program_pointer += ( OPC_SIZE + REGISTER_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE);
@@ -611,11 +628,13 @@ static void opc_orr_func() {
  *
  */
 static void opc_orir_func() {
-#ifdef DEBUGGING
-    EXPLAIN_OPCODE("orir");
-#endif
 
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, VALUE_SIZE);
+
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE_WITH("orir", "reg %"PRIu64" | %"PRIu64, opc_p->p1, opc_p->p2);
+#endif 
+
     find_register(opc_p->p1)->value |= opc_p->p2;
 
     program_pointer += ( OPC_SIZE + REGISTER_ADDRESS_SIZE + VALUE_SIZE);
@@ -675,10 +694,13 @@ static void opc_inc_func() {
  *
  */
 static void opc_lsh_func() {
-#ifdef DEBUGGING
-    EXPLAIN_OPCODE("lsh");
-#endif
+
     read_1_command_parameter(REGISTER_ADDRESS_SIZE);
+
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE_WITH("lsh", "reg %"PRIu64, opc_p->p1);
+#endif
+
     Register *r = find_register(opc_p->p1);
     r->value = r->value<<1;
     
@@ -693,10 +715,13 @@ static void opc_lsh_func() {
  *
  */
 static void opc_rsh_func() {
-#ifdef DEBUGGING
-    EXPLAIN_OPCODE("rsh");
-#endif
+                
     read_1_command_parameter(REGISTER_ADDRESS_SIZE);
+
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE_WITH("rsh", "reg %"PRIu64, opc_p->p1);
+#endif
+
     Register *r = find_register(opc_p->p1);
     r->value = r->value>>1;
     
@@ -715,11 +740,13 @@ static void opc_rsh_func() {
  * zero if equal
  */
 static void opc_cmp_func() {
-#ifdef DEBUGGING
-    EXPLAIN_OPCODE("cmp");
-#endif 
     
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE);
+
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE_WITH("cmp", "reg %"PRIu64" and reg %"PRIu64, opc_p->p1, opc_p->p2);
+#endif 
+    
     Register * r1 = find_register(opc_p->p1);
     Register * r2 = find_register(opc_p->p2);
 
@@ -748,11 +775,13 @@ static void opc_cmp_func() {
  * zero if equal
  */
 static void opc_cmpi_func() {
-#ifdef DEBUGGING
-    EXPLAIN_OPCODE("cmpi");
-#endif 
     
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, VALUE_SIZE);
+
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE_WITH("cmpi", "reg %"PRIu64" and %"PRIu64, opc_p->p1, opc_p->p2);
+#endif 
+    
     Register * r1 = find_register(opc_p->p1);
 
     if(r1->value > opc_p->p2) {
@@ -776,11 +805,13 @@ static void opc_cmpi_func() {
  *
  */
 static void opc_eql_func() {
-#ifdef DEBUGGING
-    EXPLAIN_OPCODE("eql");
-#endif 
 
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE);
+
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE_WITH("eql", "reg %"PRIu64" and reg %"PRIu64, opc_p->p1, opc_p->p2);
+#endif 
+    
     akku = find_register(opc_p->p1)->value == find_register(opc_p->p1)->value;
 
     program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE);
@@ -794,11 +825,13 @@ static void opc_eql_func() {
  *
  */
 static void opc_eqli_func() {
-#ifdef DEBUGGING
-    EXPLAIN_OPCODE("eqli");
-#endif 
 
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, VALUE_SIZE);
+
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE_WITH("eqli", "reg %"PRIu64" and %"PRIu64, opc_p->p1, opc_p->p2);
+#endif 
+    
     akku = find_register(opc_p->p1)->value == opc_p->p2;
 
     program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE + VALUE_SIZE);
@@ -812,10 +845,13 @@ static void opc_eqli_func() {
  *
  */
 static void opc_push_func() {
-#ifdef DEBUGGING
-    EXPLAIN_OPCODE("push");
-#endif
+
     read_1_command_parameter(REGISTER_ADDRESS_SIZE);
+
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE_WITH("push", "reg %"PRIu64, opc_p->p1);
+#endif
+
     stackpush(stack, &(find_register(opc_p->p1)->value), VALUE_SIZE) ;
     
     program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE);
@@ -829,14 +865,16 @@ static void opc_push_func() {
  *
  */
 static void opc_pop_func() {
-#ifdef DEBUGGING
-    EXPLAIN_OPCODE("pop");
-#endif
     if( stack_is_empty( stack ) ) {
         FATAL_DESC_ERROR("Cannot pop from empty stack!");
     }
 
     read_1_command_parameter(REGISTER_ADDRESS_SIZE);
+
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE_WITH("pop", "reg %"PRIu64, opc_p->p1);
+#endif
+
     find_register(opc_p->p1)->value = *((uint64_t*)stackpop(stack));
     
     program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE);
@@ -870,10 +908,13 @@ static void opc_drop_func() {
  * Result in akku
  */
 static void opc_add_func() {
-#ifdef DEBUGGING
-    EXPLAIN_OPCODE("add");
-#endif
+    
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE);
+
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE_WITH("add", "reg %"PRIu64" + reg %"PRIu64, opc_p->p1, opc_p->p2);
+#endif
+
     akku = find_register(opc_p->p1)->value + find_register(opc_p->p2)->value;
 
     program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE);
@@ -887,10 +928,13 @@ static void opc_add_func() {
  * Result in akku
  */
 static void opc_addi_func() {
-#ifdef DEBUGGING
-    EXPLAIN_OPCODE("addi");
-#endif
+    
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, VALUE_SIZE);
+
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE_WITH("addi", "reg %"PRIu64" + %"PRIu64, opc_p->p1, opc_p->p2);
+#endif
+
     akku = find_register(opc_p->p1)->value + opc_p->p2;
 
     program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE + VALUE_SIZE);
@@ -904,10 +948,13 @@ static void opc_addi_func() {
  * Result in register
  */
 static void opc_addr_func() {
-#ifdef DEBUGGING
-    EXPLAIN_OPCODE("addr");
-#endif
+    
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE);
+
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE_WITH("addr", "reg %"PRIu64" + reg %"PRIu64, opc_p->p1, opc_p->p2);
+#endif
+
     find_register(opc_p->p1)->value += find_register(opc_p->p2)->value;
 
     program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE);
@@ -921,10 +968,13 @@ static void opc_addr_func() {
  * Result in register
  */
 static void opc_addir_func() {
-#ifdef DEBUGGING
-    EXPLAIN_OPCODE("addir");
-#endif
+    
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, VALUE_SIZE);
+
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE_WITH("addir", "reg %"PRIu64" + %"PRIu64, opc_p->p1, opc_p->p2);
+#endif
+
     find_register(opc_p->p1)->value += opc_p->p2;
 
     program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE + VALUE_SIZE);
@@ -960,10 +1010,13 @@ static void opc_jmp_func() {
  *
  */
 static void opc_jmpiz_func() {
-#ifdef DEBUGGING
-    EXPLAIN_OPCODE("jmpiz");
-#endif
+    
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, PROGRAM_ADDRESS_SIZE);
+
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE_WITH("jmpiz", "to %"PRIu64" if reg %"PRIu64" == 0", opc_p->p2, opc_p->p1);
+#endif 
+
     if( minx_binary_exists_at(opc_p->p2) || opc_p->p2 == END_OF_PROGRAM) {
         if( find_register(opc_p->p1)->value == 0x0000 ) {
             program_pointer = opc_p->p2;
@@ -985,10 +1038,13 @@ static void opc_jmpiz_func() {
  *
  */
 static void opc_jmpnz_func() {
-#ifdef DEBUGGING
-    EXPLAIN_OPCODE("jmpnz");
-#endif
+    
     read_2_command_parameters(REGISTER_ADDRESS_SIZE, PROGRAM_ADDRESS_SIZE);
+
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE_WITH("jmpnz", "to %"PRIu64" if reg %"PRIu64" != 0", opc_p->p2, opc_p->p1);
+#endif 
+
     if( minx_binary_exists_at(opc_p->p2) || opc_p->p2 == END_OF_PROGRAM) {
         if( find_register(opc_p->p1)->value != 0x0000 ) {
             program_pointer = opc_p->p2;
@@ -1010,10 +1066,13 @@ static void opc_jmpnz_func() {
  * if akku is zero then jump else jump
  */
 static void opc_ifzjmp_func() {
-#ifdef DEBUGGING
-    EXPLAIN_OPCODE("ifzjmp");
-#endif
+    
     read_2_command_parameters(PROGRAM_ADDRESS_SIZE, PROGRAM_ADDRESS_SIZE);
+
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE_WITH("jmpnz", "to %"PRIu64" if akku == 0, else to %"PRIu64, opc_p->p1, opc_p->p2);
+#endif 
+
     if( (minx_binary_exists_at(opc_p->p1) || opc_p->p1 == END_OF_PROGRAM) && 
         (minx_binary_exists_at(opc_p->p2) || opc_p->p2 == END_OF_PROGRAM)) {
 
