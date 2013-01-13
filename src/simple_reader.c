@@ -48,7 +48,7 @@ void minx_binary_print() {
     unsigned int line = 0;
     printf("0x00000000 : ");
     for(i = 0 ; i < filesize ; i++ ) {
-        if( binary[i] = 0 ) {
+        if( binary[i] == 0 ) {
             printf("0x00000000 ");
         }
         else {
