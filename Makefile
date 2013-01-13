@@ -53,7 +53,8 @@ CFLAGS += -c
 #
 # 
 minx: utilc compile_config compile_main compile_vm compile_binary_reader
-	echo "simple_vm:"
+	echo "minx:"
+	echo "WARNING: This is maybe not stable, use 'make simple_vm' instead!"
 	echo "linking..."
 	${CC}\
 		${CONFIG_OUT}\
