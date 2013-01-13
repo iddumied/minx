@@ -58,6 +58,9 @@ class Op < Struct.new :opc, :args; end
   "JMPIZ" =>  Op.new(0x41, [REGISTER, ADDRESS] ), 
   "JMPNZ" =>  Op.new(0x42, [REGISTER, ADDRESS] ), 
   "IFZJMP" => Op.new(0x43, [ADDRESS, ADDRESS] ), 
+  "PSTACK" => Op.new(0x50, []), 
+  "PREGS" =>  Op.new(0x51, []), 
+  "PPROG" =>  Op.new(0x52, []), 
 }
 
 #
