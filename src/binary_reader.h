@@ -21,4 +21,6 @@ void *          minx_binary_get_at      (   uint64_t p,
 uint16_t *      minx_get_opcode         (uint64_t p);
 signed int      minx_binary_exists_at   (uint64_t p);
 
+void            minx_binary_print       (void);
+
 #endif // __MINX_BINARY_READER_H__
