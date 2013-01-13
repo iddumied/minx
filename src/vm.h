@@ -52,6 +52,11 @@
 #define         OPC_LSH			    0x11
 #define         OPC_RSH			    0x12
 
+#define         OPC_CMP             0x13
+#define         OPC_CMPI            0x14
+#define         OPC_EQL             0x15
+#define         OPC_EQLI            0x16
+
 #define         OPC_PUSH		    0x20
 #define         OPC_POP			    0x21
 #define         OPC_DROP		    0x22

@@ -107,6 +107,11 @@ static void ((*opc_funcs[])(void)) = {
     [OPC_LSH]       = opc_lsh_func,
     [OPC_RSH]       = opc_rsh_func,
 
+    [OPC_CMP]       = opc_cmp_func,
+    [OPC_CMPI]      = opc_cmpi_func, 
+    [OPC_EQL]       = opc_eql_func,
+    [OPC_EQLI]      = opc_eqli_func,
+
     [OPC_PUSH]      = opc_push_func,
     [OPC_POP]       = opc_pop_func,
     [OPC_DROP]      = opc_drop_func,
@@ -697,6 +702,107 @@ static void opc_rsh_func() {
     r->value = r->value>>1;
     
     program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE);
+}
+
+/*
+ * Command:                 CMP 
+ * Parameters:              2: register-address register-address
+ * Affects Program Pointer: NO
+ *
+ * compare, 
+ * result in akku, 
+ * 1 if first is bigger, 
+ * 2 if second is bigger, 
+ * zero if equal
+ */
+static void opc_cmp_func() {
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE("cmp");
+#endif 
+    
+    read_2_command_parameters(REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE);
+    Register * r1 = find_register(opc_p->p1);
+    Register * r2 = find_register(opc_p->p2);
+
+    if( r1->value > r2->value ) {
+        akku = 1;
+    }
+    else if( r1->value < r2->value ) {
+        akku = 2;
+    }
+    else {//( r1->value == r2->value )
+        akku = 0;
+    }
+
+    program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE);
+}
+
+/*
+ * Command:                 CMPI 
+ * Parameters:              1: register-address value 
+ * Affects Program Pointer: NO
+ *
+ * compare, 
+ * result in akku, 
+ * 1 if first is bigger, 
+ * 2 if second is bigger, 
+ * zero if equal
+ */
+static void opc_cmpi_func() {
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE("cmpi");
+#endif 
+    
+    read_2_command_parameters(REGISTER_ADDRESS_SIZE, VALUE_SIZE);
+    Register * r1 = find_register(opc_p->p1);
+
+    if(r1->value > opc_p->p2) {
+        akku = 1;
+    }
+    else if(r1->value < opc_p->p2) {
+        akku = 2;
+    }
+    else {//( r1->value == r2->value )
+        akku = 0;
+    }
+
+    program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE + VALUE_SIZE);
+}
+
+/*
+ * Command:                 EQL 
+ * Parameters:              1: register-address register-address
+ * Affects Program Pointer: NO
+ *
+ *
+ */
+static void opc_eql_func() {
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE("eql");
+#endif 
+
+    read_2_command_parameters(REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE);
+    akku = find_register(opc_p->p1)->value == find_register(opc_p->p1)->value;
+
+    program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE);
+}
+
+/*
+ * Command:                 EQLI 
+ * Parameters:              1: register-address value
+ * Affects Program Pointer: NO
+ *
+ *
+ */
+static void opc_eqli_func() {
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE("eqli");
+#endif 
+
+    read_2_command_parameters(REGISTER_ADDRESS_SIZE, VALUE_SIZE);
+    akku = find_register(opc_p->p1)->value == opc_p->p2;
+
+    program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE + VALUE_SIZE);
 }
 
 /*
