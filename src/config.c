@@ -115,7 +115,7 @@ static void set_config(ConfigurationType ct) {
         i < (sizeof(configuration)/sizeof(configuration[0])) &&
         configuration[i].type != ct;
         i++ );
-    configuration[i].value.i = 1;
+    configuration[i].value.b = 1;
 }
 
 #if (defined DEBUG | defined DEBUGGING)
