@@ -20,11 +20,5 @@ TODO:
 5.1)define a op code ISDEV(reg, opc) for getting if a opcode is defined, result
 	in 'reg'
 
-8)  define op codes for push/pop several registers to stack
-	push( reg, cnt )
-		- pushes reg and (cnt) next
-	pop( reg, cnt )
-		- pop into register and (cnd) next ones
-
 9)	File reader should read the file as linked list, with automatically removing 
 	"old" parts of the file from memory to keep memuse smart.
