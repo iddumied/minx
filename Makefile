@@ -94,6 +94,9 @@ compile_config:
 compile_binary_reader:
 	echo "compile_binary_reader:"
 	${CC} ${CFLAGS} ${MINX_FLAGS} ${HEADERS} ${BINARY_READER_SRC} -o ${BINARY_READER_OUT}
+
+clean:
+	rm -v ${BIN}/*.o
 #
 #
 # compiling utilc
