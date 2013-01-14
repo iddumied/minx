@@ -22,3 +22,9 @@ TODO:
 
 9)	File reader should read the file as linked list, with automatically removing 
 	"old" parts of the file from memory to keep memuse smart.
+
+12) Implement heap:
+	- opcode for starting heap allocation
+	- opcode for adding space to heap (slot)
+	- opcode for ending heap allocation
+	- heap addressable with code, every slot addressable with opcode
