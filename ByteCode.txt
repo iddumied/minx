@@ -102,3 +102,12 @@ The 0x5? block is reserved for them.
 0x50    |   PSTACK      |   none                    | print stack
 0x51    |   PREGS       |   none                    | print registers
 0x52    |   PPROG       |   none                    | print program
+
+Heap opcodes:
+
+0x60    |   HEAPALLOC   |   Register                | start heap alloc, heapnum in register
+0x61    |   HEAPADDSLOT |   Register,Register       | to heap(reg) add (reg) bytes (max 8)
+0x62    |   HEAPDONE    |   Register                | allocates heap(reg) with set size
+0x63    |   LOAD        |   Register, Register      | Loads value of heap(reg) slot(reg) to akku
+0x64    |   STORE       |   Register, Register      | Stores value of akku in heap(reg) slot(reg)
+0x65    |   FREE        |   Register                | free heap(reg)
