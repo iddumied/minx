@@ -240,6 +240,8 @@ static void run() {
         }
     }
 #endif //if (defined VERBOSITY)
+
+    free(opcode);
 } //static void run()
 
 /*
