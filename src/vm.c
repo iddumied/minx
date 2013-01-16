@@ -1141,7 +1141,7 @@ static void opc_pprog_func (void) {
 
 #if (defined VERBOSITY | defined DEBUGGING)
 static void print_register(unsigned int i) {
-    printf( MINX_VM_PRINT_PREFIX"[register][%03i] = %"PRIu64"\n", i, registers[i].value );
+    printf( MINX_VM_REGISTER_PREFIX"[%03i] = %"PRIu64"\n", i, registers[i].value );
 }
 #endif //(defined VERBOSITY | defined DEBUGGING)
 
