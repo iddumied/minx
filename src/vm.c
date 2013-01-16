@@ -208,7 +208,7 @@ static Register* find_register(uint64_t addr) {
     if( !register_exists(addr) ) {
         FATAL_DESC_ERROR("Register does not exist");
     }
-    return &registers[ addr | REGISTER_ADDRESS_SIZE ]; 
+    return &registers[ addr & REGISTER_MASK ]; 
 }
 
 /*
