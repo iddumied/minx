@@ -400,7 +400,7 @@ static void opc_ret_func() {
     if (stack_is_empty(stack))
         FATAL_DESC_ERROR("Cannot RET, stack is empty!");
      
-    program_pointer = (uint64_t) stackpop(stack);
+    program_pointer = *((uint64_t*) stackpop(stack));
 }
 
 /*
