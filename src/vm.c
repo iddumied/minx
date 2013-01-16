@@ -372,7 +372,6 @@ static void opc_call_func() {
     read_1_command_parameter(PROGRAM_ADDRESS_SIZE);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE("call");
     EXPLAIN_OPCODE_WITH("call", "%"PRIu64, opc_p->p1);
 #endif
     /*
