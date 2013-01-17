@@ -1,4 +1,4 @@
-#include "vm.h"
+#include "vpu.h"
 
 /*
  * static functions prototypes
@@ -153,9 +153,9 @@ static void ((*opc_funcs[])(void)) = {
  * ---------
  */
 
-void minx_vm_run() {
+void minx_vpu_run() {
 #if (defined DEBUGGING | defined DEBUG)
-    minxvmdbgprint("Starting\n");
+    minxvpudbgprint("Starting\n");
 #endif
 
     /* alloc standard registers */
@@ -178,7 +178,7 @@ void minx_vm_run() {
 
 static void init_registers() {
 #if (defined DEBUGGING | defined DEBUG)
-    minxvmdbgprintf("init %i registers\n", MAX_REGISTERS);
+    minxvpudbgprintf("init %i registers\n", MAX_REGISTERS);
 #endif
 
     registers = (Register*) malloc( sizeof(Register) * MAX_REGISTERS);
@@ -202,7 +202,7 @@ static void init_registers() {
  */
 static Register* find_register(uint64_t addr) {
 #if (defined DEBUGGING | defined DEBUG)
-    minxvmdbgprintf("find register: %"PRIu64"\n", addr);
+    minxvpudbgprintf("find register: %"PRIu64"\n", addr);
 #endif 
 
     if( !register_exists(addr) ) {
@@ -214,11 +214,11 @@ static Register* find_register(uint64_t addr) {
 /*
  * run function 
  *
- * runs the vm.  
+ * runs the vpu.  
  */
 static void run() {
 #if (defined DEBUGGING | defined DEBUG)
-    minxvmdbgprint("run");
+    minxvpudbgprint("run");
 #endif //DEBUGGING
 
     uint16_t *opcode = (uint16_t*) malloc(sizeof(*opcode));
@@ -252,7 +252,7 @@ static void run() {
  */
 static void run_opcode(uint16_t cmd) {
 #if (defined DEBUGGING | defined DEBUG)
-    minxvmdbgprintf("Running opcode: %"PRIu16"\n", cmd);
+    minxvpudbgprintf("Running opcode: %"PRIu16"\n", cmd);
     fflush(stdout);
 #endif 
 
@@ -264,10 +264,10 @@ static void run_opcode(uint16_t cmd) {
 
 #if (defined DEBUGGING | defined DEBUG)
     if ( program_pointer != END_OF_PROGRAM ) {
-        minxvmdbgprintf("[minx][vm]:\tPROG_POINTER: %"PRIu64"\n", program_pointer);
+        minxvpudbgprintf("[minx][VPU]:\tPROG_POINTER: %"PRIu64"\n", program_pointer);
     }
     else {
-        minxvmdbgprint("[minx][vm]: END OF PROGRAM\n");
+        minxvpudbgprint("[minx][VPU]: END OF PROGRAM\n");
     }
 #endif 
 }
@@ -1143,7 +1143,7 @@ static void opc_pprog_func (void) {
 
 #if (defined VERBOSITY | defined DEBUGGING)
 static void print_register(unsigned int i) {
-    printf( MINX_VM_REGISTER_PREFIX"[%03i] = %"PRIu64"\n", i, registers[i].value );
+    printf( MINX_VPU_REGISTER_PREFIX"[%03i] = %"PRIu64"\n", i, registers[i].value );
 }
 #endif //(defined VERBOSITY | defined DEBUGGING)
 

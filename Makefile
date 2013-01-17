@@ -15,13 +15,13 @@ BIN=./bin
 CC=/usr/bin/gcc
 
 MAIN_SRC=${SRC}/main.c
-VM_SRC=${SRC}/vm.c
+VPU_SRC=${SRC}/vpu.c
 SIMPLE_READER_SRC=${SRC}/simple_reader.c
 BINARY_READER_SRC=${SRC}/binary_reader.c
 CONFIG_SRC=${SRC}/config.c
 
 MAIN_OUT=${BIN}/main.o
-VM_OUT=${BIN}/vm.o
+VPU_OUT=${BIN}/vpu.o
 SIMPLE_READER_OUT=${BIN}/simple_reader.o
 BINARY_READER_OUT=${BIN}/binary_reader.o
 CONFIG_OUT=${BIN}/config.o
@@ -32,7 +32,7 @@ HEADERS= -I${SRC} -I${UTILC_HEADERS_LOCATIONS}
 
 #
 #
-# modifying vm 
+# modifying vpu 
 #
 #
 MINX_FLAGS = -D DEBUG -D DEBUGGING -D VERBOSITY
@@ -49,28 +49,28 @@ CFLAGS += -c
 
 #
 #
-# Compiling the VM
+# Compiling the VPU
 #
 # 
-minx: utilc compile_config compile_main compile_vm compile_binary_reader
+minx: utilc compile_config compile_main compile_vpu compile_binary_reader
 	echo "minx:"
-	echo "WARNING: This is maybe not stable, use 'make simple_vm' instead!"
+	echo "WARNING: This is maybe not stable, use 'make simple_vpu' instead!"
 	echo "linking..."
 	${CC}\
 		${CONFIG_OUT}\
 		${MAIN_OUT}\
-		${VM_OUT}\
+		${VPU_OUT}\
 		${BINARY_READER_OUT}\
 		${BIN}/${UTILC_STACK_OUT} -o ${BINARY}
 	echo "ready!"
 
-simple_vm: utilc compile_config compile_main compile_vm compile_simple_reader
-	echo "simple_vm:"
+simple_vpu: utilc compile_config compile_main compile_vpu compile_simple_reader
+	echo "simple_vpu:"
 	echo "linking..."
 	${CC}\
 		${CONFIG_OUT}\
 		${MAIN_OUT}\
-		${VM_OUT}\
+		${VPU_OUT}\
 		${SIMPLE_READER_OUT}\
 		${BIN}/${UTILC_STACK_OUT} -o ${BINARY}
 	echo "ready!"
@@ -79,9 +79,9 @@ compile_main:
 	echo "compile_main:"
 	${CC} ${CFLAGS} ${MINX_FLAGS} ${HEADERS} ${MAIN_SRC} -o ${MAIN_OUT}
 
-compile_vm:
-	echo "compile_vm:"
-	${CC} ${CFLAGS} ${MINX_FLAGS} ${HEADERS} ${VM_SRC} -o ${VM_OUT}
+compile_vpu:
+	echo "compile_vpu:"
+	${CC} ${CFLAGS} ${MINX_FLAGS} ${HEADERS} ${VPU_SRC} -o ${VPU_OUT}
 
 compile_simple_reader:
 	echo "compile_simple_reader:"

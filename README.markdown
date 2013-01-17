@@ -7,13 +7,13 @@ binary for size and just read the actual required parts into ram (and so on).
 
 Version 2.3.4 of utilc is required (see submodule).
 
-Compile with DEBUG to be able to debug the VM, compile with DEBUGGING to be able 
-to debug both the VM and the source its running.
+Compile with DEBUG to be able to debug the VPU, compile with DEBUGGING to be able 
+to debug both the VPU and the source its running.
 
-Arguments, the VM takes:
+Arguments, the VPU takes:
 first Argument _has to be_ the binary you want to run,
 then:
 	-v for verbosity (does nothing yet, requires VERBOSITY)
 	-d for debugging the source it is running
-	--vm-debug for debugging the VM internals
+	--minx-debug for debugging the VPU internals
 	--regs for printing registers at end of program (this is much output!, requires VERBOSITY)

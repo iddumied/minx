@@ -8,7 +8,7 @@
  * because of this, there is the 'read_until_end_of_file' variable. The pointer
  * 'p' should never point to a location outside of the binary file. The binary
  * must ensure that. 
- * The VM has to ensure, that if there is a jump to 0xFFFF, the shutdown is
+ * The VPU has to ensure, that if there is a jump to 0xFFFF, the shutdown is
  * initialized. 
  */
 
@@ -51,7 +51,7 @@ void minx_binary_shutdown() {
 
 /*
  * returns 'number_of_bytes' bytes 
- *  (currently, the vm needs 2 for commands and 8 for parameters)
+ *  (currently, the vpu needs 2 for commands and 8 for parameters)
  */
 void * minx_binary_get_at(uint64_t p, unsigned int number_of_bytes, void *dest) {
 
