@@ -106,6 +106,9 @@ will be ignored automatically! The 0x5? block is reserved for them.
 -----+----------+-------------------------------+--------------------------- 
 
 Heap opcodes:
+- the address of the memory is _always_ the first byte!
+- the size of the memory is in byte.
+
 Status flags will be set for each opcode.
 
 -----+----------+-------------------------------+--------------------------- 
