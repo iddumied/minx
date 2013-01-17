@@ -118,12 +118,13 @@ typedef struct {
 
 /*
  *
- * Heap section
+ * Heap 
  *
  */
 typedef struct {
-    uint64_t    size;
+    uint8_t     used;
     uint64_t    first_byte_addr;
+    uint64_t    size;
     void        *memory;
 } HeapNode;
 
