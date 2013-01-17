@@ -117,6 +117,16 @@ typedef struct {
 } CommandParameters;
 
 /*
+ *
+ * Heap section
+ *
+ */
+typedef struct {
+    uint64_t    size;
+    void        *memory;
+} HeapNode;
+
+/*
  * Function prototypes 
  */
 
