@@ -75,6 +75,16 @@
 #define         OPC_PREGS           0x51
 #define         OPC_PPROG           0x52
 
+#define         OPC_ALLOC           0x60
+#define         OPC_ALLOCI          0x61
+#define         OPC_RESIZE          0x62
+#define         OPC_RESIZEI         0x62
+#define         OPC_FREE            0x63
+#define         OPC_PUT             0x64
+#define         OPC_PUTI            0x65
+#define         OPC_READ            0x66
+#define         OPC_READI           0x67
+
 /* 
  * defines for size in bytes 
  */
@@ -104,6 +114,7 @@ typedef struct {
 #define         END_OF_PROGRAM      ((uint64_t)-1) /* last address is END_OF_PROGRAM */
 
 #define         OVERFLOW_BIT    0
+#define         ALLOC_BIT       1
 
 #define         setbit(byte,bitnum)     do { byte |=  0x0001<<bitnum; } while(0)
 #define         clrbit(byte,bitnum)     do { byte &= !0x0001<<bitnum; } while(0)
@@ -136,6 +147,9 @@ typedef struct {
     uint64_t    size;
     void        *memory;
 } HeapNode;
+
+#define HEAPNODE_USED           UINT8_MAX
+#define HEAPNODE_NOT_USED       0
 
 /*
  * Function prototypes 
