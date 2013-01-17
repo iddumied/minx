@@ -123,6 +123,7 @@ typedef struct {
  */
 typedef struct {
     uint64_t    size;
+    uint64_t    first_byte_addr;
     void        *memory;
 } HeapNode;
 

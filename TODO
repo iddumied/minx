@@ -39,3 +39,6 @@ TODO:
 			- statusflags for all opcodes for errors 
 			- counter for how much register were used to PUT from
 			- counter for how much register were used to READ into 
+
+	Manage the heaps in a linked list, each entry has its size, which is used to
+	calculate the address of the next entry.
