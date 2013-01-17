@@ -16,6 +16,9 @@ static void         read_2_command_parameters   (unsigned int size1,
 
 static void         run_opcode              (uint16_t);
 
+static void         setup_heap              (void);
+static HeapNode*    find_or_create_heapnode (void);
+
 static void         opc_nop_func            (void);
 static void         opc_call_func           (void);
 static void         opc_ret_func            (void);
@@ -293,6 +296,83 @@ static void run_opcode(uint16_t cmd) {
 }
 
 /*
+ * -----------------------------------------------------------------------------
+ *
+ *      Heap section - all helper functions for heap management
+ *
+ * -----------------------------------------------------------------------------
+ */
+
+static void setup_heap() {
+    heapnodes = (HeapNode*) malloc( sizeof(HeapNode) );
+    heapnodes[0].used               = HEAPNODE_NOT_USED;
+    heapnodes[0].first_byte_addr    = (uint64_t) 0x00;
+    heapnodes[0].size               = (uint64_t) 0x00;
+    heapnodes[0].memory             = NULL;
+    heapnodes_count = 1;
+}
+
+/*
+ * finds a unused heapnode in the heapnodes-array or creates a new one.
+ */
+static HeapNode* find_or_create_heapnode() {
+    HeapNode *new = NULL;
+    uint64_t i;
+    for( i = 0 ; i < heapnodes_count ; i++ ) {
+        if( heapnodes[i].used == HEAPNODE_NOT_USED ) {
+            new = &heapnodes[i];
+            break;
+        }
+    }
+    if( new == NULL ) {
+
+        /*
+         * reallocate with more heapnodes than required for future use.
+         */
+        unsigned int new_heapnodes_count;
+
+        if( heapnodes_count < 20 ) {
+            new_heapnodes_count = 10;
+        }
+        else if ( heapnodes_count < 50 ) {
+            new_heapnodes_count = 5;
+        }
+        else {
+            new_heapnodes_count = 2;
+        }
+
+        heapnodes = realloc(heapnodes, sizeof(HeapNode) * (heapnodes_count+new_heapnodes_count));
+
+        for( i = (heapnodes_count + new_heapnodes_count -1 ); i > heapnodes_count; i--) {
+            heapnodes[i].used = HEAPNODE_NOT_USED;
+            heapnodes[i].first_byte_addr    = (uint64_t) 0x00;
+            heapnodes[i].size               = (uint64_t) 0x00;
+            heapnodes[i].memory             = NULL;
+        }
+        new = heapnodes[heapnodes_count];
+        heapnodes_count += new_heapnodes_count;
+    }
+
+    /*
+     * calculate memorysize for the new heapnode
+     */
+
+    uint64_t ptr = 0;
+    for( i = 0 ; &heapnodes[i] != new; i++,  ptr += heapnodes[i].size );
+    new->first_byte_addr = ptr;
+    return new;
+}
+
+
+/*
+ * -----------------------------------------------------------------------------
+ *
+ *      Argument section - all helpers for opcode arguments 
+ *
+ * -----------------------------------------------------------------------------
+ */
+
+/*
  * Helper function for parsing command parameters
  * args:
  *
@@ -341,12 +421,13 @@ static void read_2_command_parameters(unsigned int size1, unsigned int size2) {
     opc_p->p2 = *((uint64_t *) minx_binary_get_at( ptr2_location, size2, &opc_p->p2));
 }
 
+
 /*
+ * -----------------------------------------------------------------------------
  *
- * =============================================================================
- *                          Op codes implementations
- * =============================================================================
+ *      Opcodes functions
  *
+ * -----------------------------------------------------------------------------
  *
  * (Almost) each opcode has to modify the program pointer to the byte after 
  * the opcode.
