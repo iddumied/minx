@@ -23,6 +23,7 @@ anyway accessible for the program.
 				Bit	|	use 
 				----+-------
 				0	|	overflow 
+                1   |   heapalloc status (1: worked, 0: failure)
 				1-7	|	not used yet
 - 0x0004	overflow value 
 - 0x0005-0x00AF (unused yet, will be used for more status registers and stuff)
