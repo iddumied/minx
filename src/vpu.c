@@ -65,6 +65,16 @@ static void         opc_pstack_func         (void);
 static void         opc_pregs_func          (void);
 static void         opc_pprog_func          (void);
 
+static void         opc_alloc_func          (void);
+static void         opc_alloci_func         (void);
+static void         opc_resize_func         (void);
+static void         opc_resizei_func        (void);
+static void         opc_free_func           (void);
+static void         opc_put_func            (void);
+static void         opc_puti_func           (void);
+static void         opc_read_func           (void);
+static void         opc_reaid_func          (void);
+
 #ifdef VERBOSITY
 static void         print_register          (unsigned int i);
 #endif 
@@ -129,7 +139,17 @@ static void ((*opc_funcs[])(void)) = {
 
     [OPC_PSTACK]    = opc_pstack_func,
     [OPC_PREGS]     = opc_pregs_func,
-    [OPC_PPROG]     = opc_pprog_func
+    [OPC_PPROG]     = opc_pprog_func,
+
+    [OPC_ALLOC]     = opc_alloc_func,
+    [OPC_ALLOCI]    = opc_alloci_func,
+    [OPC_RESIZE]    = opc_resize_func,
+    [OPC_RESIZEI]   = opc_resizei_func,
+    [OPC_FREE]      = opc_free_func,
+    [OPC_PUT]       = opc_put_func,
+    [OPC_PUTI]      = opc_puti_func,
+    [OPC_READ]      = opc_read_func,
+    [OPC_READI]     = opc_readi_func,
 };
 
 /*
@@ -1139,6 +1159,74 @@ static void opc_pprog_func (void) {
 
 #endif //DEBUGGING
     program_pointer += OPC_SIZE;
+}
+
+/*
+ * Command:                 ALLOC 
+ * Parameters:              1, register-address
+ * Affects Program Pointer: NO
+ *
+ *
+ */
+static void opc_alloc_func(void) {
+
+    HeapNode    *h;
+    void        *memory;
+    read_1_command_parameter(REGISTER_ADDRESS_SIZE);
+
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE("alloc", "%"PRIu64" Bytes", opc_p->p1);
+#endif
+
+    memory = malloc(opc_p->p1);
+    if( !memory || !(h = find_or_create_heapnode()) ) {
+        clrbit(statusregister, ALLOC_BIT);
+        akku = (uint64_t)0x00;
+    }
+    else {
+        h->used = HEAPNODE_USED;
+        h->size = opc_p->p1;
+        h->memory = memory;
+
+        setbit(statusregister, ALLOC_BIT);
+        akku = h->first_byte_addr;
+    }
+
+    program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE);
+}
+
+/*
+ * Command:                 ALLOCI
+ * Parameters:              1, value
+ * Affects Program Pointer: NO
+ *
+ *
+ */
+static void opc_alloci_func(void) {
+
+    HeapNode    *h;
+    void        *memory;
+    read_1_command_parameter(VALUE_SIZE);
+
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE("alloci", "%"PRIu64" Bytes", opc_p->p1);
+#endif
+
+    memory = malloc(opc_p->p1);
+    if( !memory || !(h = find_or_create_heapnode()) ) {
+        clrbit(statusregister, ALLOC_BIT);
+        akku = (uint64_t)0x00;
+    }
+    else {
+        h->used = HEAPNODE_USED;
+        h->size = opc_p->p1;
+        h->memory = memory;
+
+        setbit(statusregister, ALLOC_BIT);
+        akku = h->first_byte_addr;
+    }
+    
+    program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE);
 }
 
 #if (defined VERBOSITY | defined DEBUGGING)
