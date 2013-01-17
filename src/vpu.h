@@ -120,6 +120,15 @@ typedef struct {
  *
  * Heap 
  *
+ * used: if this heapnode is used, this value is UINT8_MAX
+ * when it is unused it is less than UINT8_MAX, and gets decremented each
+ * VPU_MEM_CLEANUP times. If it is zero, it is removed from memory (free()).
+ *
+ * first_byte_addr: address of the first byte of this set of memory. Used for
+ * the program.
+ *
+ * size: size of the memory. Used for both internals and the program.
+ * *memory: pointer to the memory.
  */
 typedef struct {
     uint8_t     used;
