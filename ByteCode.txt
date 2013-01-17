@@ -103,11 +103,16 @@ The 0x5? block is reserved for them.
 0x51    |   PREGS       |   none                    | print registers
 0x52    |   PPROG       |   none                    | print program
 --------+---------------+---------------------------+---------------------------
-Heap opcodes:
 
-0x60    |   HEAPALLOC   |   Register                | start heap alloc, heapnum in register
-0x61    |   HEAPADDSLOT |   Register,Register       | to heap(reg) add (reg) bytes (max 8)
-0x62    |   HEAPDONE    |   Register                | allocates heap(reg) with set size
-0x63    |   LOAD        |   Register, Register      | Loads value of heap(reg) slot(reg) to akku
-0x64    |   STORE       |   Register, Register      | Stores value of akku in heap(reg) slot(reg)
-0x65    |   FREE        |   Register                | free heap(reg)
+Heap opcodes:
+Status flags will be set for each opcode.
+
+0x60    |   ALLOC       |   Register                | ptr to first byte or 0x00 in akku
+0x61    |   ALLOCI      |   Value                   | ptr to first byte or 0x00 in akku
+0x62    |   RESIZE      |   Register, Register      | (addr of mem, size) ptr to first byte or 0x00 in akku
+0x62    |   RESIZEI     |   Register, Value         | (addr of mem, size) ptr to first byte or 0x00 in akku
+0x63    |   FREE        |   Register                | (addr of mem)
+0x64    |   PUT         |   Register, Register, Register    | (addr of mem, register, size)
+0x65    |   PUTI        |   Register, Register, Value       | (addr of mem, register, size)
+0x66    |   READ        |   Register, Register, Register    | (addr of mem, into register, size)
+0x67    |   READI       |   Register, Register, Value       | (addr of mem, into register, size)
