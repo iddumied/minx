@@ -18,7 +18,7 @@ static void         print_config        (void);
  */
 static Configuration    configuration[] = {
     {   .type = CONF_VERBOSITY,             .value.b = 0    },
-    {   .type = CONF_MVM_DEBUGGING,         .value.b = 0    },
+    {   .type = CONF_MVPU_DEBUGGING,        .value.b = 0    },
     {   .type = CONF_SRC_DEBUGGING,         .value.b = 0    },
     {   .type = CONF_PRINT_REGS_AT_EOP,     .value.b = 0    },
 };
@@ -28,7 +28,7 @@ static Configuration    configuration[] = {
  */
 static ConfigurationKeyMap confkeys[] = {
     {   .type   = CONF_VERBOSITY,               .configkey = "-v"           },
-    {   .type   = CONF_MVM_DEBUGGING,           .configkey = "--vm-debug"   },
+    {   .type   = CONF_MVPU_DEBUGGING,           .configkey = "--minx-debug"},
     {   .type   = CONF_SRC_DEBUGGING,           .configkey = "-d"           },
     {   .type   = CONF_PRINT_REGS_AT_EOP,       .configkey = "--regs"       },
 };
@@ -55,7 +55,7 @@ void minx_config_parse(unsigned int argc, char ** argv) {
                 /*
                 switch(confkeys[j].type) {
                     case CONF_VERBOSITY:
-                    case CONF_MVM_DEBUGGING:
+                    case CONF_MVPU_DEBUGGING:
                     case CONF_SRC_DEBUGGING:
                     case CONF_PRINT_REGS_AT_EOP:
                     */
@@ -77,7 +77,7 @@ void minx_config_parse(unsigned int argc, char ** argv) {
      * here, the config is parsed. So do the checks
      */
 #if (defined DEBUG | defined DEBUGGING)
-    ConfigurationValue *cv = minx_config_get(CONF_MVM_DEBUGGING);
+    ConfigurationValue *cv = minx_config_get(CONF_MVPU_DEBUGGING);
     if( cv != NULL && cv->b ) {
         printf("[minx][conf]: parsing args\n");
         print_config();
@@ -104,7 +104,7 @@ int minx_config_is_set(ConfigurationType ct) {
  */
 static void set_config(ConfigurationType ct) {
 #if (defined DEBUG | defined DEBUGGING)
-    ConfigurationValue *cv = minx_config_get(CONF_MVM_DEBUGGING);
+    ConfigurationValue *cv = minx_config_get(CONF_MVPU_DEBUGGING);
     if( cv != NULL && cv->b ) {
         printf("[minx][conf]: conf set\n");
     }

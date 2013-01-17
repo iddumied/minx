@@ -1,5 +1,5 @@
-#ifndef __MINX_VM_H__
-#define __MINX_VM_H__
+#ifndef __MINX_VPU_H__
+#define __MINX_VPU_H__
 
 #include <stdlib.h>
 #include <string.h>
@@ -82,6 +82,7 @@
 #define         OPC_SIZE                2 /*16 bit*/
 #define         VALUE_SIZE              8 /*64 bit*/
 #define         REGISTER_ADDRESS_SIZE   2 /*16 bit*/
+#define         REGISTER_MASK           0x0000FFFF /* currently, only take 2 Byte */
 #define         PROGRAM_ADDRESS_SIZE    8 /*64 bit, because program_pointer is 64 bit*/
 
 typedef struct {
@@ -119,7 +120,7 @@ typedef struct {
  * Function prototypes 
  */
 
-void    minx_vm_run(void);
+void    minx_vpu_run(void);
 extern void stack_print_binary(Stack*);
 
-#endif //__MINX_VM_H__
+#endif //__MINX_VPU_H__

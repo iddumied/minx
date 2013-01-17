@@ -1,5 +1,5 @@
 #include "binary_reader.h"
-#include "vm.h"
+#include "vpu.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -21,7 +21,7 @@ int main(int argc, char **args) {
     minx_config_init();
     minx_config_parse(argc, args);
     minx_binary_init(f);
-    minx_vm_run();
+    minx_vpu_run();
     minx_binary_shutdown();
     minx_config_shutdown();
     return 0;

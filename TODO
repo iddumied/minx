@@ -10,8 +10,8 @@ TODO:
 	where opc is the opcode to define (or redefine). It will be automatically
 	masked for 16 bit.
 	The funcloc is a pointer to a function which is defined somewhere in the
-	binary. This function is read into the VM and stored there. If the op code
-	which was defined is used, the VM executes the stored procedure.
+	binary. This function is read into the VPU and stored there. If the op code
+	which was defined is used, the VPU executes the stored procedure.
 
 	There should be some status registers reserved for statuses about the call.
 		-	was a override

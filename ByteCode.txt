@@ -1,12 +1,12 @@
-minx virtual machine specification
-----------------------------------
+minx virtual processing unit specification
+------------------------------------------
 
 - opcode is 16 Bit
 - registers are addressed with 16 Bit
 - values are 64 bit 
 - Program-adresses are 64 bit
 
-The minx vm is _stupid_. You can jump to _every_ location in the binary, if it
+The minx vpu is _stupid_. You can jump to _every_ location in the binary, if it
 exists. So you or your compiler has to care about the jumps, the machine
 does not. It only checks, if the code position exists. If not, it stops
 executing with printing a fatal error message.
