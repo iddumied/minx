@@ -106,7 +106,7 @@ static void set_config(ConfigurationType ct) {
 #if (defined DEBUG | defined DEBUGGING)
     ConfigurationValue *cv = minx_config_get(CONF_MVPU_DEBUGGING);
     if( cv != NULL && cv->b ) {
-        printf("[minx][conf]: conf set\n");
+        printf(MINX_CONFIG_PREFIX": conf set\n");
     }
 #endif 
 
@@ -122,7 +122,7 @@ static void set_config(ConfigurationType ct) {
 static void print_config() {
     unsigned int i;
     for( i = 0 ; i < (sizeof(configuration)/sizeof(configuration[0])); i++) {
-        printf("[minx][conf]: config %s = %i\n", confkeys[i].configkey, configuration[i].value.b);
+        printf(MINX_CONFIG_PREFIX": config %s = %i\n", confkeys[i].configkey, configuration[i].value.b);
     }
 }
 #endif

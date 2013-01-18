@@ -7,5 +7,7 @@
 #define MINX_VPU_OP_PRINT_PREFIX        "[minx][vpu][op]"
 #define MINX_VPU_REGISTER_PREFIX        "[minx][vpu][reg]"
 
+#define MINX_CONFIG_PREFIX              "[minx][conf]"
+
 
 #endif // __MINX_MAIN_H__
