@@ -24,5 +24,7 @@ int main(int argc, char **args) {
     minx_vpu_run();
     minx_binary_shutdown();
     minx_config_shutdown();
+
+    fclose(f);
     return 0;
 }
