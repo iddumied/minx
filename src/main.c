@@ -1,8 +1,18 @@
+#include "main.h"
+#include "config.h"
 #include "binary_reader.h"
 #include "vpu.h"
 
 #include <stdlib.h>
 #include <stdio.h>
+
+void handle_signal(int signal) {
+    if( signal == SIGINT || signal == SIGKILL ) {
+        minx_binary_shutdown();
+        minx_config_shutdown();
+        minx_vpu_shutdown();
+    }
+}
 
 int main(int argc, char **args) {
     if( argc < 2 ) {
@@ -10,6 +20,8 @@ int main(int argc, char **args) {
         exit(1);
     }
 
+    signal(SIGINT, handle_signal);
+    signal(SIGQUIT, handle_signal);
 
     FILE *f = fopen(args[1], "r");
 

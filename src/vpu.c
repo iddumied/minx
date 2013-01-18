@@ -73,6 +73,7 @@ static void         print_register          (unsigned int i);
  * static variables
  * ----------------
  */
+static int __vpu_running__;
 
 static Register             *   registers       = NULL;
 static uint16_t                 register_count  = 0;
@@ -158,6 +159,8 @@ void minx_vpu_run() {
     minxvpudbgprint("Starting\n");
 #endif
 
+    __vpu_running__ = 1;
+
     /* alloc standard registers */
     init_registers();
 
@@ -169,6 +172,10 @@ void minx_vpu_run() {
     free(registers);
     free(opc_p);
     stackdelete(stack);
+}
+
+void minx_vpu_shutdown() {
+    __vpu_running__ = 0;
 }
 
 /* 
@@ -223,7 +230,7 @@ static void run() {
 
     uint16_t *opcode = (uint16_t*) malloc(sizeof(*opcode));
 
-    while( !program_pointer_is(END_OF_PROGRAM) ) {
+    while( __vpu_running__ && !program_pointer_is(END_OF_PROGRAM) ) {
 
 #if (defined DEBUGGING || defined DEBUG)
         fflush(stdout);
