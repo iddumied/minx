@@ -76,7 +76,7 @@ static void         opc_free_func           (void);
 static void         opc_put_func            (void);
 static void         opc_puti_func           (void);
 static void         opc_read_func           (void);
-static void         opc_reaid_func          (void);
+static void         opc_readi_func          (void);
 
 #ifdef VERBOSITY
 static void         print_register          (unsigned int i);
