@@ -1247,6 +1247,7 @@ static void opc_pprog_func (void) {
  * Parameters:              1, register-address
  * Affects Program Pointer: NO
  *
+ * Breaking DRY rule here, as opc_alloci_func() is almost the same
  *
  */
 static void opc_alloc_func(void) {
@@ -1265,9 +1266,10 @@ static void opc_alloc_func(void) {
         akku = (uint64_t)0x00;
     }
     else {
-        h->used = HEAPNODE_USED;
-        h->size = opc_p->p1;
-        h->memory = memory;
+        h->used         = HEAPNODE_USED;
+        h->size         = opc_p->p1;
+        h->real_size    = opc_p->p1;
+        h->memory       = memory;
 
         setbit(statusregister, ALLOC_BIT);
         akku = h->first_byte_addr;
@@ -1281,6 +1283,7 @@ static void opc_alloc_func(void) {
  * Parameters:              1, value
  * Affects Program Pointer: NO
  *
+ * Breaking DRY rule here, as opc_alloc_func() is almost the same
  *
  */
 static void opc_alloci_func(void) {
@@ -1299,9 +1302,10 @@ static void opc_alloci_func(void) {
         akku = (uint64_t)0x00;
     }
     else {
-        h->used = HEAPNODE_USED;
-        h->size = opc_p->p1;
-        h->memory = memory;
+        h->used         = HEAPNODE_USED;
+        h->size         = opc_p->p1;
+        h->real_size    = opc_p->p1;
+        h->memory       = memory;
 
         setbit(statusregister, ALLOC_BIT);
         akku = h->first_byte_addr;
@@ -1309,6 +1313,9 @@ static void opc_alloci_func(void) {
     
     program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE);
 }
+
+static void         opc_resize_func         (void);
+static void         opc_resizei_func        (void);
 
 #if (defined VERBOSITY | defined DEBUGGING)
 static void print_register(unsigned int i) {

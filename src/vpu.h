@@ -145,6 +145,7 @@ typedef struct {
     uint8_t     used;
     uint64_t    first_byte_addr;
     uint64_t    size;
+    uint64_t    real_size;
     void        *memory;
 } HeapNode;
 
