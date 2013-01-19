@@ -8,7 +8,7 @@
 
 void handle_signal(int signal) {
     if( signal == SIGINT || signal == SIGKILL ) {
-        printf("Shutdown ...");
+        printf("[%i]: Shutdown ...", signal);
         minx_binary_shutdown();
         minx_config_shutdown();
         minx_vpu_shutdown();
