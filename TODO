@@ -42,3 +42,5 @@ TODO:
 
 	Manage the heaps in a linked list, each entry has its size, which is used to
 	calculate the address of the next entry.
+
+13)	Opcodes with more than 2 parameters?
