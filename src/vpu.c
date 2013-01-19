@@ -172,7 +172,24 @@ static void ((*opc_funcs[])(void)) = {
  * -----------------------------------------------------------------------------
  */
 
+/*
+ * Public run function 
+ *
+ * starts the VPU:
+ *  - set __vpu_running__ to 1
+ *  - init stuff
+ *      - init the registers
+ *      - init the stack 
+ *      - init the command parameters storage 
+ *  - run 
+ *  - cleanup 
+ *      - free the registers 
+ *      - free the stack 
+ *      - free the command parameters storage
+ * 
+ */
 void minx_vpu_run() {
+
 #if (defined DEBUGGING | defined DEBUG)
     minxvpudbgprint("Starting\n");
 #endif
@@ -192,6 +209,10 @@ void minx_vpu_run() {
     stackdelete(stack);
 }
 
+/*
+ * public shutdown function 
+ * used to force-shutdown the VPU.
+ */
 void minx_vpu_shutdown() {
     __vpu_running__ = 0;
 }
@@ -203,7 +224,12 @@ void minx_vpu_shutdown() {
  * -----------------------------------------------------------------------------
  */
 
-
+/*
+ * init registers 
+ *
+ * allocate memory for the registers, set all registers to 0x00 and set the
+ * register-counter.
+ */
 static void init_registers() {
 #if (defined DEBUGGING | defined DEBUG)
     minxvpudbgprintf("init %i registers\n", MAX_REGISTERS);
@@ -242,7 +268,11 @@ static Register* find_register(uint64_t addr) {
 /*
  * run function 
  *
- * runs the vpu.  
+ * - allocates memory for storing the actual opcode
+ * - run while __vpu_running__
+ * - run while current program pointer doesn't point to END_OF_PROGRAM
+ * - at END_OF_PROGRAM, if compiled with VERBOSITY and config set, print registers
+ * - cleanup the memory, allocated by this function.
  */
 static void run() {
 #if (defined DEBUGGING | defined DEBUG)
@@ -279,6 +309,7 @@ static void run() {
  *
  */
 static void run_opcode(uint16_t cmd) {
+
 #if (defined DEBUGGING | defined DEBUG)
     minxvpudbgprintf("Running opcode: %"PRIu16"\n", cmd);
     fflush(stdout);
@@ -298,7 +329,8 @@ static void run_opcode(uint16_t cmd) {
         minxvpudbgprint("[minx][VPU]: END OF PROGRAM\n");
     }
 #endif 
-}
+
+} // static void run_opcode
 
 /*
  * Helper function for parsing command parameters
