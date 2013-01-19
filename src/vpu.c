@@ -346,8 +346,8 @@ static void run_opcode(uint16_t cmd) {
  *
  */
 static void read_1_command_parameter(unsigned int size1) {
-    uint64_t ptr1_location = program_pointer + OPC_SIZE;
-    opc_p->p1 = *((uint64_t *) minx_binary_get_at( ptr1_location, size1, &opc_p->p1));
+    opc_p->p1 = *((uint64_t *) minx_binary_get_at((program_pointer+OPC_SIZE), 
+                size1, &opc_p->p1));
 }
 
 /*
@@ -373,12 +373,10 @@ static void read_1_command_parameter(unsigned int size1) {
  *  simplify the work of the opc_ functions.
  */
 static void read_2_command_parameters(unsigned int size1, unsigned int size2) {
-
-    uint64_t ptr1_location = program_pointer + OPC_SIZE;
-    uint64_t ptr2_location = program_pointer + OPC_SIZE + size1;
-
-    opc_p->p1 = *((uint64_t *) minx_binary_get_at( ptr1_location, size1, &opc_p->p1));
-    opc_p->p2 = *((uint64_t *) minx_binary_get_at( ptr2_location, size2, &opc_p->p2));
+    opc_p->p1 = *((uint64_t *) minx_binary_get_at(
+                (program_pointer + OPC_SIZE), size1, &opc_p->p1));
+    opc_p->p2 = *((uint64_t *) minx_binary_get_at(
+                (program_pointer + OPC_SIZE + size1), size2, &opc_p->p2));
 }
 
 
