@@ -158,6 +158,5 @@ typedef struct {
  */
 
 void    minx_vpu_run(void);
-extern void stack_print_binary(Stack*);
 
 #endif //__MINX_VPU_H__
