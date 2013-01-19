@@ -5,19 +5,20 @@
  * ---------------------------
  */
 
-static void         init_registers              (void);
-static Register*    find_register               (uint64_t addr);
+static void         init_registers                  (void);
+static Register*    find_register                   (uint64_t addr);
 
-static void         run                         (void);
+static void         run                             (void);
 
-static void         read_1_command_parameter    (unsigned int size1);
-static void         read_2_command_parameters   (unsigned int size1, 
-                                                 unsigned int size2);
+static void         read_1_command_parameter        (unsigned int size1);
+static void         read_2_command_parameters       (unsigned int size1, 
+                                                    unsigned int size2);
 
-static void         run_opcode              (uint16_t);
+static void         run_opcode                      (uint16_t);
 
-static void         setup_heap              (void);
-static HeapNode*    find_or_create_heapnode (void);
+static void         setup_heap                      (void);
+static HeapNode*    find_heapnode                   (uint64_t ptr);
+static HeapNode*    find_or_create_unused_heapnode  (void);
 
 static void         opc_nop_func            (void);
 static void         opc_call_func           (void);
@@ -313,9 +314,18 @@ static void setup_heap() {
 }
 
 /*
+ * find heapnode by address, if not found, return NULL.
+ */
+static HeapNode* find_heapnode(uint64_t ptr) {
+    uint64_t i;
+    for(i = 0; i < heapnodes_count && heapnodes[i].first_byte_addr != ptr; i++);
+    return i == heapnodes_count ? NULL : &heapnodes[i];
+}
+
+/*
  * finds a unused heapnode in the heapnodes-array or creates a new one.
  */
-static HeapNode* find_or_create_heapnode() {
+static HeapNode* find_or_create_unused_heapnode() {
     HeapNode *new = NULL;
     uint64_t i;
     for( i = 0 ; i < heapnodes_count ; i++ ) {
@@ -1261,7 +1271,7 @@ static void opc_alloc_func(void) {
 #endif
 
     memory = malloc(opc_p->p1);
-    if( !memory || !(h = find_or_create_heapnode()) ) {
+    if( !memory || !(h = find_or_create_unused_heapnode()) ) {
         clrbit(statusregister, ALLOC_BIT);
         akku = (uint64_t)0x00;
     }
@@ -1297,7 +1307,7 @@ static void opc_alloci_func(void) {
 #endif
 
     memory = malloc(opc_p->p1);
-    if( !memory || !(h = find_or_create_heapnode()) ) {
+    if( !memory || !(h = find_or_create_unused_heapnode()) ) {
         clrbit(statusregister, ALLOC_BIT);
         akku = (uint64_t)0x00;
     }
@@ -1314,8 +1324,78 @@ static void opc_alloci_func(void) {
     program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE);
 }
 
-static void         opc_resize_func         (void);
-static void         opc_resizei_func        (void);
+
+/*
+ * Command:                 RESIZE 
+ * Parameters:              1, register-address, register-address 
+ * Affects Program Pointer: NO
+ *
+ * Breaking DRY rule here, as opc_resizei_func() is almost the same
+ *
+ */
+static void opc_resize_func(void) {
+    read_2_command_parameters(REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE);
+
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE_WITH("resize", "heap %"PRIu64" to %"PRIu64" Bytes", 
+            opc_p->p1, opc_p->p2);
+#endif 
+
+    HeapNode *h = find_or_create_heapnode(opc_p->p1);
+    if( h == NULL ) {
+        FATAL_DESC_ERROR("Memory could not be accessed");
+    }
+
+    if( opc_p->p2 == h->size ){ 
+        return;
+    }
+
+    if( opc_p->p2 < h->size ) {
+        h->size = opc_p->p2;
+    }
+    else { //if( opc_p->p2 > h->size ) {
+        h->memory = realloc(h->memory, opc_p->p2);
+        h->real_size = h->size = opc_p->p2;
+    }
+
+    program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE);
+}
+
+/*
+ * Command:                 RESIZEI
+ * Parameters:              1, register-address, value 
+ * Affects Program Pointer: NO
+ *
+ * Breaking DRY rule here, as opc_resize_func() is almost the same
+ *
+ */
+static void opc_resizei_func (void) {
+    read_2_command_parameters(REGISTER_ADDRESS_SIZE, VALUE);
+
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE_WITH("resizei", "heap %"PRIu64" to %"PRIu64" Bytes", 
+            opc_p->p1, opc_p->p2);
+#endif 
+
+    HeapNode *h = find_or_create_heapnode(opc_p->p1);
+    if( h == NULL ) {
+        FATAL_DESC_ERROR("Memory could not be accessed");
+    }
+
+    if( opc_p->p2 == h->size ){ 
+        return;
+    }
+
+    if( opc_p->p2 < h->size ) {
+        h->size = opc_p->p2;
+    }
+    else { //if( opc_p->p2 > h->size ) {
+        h->memory = realloc(h->memory, opc_p->p2);
+        h->real_size = h->size = opc_p->p2;
+    }
+
+    program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE + VALUE_SIZE);
+}
 
 #if (defined VERBOSITY | defined DEBUGGING)
 static void print_register(unsigned int i) {
