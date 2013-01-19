@@ -1,8 +1,9 @@
 #include "vpu.h"
 
 /*
- * static functions prototypes
- * ---------------------------
+ * -----------------------------------------------------------------------------
+ *          static functions prototypes
+ * -----------------------------------------------------------------------------
  */
 
 static void         init_registers              (void);
@@ -15,6 +16,10 @@ static void         read_2_command_parameters   (unsigned int size1,
                                                  unsigned int size2);
 
 static void         run_opcode              (uint16_t);
+
+/*
+ * opcodes prototypes
+ */
 
 static void         opc_nop_func            (void);
 static void         opc_call_func           (void);
@@ -65,21 +70,32 @@ static void         opc_pstack_func         (void);
 static void         opc_pregs_func          (void);
 static void         opc_pprog_func          (void);
 
+/*
+ * optional prototypes
+ */
+
 #ifdef VERBOSITY
 static void         print_register          (unsigned int i);
 #endif 
 
 /*
- * static variables
- * ----------------
+ * -----------------------------------------------------------------------------
+ *          static variables
+ * -----------------------------------------------------------------------------
  */
-static int __vpu_running__;
+static int                      __vpu_running__;
 
 static Register             *   registers       = NULL;
 static uint16_t                 register_count  = 0;
 
 static Stack                *   stack           = NULL;
 static CommandParameters    *   opc_p           = NULL;
+
+/*
+ * -----------------------------------------------------------------------------
+ *          opcodes <-> function mapping array
+ * -----------------------------------------------------------------------------
+ */
 
 static void ((*opc_funcs[])(void)) = {
 
@@ -134,9 +150,10 @@ static void ((*opc_funcs[])(void)) = {
 };
 
 /*
- * "static" macros 
- * ---------------
- */ 
+ * -----------------------------------------------------------------------------
+ *          "static" macros
+ * -----------------------------------------------------------------------------
+ */
 
 /*
  * These macros are always valid, also if the register_map was reordered,
@@ -150,8 +167,9 @@ static void ((*opc_funcs[])(void)) = {
 #define program_pointer_is(val)         (program_pointer == val)
 
 /*
- * Functions
- * ---------
+ * -----------------------------------------------------------------------------
+ *          visible functions - definitions
+ * -----------------------------------------------------------------------------
  */
 
 void minx_vpu_run() {
@@ -178,10 +196,13 @@ void minx_vpu_shutdown() {
     __vpu_running__ = 0;
 }
 
-/* 
- * static functions 
- * ----------------
+
+/*
+ * -----------------------------------------------------------------------------
+ *          static functions - definitions
+ * -----------------------------------------------------------------------------
  */
+
 
 static void init_registers() {
 #if (defined DEBUGGING | defined DEBUG)
@@ -328,12 +349,11 @@ static void read_2_command_parameters(unsigned int size1, unsigned int size2) {
     opc_p->p2 = *((uint64_t *) minx_binary_get_at( ptr2_location, size2, &opc_p->p2));
 }
 
+
 /*
- *
- * =============================================================================
- *                          Op codes implementations
- * =============================================================================
- *
+ * -----------------------------------------------------------------------------
+ *          Opcode-functions implementations
+ * -----------------------------------------------------------------------------
  *
  * (Almost) each opcode has to modify the program pointer to the byte after 
  * the opcode.
@@ -1148,6 +1168,12 @@ static void opc_pprog_func (void) {
     program_pointer += OPC_SIZE;
 }
 
+/*
+ * -----------------------------------------------------------------------------
+ *          optional functions - definitions
+ * -----------------------------------------------------------------------------
+ */
+
 #if (defined VERBOSITY | defined DEBUGGING)
 static void print_register(unsigned int i) {
     printf( MINX_VPU_REGISTER_PREFIX"[%03i] = %"PRIu64"\n", i, registers[i].value );
@@ -1155,8 +1181,9 @@ static void print_register(unsigned int i) {
 #endif //(defined VERBOSITY | defined DEBUGGING)
 
 /*
- * "static" macros undef  
- * ---------------------
+ * -----------------------------------------------------------------------------
+ *          static macros - undefs
+ * -----------------------------------------------------------------------------
  */ 
 #undef program_pointer
 #undef akku
