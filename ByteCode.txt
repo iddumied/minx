@@ -125,4 +125,5 @@ the following opcodes take the address of the memory from the akku:
 0x65 | PUTI     | Register, Value               | (register, size)
 0x66 | READ     | Register, Register            | (register, size)
 0x67 | READI    | Register, Value               | (register, size)
+0x68 | GETSIZE  | Memory                        | load size of the memory into akku
 -----+----------+-------------------------------+--------------------------- 
