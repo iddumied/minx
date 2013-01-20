@@ -11,7 +11,7 @@
     do {                                                                    \
         ConfigurationValue *cv = minx_config_get(CONF_MVPU_DEBUGGING);      \
         if(cv != NULL && cv->b) {                                           \
-            printf(MINX_VPU_PRINT_PREFIX" "f,__VA_ARGS__);                  \
+            printf(MINX_VPU_PRINT_PREFIX": "f,__VA_ARGS__);                 \
         }                                                                   \
     }while(0)
 
@@ -19,7 +19,7 @@
     do {                                                                    \
         ConfigurationValue *cv = minx_config_get(CONF_MVPU_DEBUGGING);      \
         if(cv != NULL && cv->b) {                                           \
-            printf(MINX_VPU_PRINT_PREFIX" "f);                              \
+            printf(MINX_VPU_PRINT_PREFIX": "f);                             \
         }                                                                   \
     }while(0)
 
