@@ -315,6 +315,9 @@ static void setup_heap() {
 
 /*
  * find heapnode by address, if not found, return NULL.
+ *
+ * TODO: 
+ * If the address is INSIDE of a heapnode, the heapnode has to be returned!
  */
 static HeapNode* find_heapnode(uint64_t ptr) {
     uint64_t i;
@@ -1429,14 +1432,23 @@ static void opc_put_func(void) {
 
 #ifdef DEBUGGING
     EXPLAIN_OPCODE_WITH("put", 
-            "into heap %"PRIu64" val of reg %"PRIu64" and next %i regs", 
+            "into heap %"PRIu64" val of reg %"PRIu64"(%i Bytes)", 
             akku, 
             opc_p->p1, 
-            (((opc_p->p2 - (opc_p->p2 % 8))/8)-1)
+            opc_p->p2
             );
 #endif 
 
+    /*
+     * A register has 8 Byte. So, we can only put 8 byte at once. 
+     * I will not read more than one register to put, because it is so ugly!
+     */
+    if( opc_p->p2 > (uint64_t)8 ) {
+        FATAL_DESC_ERROR("Cannot read more than 8 Byte from register");
+    }
+
     HeapNode *h = find_heapnode(akku);
+
     /* do something */
 
     program_pointer += (OPC_SIZE + HEAP_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE);

@@ -121,9 +121,9 @@ Status flags will be set for each opcode.
 0x63 | FREE     | Memory                        | 
 
 the following opcodes take the address of the memory from the akku:
-0x64 | PUT      | Register, Register            | (register, size)
-0x65 | PUTI     | Register, Value               | (register, size)
-0x66 | READ     | Register, Register            | (register, size)
-0x67 | READI    | Register, Value               | (register, size)
+0x64 | PUT      | Register, Register            | (register, size(max 8 Byte))
+0x65 | PUTI     | Register, Value               | (register, size(max 8 Byte))
+0x66 | READ     | Register, Register            | (register, size(max 8 Byte))
+0x67 | READI    | Register, Value               | (register, size(max 8 Byte))
 0x68 | GETSIZE  | Memory                        | load size of the memory into akku
 -----+----------+-------------------------------+--------------------------- 
