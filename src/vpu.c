@@ -323,10 +323,10 @@ static void run_opcode(uint16_t cmd) {
 
 #if (defined DEBUGGING | defined DEBUG)
     if ( program_pointer != END_OF_PROGRAM ) {
-        minxvpudbgprintf("[minx][VPU]:\tPROG_POINTER: %"PRIu64"\n", program_pointer);
+        minxvpudbgprintf("PROG_POINTER: %"PRIu64"\n", program_pointer);
     }
     else {
-        minxvpudbgprint("[minx][VPU]: END OF PROGRAM\n");
+        minxvpudbgprint("END OF PROGRAM\n");
     }
 #endif 
 
