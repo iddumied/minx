@@ -10,9 +10,8 @@ static Register*    find_register                   (uint64_t addr);
 
 static void         run                             (void);
 
-static void         read_1_command_parameter        (unsigned int size1);
-static void         read_2_command_parameters       (unsigned int size1, 
-                                                    unsigned int size2);
+static void         read_n_command_parameter        (unsigned int n,
+                                                    unsigned int sizes[]);
 
 static void         run_opcode                      (uint16_t);
 
@@ -389,49 +388,28 @@ static HeapNode* find_or_create_unused_heapnode() {
  * Helper function for parsing command parameters
  * args:
  *
- * @param cp            storage for the result 
- * @param size1         size of argument 1
- *
- * Why
- * ---
- *
- *  Have a look at the description for read_2_command_parameters() function.
- *
- */
-static void read_1_command_parameter(unsigned int size1) {
-    uint64_t ptr1_location = program_pointer + OPC_SIZE;
-    opc_p->p1 = *((uint64_t *) minx_binary_get_at( ptr1_location, size1, &opc_p->p1));
-}
-
-/*
- * Helper function for parsing command parameters
- * args:
- *
- * @param cp            storage for the result 
- * @param size1         size of argument 1, used as offset, too
- * @param size2         size of argument 2
+ * @param n             count of parameters 
+ * @param sizes         sizes of the parameters
  *
  * Why
  * ---
  *
  *  Reading the parameters from the binary is always the same procedure:
- *      - go to (program_pointer + OPC_SIZE )
- *      - read the value there, it could be a constant or a pointer, doesn't
- *      matter yet
- *      - go to (program_pointer + OPC_SIZE + <size of prev read data>)
- *      - read the value there, it could be a constant or a pointer, doesn't
- *      matter yet
+ *      1) go to (program_pointer + OPC_SIZE )
+ *      2) read the value there
+ *      3) go to (program_pointer + OPC_SIZE + <size of prev read data>)
+ *      4) read the value there
+ *      5) go to 3) or ready
  *
- *  and then use this data. The upper part is done by this helper function, to
- *  simplify the work of the opc_ functions.
  */
-static void read_2_command_parameters(unsigned int size1, unsigned int size2) {
+static void read_n_command_parameters(unsigned int n, unsigned int sizes[]) {
+    uint64_t        next_pos = program_pointer + OPC_SIZE;
+    unsigned int    i;
 
-    uint64_t ptr1_location = program_pointer + OPC_SIZE;
-    uint64_t ptr2_location = program_pointer + OPC_SIZE + size1;
-
-    opc_p->p1 = *((uint64_t *) minx_binary_get_at( ptr1_location, size1, &opc_p->p1));
-    opc_p->p2 = *((uint64_t *) minx_binary_get_at( ptr2_location, size2, &opc_p->p2));
+    for(i = 0 ; i < n ; i++ ) {
+        opc_p->p[i] = minx_binary_get_at(next_pos, sizes[i], &opc_p->p[i]);
+        next_pos += sizes[i];
+    }
 }
 
 /*
