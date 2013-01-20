@@ -124,8 +124,8 @@ typedef struct {
  * command parameters parsing helper struct
  */
 typedef struct {
-    uint64_t    p1;
-    uint64_t    p2;
+    unsigned int    len;
+    uint64_t        p[];
 } CommandParameters;
 
 /*
