@@ -1413,7 +1413,7 @@ static void opc_free_func(void) {
 
 /*
  * Command:                 PUT
- * Parameters:              1, heap-address, register-address, register-address
+ * Parameters:              3, heap-address, register-address, register-address
  * Affects Program Pointer: NO
  *
  *
@@ -1465,7 +1465,7 @@ static void opc_put_func(void) {
 
 /*
  * Command:                 READ
- * Parameters:              1, heap-address, register-address, register-address
+ * Parameters:              3, heap-address, register-address, register-address
  * Affects Program Pointer: NO
  *
  *
