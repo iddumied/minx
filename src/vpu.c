@@ -10,7 +10,7 @@ static Register*    find_register                   (uint64_t addr);
 
 static void         run                             (void);
 
-static void         read_n_command_parameter        (unsigned int n,
+static void         read_n_command_parameters       (unsigned int n,
                                                     unsigned int sizes[]);
 
 static void         run_opcode                      (uint16_t);
