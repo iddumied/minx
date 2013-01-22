@@ -76,6 +76,7 @@ static void         opc_resizei_func        (void);
 static void         opc_free_func           (void);
 static void         opc_put_func            (void);
 static void         opc_read_func           (void);
+static void         opc_getsize_func        (void);
 
 #ifdef VERBOSITY
 static void         print_register          (unsigned int i);
@@ -150,6 +151,7 @@ static void ((*opc_funcs[])(void)) = {
     [OPC_FREE]      = opc_free_func,
     [OPC_PUT]       = opc_put_func,
     [OPC_READ]      = opc_read_func,
+    [OPC_GETSIZE]   = opc_getsize_func,
 };
 
 /*
@@ -1510,6 +1512,29 @@ static void opc_read_func(void) {
      * else do nothing (if the size is set to zero) 
      */
 
+}
+
+/*
+ * Command:                 GETSIZE
+ * Parameters:              1, heap-address
+ * Affects Program Pointer: NO
+ *
+ *
+ */
+static void opc_getsize_func(void) {
+    unsigned int params[] = { HEAP_ADDRESS_SIZE };
+    read_n_command_parameters(1, params);
+
+    Heap *h;
+
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE_WITH("GETSIZE", "of heap %"PRIu64" into akku", opc_p->p[0]);
+#endif 
+
+    h       = find_heapnode(opc_p->p[0]);
+    akku    = h->size; 
+
+    program_pointer += (OPC_SIZE + HEAP_ADDRESS_SIZE);
 }
 
 #if (defined VERBOSITY | defined DEBUGGING)
