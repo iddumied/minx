@@ -1463,6 +1463,54 @@ static void opc_put_func(void) {
     program_pointer += (OPC_SIZE + HEAP_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE);
 }
 
+/*
+ * Command:                 READ
+ * Parameters:              1, heap-address, register-address, register-address
+ * Affects Program Pointer: NO
+ *
+ *
+ */
+static void opc_read_func(void) {
+    unsigned int params[] = {   HEAP_ADDRESS_SIZE,
+                                REGISTER_ADDRESS_SIZE,
+                                REGISTER_ADDRESS_SIZE };
+    read_n_command_parameters(3, params);
+
+    HeapNode    *h;
+    void        *mem;
+
+#ifdef DEBUGGING 
+    EXPLAIN_OPCODE_WITH("read",
+            "from heap %"PRIu64" %i Byte into reg %"PRIu64,
+            opc_p->p[0],
+            opc_p->p[2],
+            opc_p->p[1]
+            );
+#endif 
+
+    /*
+     * A register has 8 Byte. So, we can only put 8 byte at once. 
+     * I will not read more than one register to put, because it is so ugly!
+     */
+    if( opc_p->p[2] > (uint64_t)8 ) {
+        FATAL_DESC_ERROR("Cannot read more than 8 Byte from register");
+    }
+    else if ( opc_p->p[2] != 0 ) {
+        h   = find_heapnode(opc_p->p[0]);
+        mem = get_memory_from_heapnode(h, opc_p->p[0]);
+
+        /*
+         * set the target register to 0x00, so the previous stored data is
+         * completely gone when setting the read data from the heap.
+         */
+        registers[opc_p->p[1]].value = 0x00;
+        memcpy(registers[opc_p->p[1]].value, mem, opc_p->p[2]);
+    }
+    /*
+     * else do nothing (if the size is set to zero) 
+     */
+
+}
 
 #if (defined VERBOSITY | defined DEBUGGING)
 static void print_register(unsigned int i) {
