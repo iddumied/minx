@@ -18,6 +18,7 @@ static void         run_opcode                      (uint16_t);
 static void         setup_heap                      (void);
 static HeapNode*    find_heapnode                   (uint64_t ptr);
 static HeapNode*    find_or_create_unused_heapnode  (void);
+static void         get_memory_from_heapnode        (HeapNode *h, uint64_t addr);
 
 static void         opc_nop_func            (void);
 static void         opc_call_func           (void);
@@ -369,6 +370,10 @@ static HeapNode* find_or_create_unused_heapnode() {
     for( i = 0 ; &heapnodes[i] != new; i++,  ptr += heapnodes[i].size );
     new->first_byte_addr = ptr;
     return new;
+}
+
+static void* get_memory_from_heapnode(HeapNode *h, uint64_t addr) {
+    return &( h->memory[addr - h->first_byte_addr] );
 }
 
 
