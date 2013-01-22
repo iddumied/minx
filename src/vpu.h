@@ -81,9 +81,8 @@
 #define         OPC_RESIZEI         0x62
 #define         OPC_FREE            0x63
 #define         OPC_PUT             0x64
-#define         OPC_PUTI            0x65
-#define         OPC_READ            0x66
-#define         OPC_READI           0x67
+#define         OPC_READ            0x65
+#define         OPC_GETSIZE         0x66
 
 /* 
  * defines for size in bytes 
