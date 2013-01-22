@@ -74,9 +74,7 @@ static void         opc_resize_func         (void);
 static void         opc_resizei_func        (void);
 static void         opc_free_func           (void);
 static void         opc_put_func            (void);
-static void         opc_puti_func           (void);
 static void         opc_read_func           (void);
-static void         opc_readi_func          (void);
 
 #ifdef VERBOSITY
 static void         print_register          (unsigned int i);
@@ -150,9 +148,7 @@ static void ((*opc_funcs[])(void)) = {
     [OPC_RESIZEI]   = opc_resizei_func,
     [OPC_FREE]      = opc_free_func,
     [OPC_PUT]       = opc_put_func,
-    [OPC_PUTI]      = opc_puti_func,
     [OPC_READ]      = opc_read_func,
-    [OPC_READI]     = opc_readi_func,
 };
 
 /*
