@@ -1424,10 +1424,14 @@ static void opc_put_func(void) {
                                 REGISTER_ADDRESS_SIZE };
     read_n_command_parameters(3, params);
 
+    HeapNode        *h;
+    void            *mem;
+    uint64_t        mask;
+    unsigned int    masked_bytes;
+
 #ifdef DEBUGGING
     EXPLAIN_OPCODE_WITH("put", 
             "into heap %"PRIu64" val of reg %"PRIu64"(%i Bytes)", 
-            akku, 
             opc_p->p[0], 
             opc_p->p[1],
             opc_p->p[2]
@@ -1442,9 +1446,19 @@ static void opc_put_func(void) {
         FATAL_DESC_ERROR("Cannot read more than 8 Byte from register");
     }
 
-    HeapNode *h = find_heapnode(opc_p->p[0]);
-    
-    /* do something */ 
+    h   = find_heapnode(opc_p->p[0]);
+    mem = get_memory_from_heapnode(h, opc_p->p[0]);
+
+    /*
+     * Build the mask to mask the bytes from heap, so in the register there is
+     * just the data from heap and not the artifacts from prior use!
+     */
+    for(mask = 0x00, masked_bytes = opc_p->p[2]; masked_bytes; masked_bytes--) {
+        mask = (mask<<8) | 0xFF;
+    }
+
+    memcpy(registers[opc_p->p[1]].value, mem, opc_p->p[2]);
+    registers[opc_p->p[1]].value &= mask;
 
     program_pointer += (OPC_SIZE + HEAP_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE);
 }
