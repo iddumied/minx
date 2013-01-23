@@ -1340,16 +1340,26 @@ static void opc_resize_func(void) {
     }
 
     if( opc_p->p[1] == h->size ){ 
+        clrbit(statusregister, RESIZE_BIT);
         return;
     }
 
-    if( opc_p->p[1] < h->size ) {
+    /*
+     * if the resize value is smaller as the actual size or the _real_ size,
+     * just set the size variable in the heapnode
+     */
+    if( opc_p->p[1] <= h->size || opc_p->p[1] <= h->real_size) {
         h->size = opc_p->p[1];
     }
-    else { //if( opc_p->p2 > h->size ) {
+    /*
+     * if the parameter says, the memory should be resized, do it!
+     */
+    else {
         h->memory = realloc(h->memory, opc_p->p[1]);
         h->real_size = h->size = opc_p->p[1];
     }
+
+    setbit(statusregister, RESIZE_BIT);
 
     program_pointer += (OPC_SIZE + HEAP_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE);
 }
@@ -1377,16 +1387,26 @@ static void opc_resizei_func(void) {
     }
 
     if( opc_p->p[1] == h->size ){ 
+        clrbit(statusregister, RESIZE_BIT);
         return;
     }
 
-    if( opc_p->p[1] < h->size ) {
+    /*
+     * if the resize value is smaller as the actual size or the _real_ size,
+     * just set the size variable in the heapnode
+     */
+    if( opc_p->p[1] <= h->size || opc_p->p[1] <= h->real_size) {
         h->size = opc_p->p[1];
     }
+    /*
+     * if the parameter says, the memory should be resized, do it!
+     */
     else { //if( opc_p->p2 > h->size ) {
         h->memory = realloc(h->memory, opc_p->p[1]);
         h->real_size = h->size = opc_p->p[1];
     }
+        
+    setbit(statusregister, RESIZE_BIT);
 
     program_pointer += (OPC_SIZE + HEAP_ADDRESS_SIZE + VALUE_SIZE);
 }

@@ -111,8 +111,6 @@ Heap opcodes:
 - the address of the memory is _always_ the first byte!
 - the size of the memory is in byte.
 
-Status flags will be set for each opcode.
-
 -----+----------+-------------------------------+--------------------------- 
 0x60 | ALLOC    | Register                      | ptr to first byte or 0x00 in akku
 0x61 | ALLOCI   | Value                         | ptr to first byte or 0x00 in akku

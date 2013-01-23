@@ -115,6 +115,7 @@ typedef struct {
 
 #define         OVERFLOW_BIT    0
 #define         ALLOC_BIT       1
+#define         RESIZE_BIT      2
 
 #define         setbit(byte,bitnum)     do { byte |=  0x0001<<bitnum; } while(0)
 #define         clrbit(byte,bitnum)     do { byte &= !0x0001<<bitnum; } while(0)
