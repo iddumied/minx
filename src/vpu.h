@@ -78,11 +78,11 @@
 #define         OPC_ALLOC           0x60
 #define         OPC_ALLOCI          0x61
 #define         OPC_RESIZE          0x62
-#define         OPC_RESIZEI         0x62
-#define         OPC_FREE            0x63
-#define         OPC_PUT             0x64
-#define         OPC_READ            0x65
-#define         OPC_GETSIZE         0x66
+#define         OPC_RESIZEI         0x63
+#define         OPC_FREE            0x64
+#define         OPC_PUT             0x65
+#define         OPC_READ            0x66
+#define         OPC_GETSIZE         0x67
 
 /* 
  * defines for size in bytes 

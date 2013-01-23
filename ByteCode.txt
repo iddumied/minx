@@ -115,11 +115,11 @@ Heap opcodes:
 0x60 | ALLOC    | Register                      | ptr to first byte or 0x00 in akku
 0x61 | ALLOCI   | Value                         | ptr to first byte or 0x00 in akku
 0x62 | RESIZE   | Memory, Register              | ptr to first byte or 0x00 in akku
-0x62 | RESIZEI  | Memory, Value                 | ptr to first byte or 0x00 in akku
-0x63 | FREE     | Memory                        | 
+0x63 | RESIZEI  | Memory, Value                 | ptr to first byte or 0x00 in akku
+0x64 | FREE     | Memory                        | 
 
 the following opcodes take the address of the memory from the akku:
-0x64 | PUT      | Memory, Register, Register    | (register, size(max 8 Byte))
-0x65 | READ     | Memory, Register, Register    | (register, size(max 8 Byte))
-0x66 | GETSIZE  | Memory                        | load size of the memory into akku
+0x65 | PUT      | Memory, Register, Register    | (register, size(max 8 Byte))
+0x66 | READ     | Memory, Register, Register    | (register, size(max 8 Byte))
+0x67 | GETSIZE  | Memory                        | load size of the memory into akku
 -----+----------+-------------------------------+--------------------------- 
