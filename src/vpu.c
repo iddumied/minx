@@ -1445,10 +1445,10 @@ static void opc_free_func(void) {
 #ifdef DEBUGGING
     EXPLAIN_OPCODE_WITH("free", "heap %"PRIu64, opc_p->p[0]);
 #endif
-
-    HeapNode *h = find_heapnode(opc_p->p[0]);
-    h->used     = HEAPNODE_NOT_USED;
-    h->memory   = memset(h->memory, 0x00, h->real_size);
+    
+    HeapNode *h         = find_heapnode(registers[opc_p->p[0]].value);
+    h->used             = HEAPNODE_NOT_USED;
+    h->memory           = memset(h->memory, 0x00, h->real_size);
 
     program_pointer += (OPC_SIZE + HEAP_ADDRESS_SIZE);
 }
@@ -1488,7 +1488,7 @@ static void opc_put_func(void) {
         FATAL_DESC_ERROR("Cannot read more than 8 Byte from register");
     }
 
-    h   = find_heapnode(opc_p->p[0]);
+    h   = find_heapnode(registers[opc_p->p[0]].value);
     mem = get_memory_from_heapnode(h, opc_p->p[0]);
 
     /*
@@ -1538,7 +1538,7 @@ static void opc_read_func(void) {
         FATAL_DESC_ERROR("Cannot read more than 8 Byte from register");
     }
     else if ( opc_p->p[2] != 0 ) {
-        h   = find_heapnode(opc_p->p[0]);
+        h   = find_heapnode(registers[opc_p->p[0]].value);
         mem = get_memory_from_heapnode(h, opc_p->p[0]);
 
         /*
@@ -1571,7 +1571,7 @@ static void opc_getsize_func(void) {
     EXPLAIN_OPCODE_WITH("GETSIZE", "of heap %"PRIu64" into akku", opc_p->p[0]);
 #endif 
 
-    h       = find_heapnode(opc_p->p[0]);
+    h       = find_heapnode(registers[opc_p->p[0]].value);
     akku    = h->size; 
 
     program_pointer += (OPC_SIZE + HEAP_ADDRESS_SIZE);
