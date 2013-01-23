@@ -74,6 +74,8 @@
 #define         OPC_PSTACK          0x50
 #define         OPC_PREGS           0x51
 #define         OPC_PPROG           0x52
+#define         OPC_PMEMS           0x53
+#define         OPC_PMEM            0x54
 
 #define         OPC_ALLOC           0x60
 #define         OPC_ALLOCI          0x61

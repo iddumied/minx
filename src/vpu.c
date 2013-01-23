@@ -69,6 +69,8 @@ static void         opc_ifzjmp_func         (void);
 static void         opc_pstack_func         (void);
 static void         opc_pregs_func          (void);
 static void         opc_pprog_func          (void);
+static void         opc_pmems_func          (void);
+static void         opc_pmem_func           (void);
 
 static void         opc_alloc_func          (void);
 static void         opc_alloci_func         (void);
@@ -146,6 +148,8 @@ static void ((*opc_funcs[])(void)) = {
     [OPC_PSTACK]    = opc_pstack_func,
     [OPC_PREGS]     = opc_pregs_func,
     [OPC_PPROG]     = opc_pprog_func,
+    [OPC_PMEMS]     = opc_pmems_func,
+    [OPC_PMEM]      = opc_pmem_func,
 
     [OPC_ALLOC]     = opc_alloc_func,
     [OPC_ALLOCI]    = opc_alloci_func,
@@ -1261,6 +1265,83 @@ static void opc_pprog_func (void) {
 #endif //DEBUGGING
     program_pointer += OPC_SIZE;
 }
+
+/*
+ * Command:                 PMEMS
+ * Parameters:              0
+ * Affects Program Pointer: NO 
+ */
+static void opc_pmems_func(void) {
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE("pmems");
+
+    if( minx_config_get(CONF_SRC_DEBUGGING)->b ) {
+        uint64_t i;
+        unsigned int line = 0, j = 0;
+        for( i = 0 ; i < heapnodes_count; i++ ) {
+            printf("M: %"PRIu64"\n", i);
+            printf("0x00000000 : ");
+            for(j = 0; j < heapnodes[i].size; j++ ) {
+                if( ((char)heapnodes[i].memory)[j] == 0 ) {
+                    printf("0x00 ");
+                }
+                else {
+                    printf("%#02x ", ((char)heapnodes[i].memory)[j]);
+                }
+
+                if((j+1) % 8 == 0) {
+                    printf("\n%#010x : ", ++line);
+                }
+            }
+            printf("\n");
+        }
+        printf("\n");
+    }
+#endif
+    program_pointer += OPC_SIZE;
+}
+
+/*
+ * Command:                 PMEM 
+ * Parameters:              1, heapnode-address
+ * Affects Program Pointer: NO
+ *
+ *
+ */
+static void opc_pmem_func(void) {
+#ifdef DEBUGGING
+    if( !minx_config_get(CONF_SRC_DEBUGGING)->b ) {
+        EXPLAIN_OPCODE("pmem");
+    }
+    else {
+        unsigned int params[] = { REGISTER_ADDRESS_SIZE };
+        read_n_command_parameters(1, params);
+
+        EXPLAIN_OPCODE_WITH("pmem", "memory: %"PRIu64, registers[opc_p->p[0]].value);
+
+        HeapNode *h = find_heapnode(registers[opc_p->p[0]].value);
+        uint64_t i;
+        unsigned int line = 0;
+        printf("0x00000000 : ");
+        for( i = 0 ; i < h->size; i++ ) {
+            if( ((char)h->memory)[i] == 0 ) {
+                printf("0x00 ");
+            }
+            else {
+                printf("%#02x ", ((char)h->memory)[i]);
+            }
+
+            if((i+1) % 8 == 0) {
+                printf("\n%#010x : ", ++line);
+            }
+        }
+        printf("\n");
+    }
+
+#endif
+    program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE);
+}
+
 
 /*
  * Command:                 ALLOC 

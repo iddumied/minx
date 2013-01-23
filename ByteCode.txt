@@ -105,6 +105,8 @@ will be ignored automatically! The 0x5? block is reserved for them.
 0x50 | PSTACK   | none                          | print stack
 0x51 | PREGS    | none                          | print registers
 0x52 | PPROG    | none                          | print program
+0x53 | PMEMS    | none                          | print all allocatet mems
+0x54 | PMEM     | Memory                        | print memory
 -----+----------+-------------------------------+--------------------------- 
 
 Heap opcodes:
