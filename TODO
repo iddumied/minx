@@ -22,3 +22,42 @@ TODO:
 
 9)	File reader should read the file as linked list, with automatically removing 
 	"old" parts of the file from memory to keep memuse smart.
+
+14) Create a plugin-system
+	opcodes:
+		LOADMODULE(memory) 
+			passed memory should be the path to the .so file!
+			This opcodes should write a uniq module identifier into akku.
+			
+		MODCALL(moduleID, opcode, memory)
+			the passed memory represents the parameters for the opcode. The
+			opcodes in the modules have to read the memory themself.
+
+		UNDLOADMODULE(moduleID)
+			remove module from runtime. The module ID will not be reused!
+
+	In the first implementation, the VPU will not ensure, the moduleID is
+	used. If the binary does load a module and override the akku in the next
+	step, the module is loaded and cannot be unloaded!
+	In the next step of the implementation, the VPU will ensure, the akku is
+	locked or it will fail if the binary wants to override a not-copied
+	moduleID, don't know yet!
+
+	If the binary wants to access a module which is not loaded or which is
+	unloaded already, the VPU will fail and exit.
+
+	A module has to implement several functions:
+		- a function for loading the module
+		- a function where the arguments of the minx call will be passed
+		- a function for calling the module, which gets a opcode and a HeapNode,
+		  this function should return the HeapNode!
+		- a function for getting data for the akku, which is called directly
+		  after the module-call function
+		- a function for unloading
+		- a function for force-shutdown of the VM
+		- a function for shutdown without unloading
+
+15) Clean up the opcodes-protocol and release it as v1.0.0 to guarantee no more
+	changes of its core functionality.
+
+
