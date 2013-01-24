@@ -102,11 +102,6 @@ typedef struct {
     uint64_t    value;
 } Register;
 
-typedef struct {
-    uint64_t    reg_count;
-    Register    *registers[];
-} RegisterMap;
-
 /*
  * currently, registers are addressed with 1 byte addresses.
  * But the addresses are read from the binary as 2 byte, because if we want to
