@@ -251,14 +251,14 @@ static void run() {
     minxvpudbgprint("run");
 #endif //DEBUGGING
 
-    uint16_t *opcode = (uint16_t*) malloc(sizeof(*opcode));
+    uint16_t *opcode = (uint16_t*) malloc(sizeof(uint16_t));
 
     while( !program_pointer_is(END_OF_PROGRAM) ) {
 
 #if (defined DEBUGGING || defined DEBUG)
         fflush(stdout);
 #endif // (defined DEBUGGING || defined DEBUG)
-        opcode = minx_binary_get_at(program_pointer, OPC_SIZE, opcode);
+        opcode = (uint16_t*)minx_binary_get_at(program_pointer, OPC_SIZE, opcode);
         run_opcode(*opcode);
     }
 
@@ -271,7 +271,6 @@ static void run() {
     }
 #endif //if (defined VERBOSITY)
 
-    free(opcode);
 } //static void run()
 
 /*
@@ -320,10 +319,6 @@ static void setup_heap() {
 }
 
 static void shutdown_heap() {
-    uint64_t i;
-    for(i = 0 ; i < heapnodes_count ; i++) {
-        free(heapnodes[i].memory);
-    }
     free(heapnodes);
 }
 
