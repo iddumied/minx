@@ -81,3 +81,14 @@ TODO:
 	changes of its core functionality.
 
 16) Add Disassembler 
+
+17) The Memory management SUCKS so hard! 
+	Example:
+		alloc returns address 0x00F0, alloc was 5 Byte
+		-> so the last address of the memory is 0xF5
+
+		next alloc returns address 0x00F6, alloc was also 5 Byte
+
+		resize first alloc to 10 Byte. What happens or better: what should happen?
+
+
