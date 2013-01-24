@@ -1552,7 +1552,7 @@ static void opc_put_func(void) {
     HeapNode        *h;
     char            *mem;
     uint64_t        mask;
-    unsigned int    masked_bytes;
+    uint64_t        masked_bytes;
 
 #ifdef DEBUGGING
     EXPLAIN_OPCODE_WITH("put", 
@@ -1572,13 +1572,13 @@ static void opc_put_func(void) {
     }
 
     h   = find_heapnode(registers[opc_p->p[0]].value);
-    mem = get_memory_from_heapnode(h, opc_p->p[0]);
+    mem = get_memory_from_heapnode(h, registers[opc_p->p[0]].value);
 
     /*
      * Build the mask to mask the bytes from heap, so in the register there is
      * just the data from heap and not the artifacts from prior use!
      */
-    for(mask = 0x00, masked_bytes = registers[opc_p->p[2]]; masked_bytes; masked_bytes--) {
+    for(mask = 0x00, masked_bytes = registers[opc_p->p[2]].value; masked_bytes; masked_bytes--) {
         mask = (mask<<8) | 0xFF;
     }
 
