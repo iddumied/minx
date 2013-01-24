@@ -1556,9 +1556,10 @@ static void opc_put_func(void) {
 
 #ifdef DEBUGGING
     EXPLAIN_OPCODE_WITH("put", 
-            "into heap %"PRIu64" val of reg %"PRIu64"(%"PRIu64" Bytes)", 
-            opc_p->p[0], 
+            "at address %"PRIu64" val of reg %"PRIu64"(%"PRIu64") (%"PRIu64" Bytes)", 
+            registers[opc_p->p[0]].value, 
             opc_p->p[1],
+            registers[opc_p->p[1]].value,
             registers[opc_p->p[2]].value
             );
 #endif 
@@ -1606,7 +1607,7 @@ static void opc_read_func(void) {
 
 #ifdef DEBUGGING 
     EXPLAIN_OPCODE_WITH("read",
-            "from heap %"PRIu64" %"PRIu64" Byte into reg %"PRIu64,
+            "from address %"PRIu64" %"PRIu64" Byte into reg %"PRIu64,
             opc_p->p[0],
             registers[opc_p->p[2]].value,
             opc_p->p[1]
