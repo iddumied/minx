@@ -91,4 +91,14 @@ TODO:
 
 		resize first alloc to 10 Byte. What happens or better: what should happen?
 
+	Idea to improve this:
+		Organize memory in a Map.
+		Each Memory gets a adress. Bytes in the memory are addressed with a
+		offset, not via an address! That's much better, because management is
+		much more easy and should be faster, too. 
+
+		This requires a running implementation of a map (use it from utilc!)
+
+		The address of the memory can be generated randomly, if security
+		requires it.
 
