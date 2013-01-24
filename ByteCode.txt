@@ -23,6 +23,7 @@ anyway accessible for the program.
 				Bit	|	use 
 				----+-------
 				0	|	overflow 
+                1   |   heapalloc status (1: worked, 0: failure)
 				1-7	|	not used yet
 - 0x0004	overflow value 
 - 0x0005-0x00AF (unused yet, will be used for more status registers and stuff)
@@ -46,59 +47,79 @@ opcodes
 'Register'	stands for 16 Bit (2 Byte) register address 
 'Value'		stands for 64 Bit (8 Byte) value
 'Adress'	stands for 64 Bit (8 Byte) code address
+'Memory'    stands for 16 Bit (2 Byte) register address where a memory address is stored
 
-code	|	Short expl.	|	arguments				|	Expl.
---------+---------------+---------------------------+---------------------------
-0x00	|	NOP			|	none					|
-0x01	|	CALL		|	Adress					| Push current addr to Stack, jump to address
-0x02	|	RET			|	none					| Jump to $(stack pop)
-
-0x03	|	MOV			|	Register, Register		|
-0x04	|	MOVI		|	Register, Value			|
-
-0x05	|	NOT			|	Register				| result in akku
-0x06	|	NOTR		|	Register				| result in register
-
-0x07	|	AND			|	Register, Register		| result in akku
-0x08	|	ANDI		|	Register, Value			| result in akku
-0x09	|	ANDR		|	Register, Register		| result in register 
-0x0A	|	ANDIR		|	Register, Value			| result in register
-
-0x0B	|	OR			|	Register, Register		| result in akku 
-0x0C	|	ORI			|	Register, Value			| result in akku 
-0x0D	|	ORR			|	Register, Register		| result in register 
-0x0E	|	ORIR		|	Register, Value			| result in register
-
-0x0F	|	DEC			|	Register				| result in register 
-0x10	|	INC			|	Register				| result in register 
-
-0x11	|	LSH			|	Register				| result in register 
-0x12	|	RSH			|	Register				| result in register 
-
-0x13    |   CMP         |   Register, Register      | compare, result in akku, 1 if first is bigger, 2 if second is bigger, zero if equal
-0x14    |   CMPI        |   Register, Value         | see opcode CMP
-0x15    |   EQL         |   Register, Register      | 1 in akku if val equal
-0x16    |   EQLI        |   Register, Value         | 1 if akku if equal
-
-0x20	|	PUSH		|	Register				| push register to stack
-0x21	|	POP			|	Register				| pop from stack into register
-0x22	|	DROP		|	none					| pop from stack and drop
-
-0x30	|	ADD			|	Register, Register		| result in akku 
-0x31	|	ADDI		|	Register, Value			| result in akku 
-0x32	|	ADDR		|	Register, Register		| result in register 
-0x33	|	ADDIR		|	Register, Value			| result in register
-
-0x40	|	JMP			|	Adress					| jump to address (number of byte)
-0x41	|	JMPIZ		|	Register, Adress		| jump if register is zero
-0x42	|	JMPNZ		|	Register, Adress		| jump if register is not zero
-0x43	|	IFZJMP		|	Adress, Adress			| if akku is zero jump, else jump
+code | Short ex.| arguments				        | Expl.
+-----+----------+-------------------------------+-----------------------
+0x00 | NOP		| none					        |
+0x01 | CALL	    | Adress					    | Push current addr to Stack, jump to address
+0x02 | RET		| none					        | Jump to $(stack pop)
+     |          |                               |
+0x03 | MOV		| Register, Register		    |
+0x04 | MOVI	    | Register, Value			    |
+     |          |                               |
+0x05 | NOT		| Register				        | result in akku
+0x06 | NOTR	    | Register				        | result in register
+     |          |                               |
+0x07 | AND		| Register, Register		    | result in akku
+0x08 | ANDI	    | Register, Value			    | result in akku
+0x09 | ANDR	    | Register, Register		    | result in register 
+0x0A | ANDIR	| Register, Value			    | result in register
+     |          |                               |
+0x0B | OR		| Register, Register		    | result in akku 
+0x0C | ORI		| Register, Value			    | result in akku 
+0x0D | ORR		| Register, Register		    | result in register 
+0x0E | ORIR	    | Register, Value			    | result in register
+     |          |                               |
+0x0F | DEC		| Register				        | result in register 
+0x10 | INC		| Register				        | result in register 
+     |          |                               |
+0x11 | LSH		| Register				        | result in register 
+0x12 | RSH		| Register				        | result in register 
+     |          |                               |
+0x13 | CMP      | Register, Register            | compare, result in akku, 1 if first is bigger, 2 if second is bigger, zero if equal
+0x14 | CMPI     | Register, Value               | see opcode CMP
+0x15 | EQL      | Register, Register            | 1 in akku if val equal
+0x16 | EQLI     | Register, Value               | 1 if akku if equal
+-----+----------+-------------------------------+---------------------------
+0x20 | PUSH		| Register				        | push register to stack
+0x21 | POP		| Register				        | pop from stack into register
+0x22 | DROP		| none					        | pop from stack and drop
+-----+----------+-------------------------------+---------------------------
+0x30 | ADD		| Register, Register		    | result in akku 
+0x31 | ADDI		| Register, Value			    | result in akku 
+0x32 | ADDR		| Register, Register		    | result in register 
+0x33 | ADDIR	| Register, Value			    | result in register
+-----+----------+-------------------------------+---------------------------
+0x40 | JMP		| Adress					    | jump to address (number of byte)
+0x41 | JMPIZ	| Register, Adress		        | jump if register is zero
+0x42 | JMPNZ	| Register, Adress		        | jump if register is not zero
+0x43 | IFZJMP	| Adress, Adress			    | if akku is zero jump, else jump
+-----+----------+-------------------------------+--------------------------- 
 
 These are special debugging opcodes and are only print when compiled with 
 DEBUGGING and started with "-d" flag. If not compiled with DEBUGGING, they
-will be ignored automatically!
+will be ignored automatically! The 0x5? block is reserved for them.
 
-The 0x5? block is reserved for them.
-0x50    |   PSTACK      |   none                    | print stack
-0x51    |   PREGS       |   none                    | print registers
-0x52    |   PPROG       |   none                    | print program
+-----+----------+-------------------------------+--------------------------- 
+0x50 | PSTACK   | none                          | print stack
+0x51 | PREGS    | none                          | print registers
+0x52 | PPROG    | none                          | print program
+-----+----------+-------------------------------+--------------------------- 
+
+Heap opcodes:
+- the address of the memory is _always_ the first byte!
+- the size of the memory is in byte.
+
+-----+----------+-------------------------------+--------------------------- 
+0x60 | ALLOC    | Register                      | ptr to first byte or 0x00 in akku
+0x61 | ALLOCI   | Value                         | ptr to first byte or 0x00 in akku
+0x62 | RESIZE   | Memory, Register              | ptr to first byte or 0x00 in akku
+0x63 | RESIZEI  | Memory, Value                 | ptr to first byte or 0x00 in akku
+0x64 | FREE     | Memory                        | Register where the addr to the first byte of the memory stands
+
+the following opcodes take the address of the memory from the akku:
+0x65 | PUT      | Memory, Register, Register    | (register, size(max 8 Byte))
+0x66 | READ     | Memory, Register, Register    | (register, size(max 8 Byte))
+0x67 | GETSIZE  | Memory                        | load size of the memory into akku
+-----+----------+-------------------------------+--------------------------- 

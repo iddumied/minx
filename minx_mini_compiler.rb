@@ -15,6 +15,7 @@
 REGISTER  = 2
 VALUE     = 8
 ADDRESS   = 8
+MEMORY    = REGISTER 
 
 # helper to store stuff
 class Op < Struct.new :opc, :args; end
@@ -61,6 +62,14 @@ class Op < Struct.new :opc, :args; end
   "PSTACK" => Op.new(0x50, []), 
   "PREGS" =>  Op.new(0x51, []), 
   "PPROG" =>  Op.new(0x52, []), 
+  "ALLOC" =>  Op.new(0x60, [REGISTER]), 
+  "ALLOCI" => Op.new(0x61, [VALUE]), 
+  "RESIZE" => Op.new(0x62, [MEMORY, REGISTER]), 
+  "RESIZEI"=> Op.new(0x63, [MEMORY, VALUE]), 
+  "FREE" =>   Op.new(0x64, [MEMORY]), 
+  "PUT" =>    Op.new(0x65, [MEMORY, REGISTER, REGISTER]), 
+  "READ" =>   Op.new(0x66, [MEMORY, REGISTER, REGISTER]), 
+  "GETSIZE"=> Op.new(0x67, [MEMORY]), 
 }
 
 #

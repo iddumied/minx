@@ -6,16 +6,21 @@
  * -----------------------------------------------------------------------------
  */
 
-static void         init_registers              (void);
-static Register*    find_register               (uint64_t addr);
+static void         init_registers                  (void);
+static Register*    find_register                   (uint64_t addr);
 
-static void         run                         (void);
+static void         run                             (void);
 
-static void         read_1_command_parameter    (unsigned int size1);
-static void         read_2_command_parameters   (unsigned int size1, 
-                                                 unsigned int size2);
+static void         read_n_command_parameters       (unsigned int n,
+                                                    unsigned int sizes[]);
 
-static void         run_opcode              (uint16_t);
+static void         run_opcode                      (uint16_t);
+
+static void         setup_heap                      (void);
+static void         shutdown_heap                   (void);
+static HeapNode*    find_heapnode                   (uint64_t ptr);
+static HeapNode*    find_or_create_unused_heapnode  (void);
+static void*        get_memory_from_heapnode        (HeapNode *h, uint64_t addr);
 
 /*
  * opcodes prototypes
@@ -70,10 +75,18 @@ static void         opc_pstack_func         (void);
 static void         opc_pregs_func          (void);
 static void         opc_pprog_func          (void);
 
+static void         opc_alloc_func          (void);
+static void         opc_alloci_func         (void);
+static void         opc_resize_func         (void);
+static void         opc_resizei_func        (void);
+static void         opc_free_func           (void);
+static void         opc_put_func            (void);
+static void         opc_read_func           (void);
+static void         opc_getsize_func        (void);
+
 /*
  * optional prototypes
  */
-
 #ifdef VERBOSITY
 static void         print_register          (unsigned int i);
 #endif 
@@ -90,6 +103,8 @@ static uint16_t                 register_count  = 0;
 
 static Stack                *   stack           = NULL;
 static CommandParameters    *   opc_p           = NULL;
+static HeapNode             *   heapnodes       = NULL;
+static uint64_t                 heapnodes_count = 0;
 
 /*
  * -----------------------------------------------------------------------------
@@ -146,7 +161,16 @@ static void ((*opc_funcs[])(void)) = {
 
     [OPC_PSTACK]    = opc_pstack_func,
     [OPC_PREGS]     = opc_pregs_func,
-    [OPC_PPROG]     = opc_pprog_func
+    [OPC_PPROG]     = opc_pprog_func,
+
+    [OPC_ALLOC]     = opc_alloc_func,
+    [OPC_ALLOCI]    = opc_alloci_func,
+    [OPC_RESIZE]    = opc_resize_func,
+    [OPC_RESIZEI]   = opc_resizei_func,
+    [OPC_FREE]      = opc_free_func,
+    [OPC_PUT]       = opc_put_func,
+    [OPC_READ]      = opc_read_func,
+    [OPC_GETSIZE]   = opc_getsize_func,
 };
 
 /*
@@ -198,7 +222,7 @@ void minx_vpu_run() {
 
     /* alloc standard registers */
     init_registers();
-
+    setup_heap();
     stack = empty_stack();
     opc_p = (CommandParameters*) malloc( sizeof(*opc_p) );
 
@@ -207,6 +231,7 @@ void minx_vpu_run() {
     free(registers);
     free(opc_p);
     stackdelete(stack);
+    shutdown_heap();
 }
 
 /*
@@ -333,56 +358,148 @@ static void run_opcode(uint16_t cmd) {
 } // static void run_opcode
 
 /*
- * Helper function for parsing command parameters
- * args:
+ * -----------------------------------------------------------------------------
  *
- * @param cp            storage for the result 
- * @param size1         size of argument 1
+ *      Heap section - all helper functions for heap management
  *
- * Why
- * ---
- *
- *  Have a look at the description for read_2_command_parameters() function.
- *
+ * -----------------------------------------------------------------------------
  */
-static void read_1_command_parameter(unsigned int size1) {
-    opc_p->p1 = *((uint64_t *) minx_binary_get_at((program_pointer+OPC_SIZE), 
-                size1, &opc_p->p1));
+
+static void setup_heap() {
+    heapnodes = (HeapNode*) malloc( sizeof(HeapNode) );
+    heapnodes[0].used               = HEAPNODE_NOT_USED;
+    heapnodes[0].first_byte_addr    = (uint64_t) 0x00;
+    heapnodes[0].size               = (uint64_t) 0x00;
+    heapnodes[0].memory             = NULL;
+    heapnodes_count = 1;
+}
+
+static void shutdown_heap() {
+    uint64_t i;
+    for(i = 0 ; i < heapnodes_count ; i++) {
+        free(heapnodes[i].memory);
+    }
+    free(heapnodes);
 }
 
 /*
- * Helper function for parsing command parameters
- * args:
+ * find heapnode by address, if not found, return NULL.
  *
- * @param cp            storage for the result 
- * @param size1         size of argument 1, used as offset, too
- * @param size2         size of argument 2
- *
- * Why
- * ---
- *
- *  Reading the parameters from the binary is always the same procedure:
- *      - go to (program_pointer + OPC_SIZE )
- *      - read the value there, it could be a constant or a pointer, doesn't
- *      matter yet
- *      - go to (program_pointer + OPC_SIZE + <size of prev read data>)
- *      - read the value there, it could be a constant or a pointer, doesn't
- *      matter yet
- *
- *  and then use this data. The upper part is done by this helper function, to
- *  simplify the work of the opc_ functions.
+ * TODO: 
+ * If the address is INSIDE of a heapnode, the heapnode has to be returned!
  */
-static void read_2_command_parameters(unsigned int size1, unsigned int size2) {
-    opc_p->p1 = *((uint64_t *) minx_binary_get_at(
-                (program_pointer + OPC_SIZE), size1, &opc_p->p1));
-    opc_p->p2 = *((uint64_t *) minx_binary_get_at(
-                (program_pointer + OPC_SIZE + size1), size2, &opc_p->p2));
+static HeapNode* find_heapnode(uint64_t ptr) {
+    uint64_t i;
+    for(i = 0; i < heapnodes_count && heapnodes[i].first_byte_addr != ptr; i++);
+    if( i == heapnodes_count ) {
+        return NULL;
+    }
+    return &(heapnodes[i]);
+}
+
+/*
+ * finds a unused heapnode in the heapnodes-array or creates a new one.
+ */
+static HeapNode* find_or_create_unused_heapnode() {
+    HeapNode *new = NULL;
+    uint64_t i;
+    for( i = 0 ; i < heapnodes_count ; i++ ) {
+        if( heapnodes[i].used == HEAPNODE_NOT_USED ) {
+            new = &heapnodes[i];
+            break;
+        }
+    }
+    if( new == NULL ) {
+
+        /*
+         * reallocate with more heapnodes than required for future use.
+         */
+        unsigned int new_heapnodes_count;
+
+        if( heapnodes_count < 20 ) {
+            new_heapnodes_count = 10;
+        }
+        else if ( heapnodes_count < 50 ) {
+            new_heapnodes_count = 5;
+        }
+        else {
+            new_heapnodes_count = 2;
+        }
+
+        heapnodes = realloc(heapnodes, sizeof(HeapNode) * (heapnodes_count+new_heapnodes_count));
+
+        for( i = (heapnodes_count + new_heapnodes_count -1 ); i > heapnodes_count; i--) {
+            heapnodes[i].used = HEAPNODE_NOT_USED;
+            heapnodes[i].first_byte_addr    = (uint64_t) 0x00;
+            heapnodes[i].size               = (uint64_t) 0x00;
+            heapnodes[i].memory             = NULL;
+        }
+        new = &heapnodes[heapnodes_count];
+        heapnodes_count += new_heapnodes_count;
+    }
+
+    /*
+     * calculate memorysize for the new heapnode
+     */
+
+    uint64_t ptr = 0;
+    for( i = 0 ; &heapnodes[i] != new; i++,  ptr += heapnodes[i].size );
+    new->first_byte_addr = ptr;
+    return new;
+}
+
+static void* get_memory_from_heapnode(HeapNode *h, uint64_t addr) {
+    char * mem = (char*)h->memory;
+    if( h->first_byte_addr > addr || h->first_byte_addr - addr > h->size ) {
+        FATAL_DESC_ERROR("tried to access memory that does not exist");
+    }
+    uint64_t local_ptr = h->first_byte_addr - addr;
+    return &mem[local_ptr];
 }
 
 
 /*
  * -----------------------------------------------------------------------------
- *          Opcode-functions implementations
+ *
+ *      Argument section - all helpers for opcode arguments 
+ *
+ * -----------------------------------------------------------------------------
+ */
+
+/*
+ * Helper function for parsing command parameters
+ * args:
+ *
+ * @param n             count of parameters 
+ * @param sizes         sizes of the parameters
+ *
+ * Why
+ * ---
+ *
+ *  Reading the parameters from the binary is always the same procedure:
+ *      1) go to (program_pointer + OPC_SIZE )
+ *      2) read the value there
+ *      3) go to (program_pointer + OPC_SIZE + <size of prev read data>)
+ *      4) read the value there
+ *      5) go to 3) or ready
+ *
+ */
+static void read_n_command_parameters(unsigned int n, unsigned int sizes[]) {
+    uint64_t        next_pos = program_pointer + OPC_SIZE;
+    unsigned int    i;
+
+    for(i = 0 ; i < n ; i++ ) {
+        opc_p->p[i] = *((uint64_t*) minx_binary_get_at(next_pos, sizes[i], &opc_p->p[i]));
+        next_pos += sizes[i];
+    }
+}
+
+
+/*
+ * -----------------------------------------------------------------------------
+ *
+ *      Opcodes functions
+ *
  * -----------------------------------------------------------------------------
  *
  * (Almost) each opcode has to modify the program pointer to the byte after 
@@ -427,11 +544,11 @@ static void opc_nop_func() {
  * set the program_pointer to the value of the argument of the opc.
  */
 static void opc_call_func() {
-
-    read_1_command_parameter(PROGRAM_ADDRESS_SIZE);
+    unsigned int params[] = { PROGRAM_ADDRESS_SIZE };
+    read_n_command_parameters(1, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("call", "%"PRIu64, opc_p->p1);
+    EXPLAIN_OPCODE_WITH("call", "%"PRIu64, opc_p->p[1]);
 #endif
     /*
      * push to stack
@@ -442,7 +559,7 @@ static void opc_call_func() {
     stackpush(  stack,
                 (void*)(program_pointer + OPC_SIZE + PROGRAM_ADDRESS_SIZE), 
                 (size_t)PROGRAM_ADDRESS_SIZE);
-    program_pointer = opc_p->p1;
+    program_pointer = opc_p->p[0];
 }
 
 /*
@@ -470,13 +587,14 @@ static void opc_ret_func() {
  *
  */
 static void opc_mov_func() {
-    read_2_command_parameters(REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE);
+    unsigned int params[] = { REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE };
+    read_n_command_parameters(2, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("mov", "%"PRIu64" <- %"PRIu64, opc_p->p1, opc_p->p2);
+    EXPLAIN_OPCODE_WITH("mov", "%"PRIu64" <- %"PRIu64, opc_p->p[1], opc_p->p[2]);
 #endif 
 
-    find_register(opc_p->p1)->value = find_register(opc_p->p2)->value;
+    find_register(opc_p->p[1])->value = find_register(opc_p->p[2])->value;
     program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE);
 }
 
@@ -488,13 +606,14 @@ static void opc_mov_func() {
  *
  */
 static void opc_movi_func() {
-    read_2_command_parameters(REGISTER_ADDRESS_SIZE, VALUE_SIZE);
+    unsigned int params[] = { REGISTER_ADDRESS_SIZE, VALUE_SIZE };
+    read_n_command_parameters(2, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("movi", "%"PRIu64" <- %"PRIu64, opc_p->p1, opc_p->p2);
+    EXPLAIN_OPCODE_WITH("movi", "%"PRIu64" <- %"PRIu64, opc_p->p[0], opc_p->p[1]);
 #endif 
 
-    find_register(opc_p->p1)->value = opc_p->p2;
+    find_register(opc_p->p[0])->value = opc_p->p[1];
 
     program_pointer += ( OPC_SIZE + REGISTER_ADDRESS_SIZE + VALUE_SIZE );
 }
@@ -507,13 +626,14 @@ static void opc_movi_func() {
  * Result in akku
  */
 static void opc_not_func() {
-    read_1_command_parameter(REGISTER_ADDRESS_SIZE);
+    unsigned int params[] = { REGISTER_ADDRESS_SIZE };
+    read_n_command_parameters(1, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("not", "reg: %"PRIu64, opc_p->p1);
+    EXPLAIN_OPCODE_WITH("not", "reg: %"PRIu64, opc_p->p[1]);
 #endif 
 
-    akku = ! find_register(opc_p->p1)->value;
+    akku = ! find_register(opc_p->p[1])->value;
 
     program_pointer += ( OPC_SIZE + REGISTER_ADDRESS_SIZE );
 }
@@ -526,13 +646,14 @@ static void opc_not_func() {
  * Result in same register
  */
 static void opc_notr_func() {
-    read_1_command_parameter(REGISTER_ADDRESS_SIZE);
+    unsigned int params[] = { REGISTER_ADDRESS_SIZE };
+    read_n_command_parameters(1, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("not", "reg: %"PRIu64, opc_p->p1);
+    EXPLAIN_OPCODE_WITH("not", "reg: %"PRIu64, opc_p->p[0]);
 #endif 
 
-    find_register(opc_p->p1)->value = ! find_register(opc_p->p1)->value;
+    find_register(opc_p->p[0])->value = ! find_register(opc_p->p[0])->value;
  
     program_pointer += ( OPC_SIZE + REGISTER_ADDRESS_SIZE );
 }
@@ -545,14 +666,14 @@ static void opc_notr_func() {
  * result in akku
  */
 static void opc_and_func() {
-
-    read_2_command_parameters(REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE);
+    unsigned int params[] = { REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE };
+    read_n_command_parameters(2, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("and", "reg %"PRIu64" & reg %"PRIu64, opc_p->p1, opc_p->p2);
+    EXPLAIN_OPCODE_WITH("and", "reg %"PRIu64" & reg %"PRIu64, opc_p->p[0], opc_p->p[1]);
 #endif
 
-    akku = find_register(opc_p->p1)->value & find_register(opc_p->p2)->value;
+    akku = find_register(opc_p->p[1])->value & find_register(opc_p->p[1])->value;
 
     program_pointer += ( OPC_SIZE + REGISTER_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE );
 }
@@ -565,16 +686,16 @@ static void opc_and_func() {
  * Result in akku
  */
 static void opc_andi_func() {
-    
-    read_2_command_parameters(REGISTER_ADDRESS_SIZE, VALUE_SIZE);
+    unsigned int params[] = { REGISTER_ADDRESS_SIZE, VALUE_SIZE };
+    read_n_command_parameters(2, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("andi", "reg %"PRIu64" & %"PRIu64, opc_p->p1, opc_p->p2);
+    EXPLAIN_OPCODE_WITH("andi", "reg %"PRIu64" & %"PRIu64, opc_p->p[0], opc_p->p[1]);
 #endif
 
-    akku = find_register(opc_p->p1)->value & opc_p->p2;
+    akku = find_register(opc_p->p[0])->value & opc_p->p[1];
 
-    program_pointer += ( OPC_SIZE + REGISTER_ADDRESS_SIZE + VALUE_SIZE);
+    program_pointer += ( OPC_SIZE + REGISTER_ADDRESS_SIZE + VALUE_SIZE );
 }
 
 /*
@@ -585,14 +706,14 @@ static void opc_andi_func() {
  * Result in first register
  */
 static void opc_andr_func() {
-
-    read_2_command_parameters(REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE);
+    unsigned int params[] = { REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE };
+    read_n_command_parameters(2, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("andr", "reg %"PRIu64" & reg%"PRIu64, opc_p->p1, opc_p->p2);
+    EXPLAIN_OPCODE_WITH("andr", "reg %"PRIu64" & reg%"PRIu64, opc_p->p[0], opc_p->p[1]);
 #endif
 
-    find_register(opc_p->p1)->value &= find_register(opc_p->p2)->value;
+    find_register(opc_p->p[0])->value &= find_register(opc_p->p[1])->value;
 
     program_pointer += ( OPC_SIZE + REGISTER_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE );
 }
@@ -605,16 +726,16 @@ static void opc_andr_func() {
  * Result in first register
  */
 static void opc_andir_func() {
-
-    read_2_command_parameters(REGISTER_ADDRESS_SIZE, VALUE_SIZE);
+    unsigned int params[] = { REGISTER_ADDRESS_SIZE, VALUE_SIZE };
+    read_n_command_parameters(2, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("andir", "reg %"PRIu64" & %"PRIu64, opc_p->p1, opc_p->p2);
+    EXPLAIN_OPCODE_WITH("andir", "reg %"PRIu64" & %"PRIu64, opc_p->p[0], opc_p->p[1]);
 #endif
 
-    find_register(opc_p->p1)->value &= opc_p->p2;
+    find_register(opc_p->p[0])->value &= opc_p->p[1];
 
-    program_pointer += ( OPC_SIZE + REGISTER_ADDRESS_SIZE + VALUE_SIZE);
+    program_pointer += ( OPC_SIZE + REGISTER_ADDRESS_SIZE + VALUE_SIZE );
 }
 
 
@@ -626,14 +747,14 @@ static void opc_andir_func() {
  * Result in akku
  */
 static void opc_or_func() {
-
-    read_2_command_parameters(REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE);
+    unsigned int params[] = { REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE };
+    read_n_command_parameters(2, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("or", "reg %"PRIu64" | reg %"PRIu64, opc_p->p1, opc_p->p2);
+    EXPLAIN_OPCODE_WITH("or", "reg %"PRIu64" | reg %"PRIu64, opc_p->p[0], opc_p->p[1]);
 #endif 
 
-    akku = find_register(opc_p->p1)->value | find_register(opc_p->p2)->value;
+    akku = find_register(opc_p->p[0])->value | find_register(opc_p->p[1])->value;
 
     program_pointer += ( OPC_SIZE + REGISTER_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE );
 }
@@ -646,16 +767,16 @@ static void opc_or_func() {
  *
  */
 static void opc_ori_func() {
-
-    read_2_command_parameters(REGISTER_ADDRESS_SIZE, VALUE_SIZE);
+    unsigned int params[] = { REGISTER_ADDRESS_SIZE, VALUE_SIZE };
+    read_n_command_parameters(2, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("ori", "reg %"PRIu64" | %"PRIu64, opc_p->p1, opc_p->p2);
+    EXPLAIN_OPCODE_WITH("ori", "reg %"PRIu64" | %"PRIu64, opc_p->p[0], opc_p->p[1]);
 #endif 
 
-    akku = find_register(opc_p->p1)->value | opc_p->p2;
+    akku = find_register(opc_p->p[0])->value | opc_p->p[1];
 
-    program_pointer += ( OPC_SIZE + REGISTER_ADDRESS_SIZE + VALUE_SIZE);
+    program_pointer += ( OPC_SIZE + REGISTER_ADDRESS_SIZE + VALUE_SIZE );
 }
 
 /*
@@ -666,16 +787,16 @@ static void opc_ori_func() {
  *
  */
 static void opc_orr_func() {
-
-    read_2_command_parameters(REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE);
+    unsigned int params[] = { REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE };
+    read_n_command_parameters(2, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("orr", "reg %"PRIu64" | reg %"PRIu64, opc_p->p1, opc_p->p2);
+    EXPLAIN_OPCODE_WITH("orr", "reg %"PRIu64" | reg %"PRIu64, opc_p->p[0], opc_p->p[1]);
 #endif 
 
-    find_register(opc_p->p1)->value |= find_register(opc_p->p2)->value;
+    find_register(opc_p->p[0])->value |= find_register(opc_p->p[1])->value;
 
-    program_pointer += ( OPC_SIZE + REGISTER_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE);
+    program_pointer += ( OPC_SIZE + REGISTER_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE );
 }
 
 /*
@@ -686,16 +807,16 @@ static void opc_orr_func() {
  *
  */
 static void opc_orir_func() {
-
-    read_2_command_parameters(REGISTER_ADDRESS_SIZE, VALUE_SIZE);
+    unsigned int params[] = { REGISTER_ADDRESS_SIZE, VALUE_SIZE };
+    read_n_command_parameters(2, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("orir", "reg %"PRIu64" | %"PRIu64, opc_p->p1, opc_p->p2);
+    EXPLAIN_OPCODE_WITH("orir", "reg %"PRIu64" | %"PRIu64, opc_p->p[0], opc_p->p[1]);
 #endif 
 
-    find_register(opc_p->p1)->value |= opc_p->p2;
+    find_register(opc_p->p[0])->value |= opc_p->p[1];
 
-    program_pointer += ( OPC_SIZE + REGISTER_ADDRESS_SIZE + VALUE_SIZE);
+    program_pointer += ( OPC_SIZE + REGISTER_ADDRESS_SIZE + VALUE_SIZE );
 }
 
 /*
@@ -706,17 +827,18 @@ static void opc_orir_func() {
  *
  */
 static void opc_dec_func() {
-    read_1_command_parameter(REGISTER_ADDRESS_SIZE);
+    unsigned int params[] = { REGISTER_ADDRESS_SIZE };
+    read_n_command_parameters(1, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("dec", "reg: %"PRIu64, opc_p->p1);
+    EXPLAIN_OPCODE_WITH("dec", "reg: %"PRIu64, opc_p->p[0]);
 #endif 
 
-    if( find_register(opc_p->p1)->value == 0x0000 ) {
+    if( find_register(opc_p->p[0])->value == 0x0000 ) {
         setbit(statusregister, OVERFLOW_BIT);
     }
 
-    find_register(opc_p->p1)->value--;
+    find_register(opc_p->p[0])->value--;
     
     program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE);
 }
@@ -729,17 +851,18 @@ static void opc_dec_func() {
  *
  */
 static void opc_inc_func() {
-    read_1_command_parameter(REGISTER_ADDRESS_SIZE);
+    unsigned int params[] = { REGISTER_ADDRESS_SIZE };
+    read_n_command_parameters(1, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("inc", "reg: %"PRIu64, opc_p->p1);
+    EXPLAIN_OPCODE_WITH("inc", "reg: %"PRIu64, opc_p->p[0]);
 #endif 
 
-    if( find_register(opc_p->p1)->value == 0xFFFF ) {
+    if( find_register(opc_p->p[0])->value == 0xFFFF ) {
         setbit(statusregister, OVERFLOW_BIT);
     }
 
-    find_register(opc_p->p1)->value++;
+    find_register(opc_p->p[0])->value++;
     
     program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE);
 }
@@ -752,14 +875,14 @@ static void opc_inc_func() {
  *
  */
 static void opc_lsh_func() {
-
-    read_1_command_parameter(REGISTER_ADDRESS_SIZE);
+    unsigned int params[] = { REGISTER_ADDRESS_SIZE };
+    read_n_command_parameters(1, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("lsh", "reg %"PRIu64, opc_p->p1);
+    EXPLAIN_OPCODE_WITH("lsh", "reg %"PRIu64, opc_p->p[0]);
 #endif
 
-    Register *r = find_register(opc_p->p1);
+    Register *r = find_register(opc_p->p[0]);
     r->value = r->value<<1;
     
     program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE);
@@ -773,14 +896,14 @@ static void opc_lsh_func() {
  *
  */
 static void opc_rsh_func() {
-                
-    read_1_command_parameter(REGISTER_ADDRESS_SIZE);
+    unsigned int params[] = { REGISTER_ADDRESS_SIZE };
+    read_n_command_parameters(1, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("rsh", "reg %"PRIu64, opc_p->p1);
+    EXPLAIN_OPCODE_WITH("rsh", "reg %"PRIu64, opc_p->p[0]);
 #endif
 
-    Register *r = find_register(opc_p->p1);
+    Register *r = find_register(opc_p->p[0]);
     r->value = r->value>>1;
     
     program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE);
@@ -798,15 +921,15 @@ static void opc_rsh_func() {
  * zero if equal
  */
 static void opc_cmp_func() {
-    
-    read_2_command_parameters(REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE);
+    unsigned int params[] = { REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE };
+    read_n_command_parameters(2, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("cmp", "reg %"PRIu64" and reg %"PRIu64, opc_p->p1, opc_p->p2);
+    EXPLAIN_OPCODE_WITH("cmp", "reg %"PRIu64" and reg %"PRIu64, opc_p->p[0], opc_p->p[1]);
 #endif 
     
-    Register * r1 = find_register(opc_p->p1);
-    Register * r2 = find_register(opc_p->p2);
+    Register * r1 = find_register(opc_p->p[0]);
+    Register * r2 = find_register(opc_p->p[1]);
 
     if( r1->value > r2->value ) {
         akku = 1;
@@ -833,19 +956,19 @@ static void opc_cmp_func() {
  * zero if equal
  */
 static void opc_cmpi_func() {
-    
-    read_2_command_parameters(REGISTER_ADDRESS_SIZE, VALUE_SIZE);
+    unsigned int params[] = { REGISTER_ADDRESS_SIZE, VALUE_SIZE }; 
+    read_n_command_parameters(2, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("cmpi", "reg %"PRIu64" and %"PRIu64, opc_p->p1, opc_p->p2);
+    EXPLAIN_OPCODE_WITH("cmpi", "reg %"PRIu64" and %"PRIu64, opc_p->p[0], opc_p->p[1]);
 #endif 
     
-    Register * r1 = find_register(opc_p->p1);
+    Register * r1 = find_register(opc_p->p[0]);
 
-    if(r1->value > opc_p->p2) {
+    if(r1->value > opc_p->p[1]) {
         akku = 1;
     }
-    else if(r1->value < opc_p->p2) {
+    else if(r1->value < opc_p->p[1]) {
         akku = 2;
     }
     else {//( r1->value == r2->value )
@@ -863,14 +986,14 @@ static void opc_cmpi_func() {
  *
  */
 static void opc_eql_func() {
-
-    read_2_command_parameters(REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE);
+    unsigned int params[] = { REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE };
+    read_n_command_parameters(2, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("eql", "reg %"PRIu64" and reg %"PRIu64, opc_p->p1, opc_p->p2);
+    EXPLAIN_OPCODE_WITH("eql", "reg %"PRIu64" and reg %"PRIu64, opc_p->p[0], opc_p->p[1]);
 #endif 
     
-    akku = find_register(opc_p->p1)->value == find_register(opc_p->p1)->value;
+    akku = find_register(opc_p->p[0])->value == find_register(opc_p->p[0])->value;
 
     program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE);
 }
@@ -883,14 +1006,14 @@ static void opc_eql_func() {
  *
  */
 static void opc_eqli_func() {
-
-    read_2_command_parameters(REGISTER_ADDRESS_SIZE, VALUE_SIZE);
+    unsigned int params[] = { REGISTER_ADDRESS_SIZE, VALUE_SIZE };
+    read_n_command_parameters(2, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("eqli", "reg %"PRIu64" and %"PRIu64, opc_p->p1, opc_p->p2);
+    EXPLAIN_OPCODE_WITH("eqli", "reg %"PRIu64" and %"PRIu64, opc_p->p[0], opc_p->p[1]);
 #endif 
     
-    akku = find_register(opc_p->p1)->value == opc_p->p2;
+    akku = find_register(opc_p->p[0])->value == opc_p->p[1];
 
     program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE + VALUE_SIZE);
 }
@@ -903,14 +1026,14 @@ static void opc_eqli_func() {
  *
  */
 static void opc_push_func() {
-
-    read_1_command_parameter(REGISTER_ADDRESS_SIZE);
+    unsigned int params[] = { REGISTER_ADDRESS_SIZE };
+    read_n_command_parameters(1, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("push", "reg %"PRIu64, opc_p->p1);
+    EXPLAIN_OPCODE_WITH("push", "reg %"PRIu64, opc_p->p[0]);
 #endif
 
-    stackpush(stack, &(find_register(opc_p->p1)->value), VALUE_SIZE) ;
+    stackpush(stack, &(find_register(opc_p->p[0])->value), VALUE_SIZE) ;
     
     program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE);
 }
@@ -926,14 +1049,14 @@ static void opc_pop_func() {
     if( stack_is_empty( stack ) ) {
         FATAL_DESC_ERROR("Cannot pop from empty stack!");
     }
-
-    read_1_command_parameter(REGISTER_ADDRESS_SIZE);
+    unsigned int params[] = { REGISTER_ADDRESS_SIZE };
+    read_n_command_parameters(1, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("pop", "reg %"PRIu64, opc_p->p1);
+    EXPLAIN_OPCODE_WITH("pop", "reg %"PRIu64, opc_p->p[0]);
 #endif
 
-    find_register(opc_p->p1)->value = *((uint64_t*)stackpop(stack));
+    find_register(opc_p->p[0])->value = *((uint64_t*)stackpop(stack));
     
     program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE);
 }
@@ -966,14 +1089,14 @@ static void opc_drop_func() {
  * Result in akku
  */
 static void opc_add_func() {
-    
-    read_2_command_parameters(REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE);
+    unsigned int params[] = { REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE };
+    read_n_command_parameters(2, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("add", "reg %"PRIu64" + reg %"PRIu64, opc_p->p1, opc_p->p2);
+    EXPLAIN_OPCODE_WITH("add", "reg %"PRIu64" + reg %"PRIu64, opc_p->p[0], opc_p->p[1]);
 #endif
 
-    akku = find_register(opc_p->p1)->value + find_register(opc_p->p2)->value;
+    akku = find_register(opc_p->p[0])->value + find_register(opc_p->p[1])->value;
 
     program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE);
 }
@@ -986,14 +1109,14 @@ static void opc_add_func() {
  * Result in akku
  */
 static void opc_addi_func() {
-    
-    read_2_command_parameters(REGISTER_ADDRESS_SIZE, VALUE_SIZE);
+    unsigned int params[] = { REGISTER_ADDRESS_SIZE, VALUE_SIZE };
+    read_n_command_parameters(1, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("addi", "reg %"PRIu64" + %"PRIu64, opc_p->p1, opc_p->p2);
+    EXPLAIN_OPCODE_WITH("addi", "reg %"PRIu64" + %"PRIu64, opc_p->p[0], opc_p->p[1]);
 #endif
 
-    akku = find_register(opc_p->p1)->value + opc_p->p2;
+    akku = find_register(opc_p->p[0])->value + opc_p->p[1];
 
     program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE + VALUE_SIZE);
 }
@@ -1006,14 +1129,14 @@ static void opc_addi_func() {
  * Result in register
  */
 static void opc_addr_func() {
-    
-    read_2_command_parameters(REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE);
+    unsigned int params[] = { REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE };
+    read_n_command_parameters(2, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("addr", "reg %"PRIu64" + reg %"PRIu64, opc_p->p1, opc_p->p2);
+    EXPLAIN_OPCODE_WITH("addr", "reg %"PRIu64" + reg %"PRIu64, opc_p->p[0], opc_p->p[1]);
 #endif
 
-    find_register(opc_p->p1)->value += find_register(opc_p->p2)->value;
+    find_register(opc_p->p[0])->value += find_register(opc_p->p[1])->value;
 
     program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE);
 }
@@ -1026,14 +1149,14 @@ static void opc_addr_func() {
  * Result in register
  */
 static void opc_addir_func() {
-    
-    read_2_command_parameters(REGISTER_ADDRESS_SIZE, VALUE_SIZE);
+    unsigned int params[] = { REGISTER_ADDRESS_SIZE, VALUE_SIZE };
+    read_n_command_parameters(2, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("addir", "reg %"PRIu64" + %"PRIu64, opc_p->p1, opc_p->p2);
+    EXPLAIN_OPCODE_WITH("addir", "reg %"PRIu64" + %"PRIu64, opc_p->p[0], opc_p->p[1]);
 #endif
 
-    find_register(opc_p->p1)->value += opc_p->p2;
+    find_register(opc_p->p[0])->value += opc_p->p[1];
 
     program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE + VALUE_SIZE);
 }
@@ -1046,14 +1169,15 @@ static void opc_addir_func() {
  *
  */
 static void opc_jmp_func() {
-    read_1_command_parameter(PROGRAM_ADDRESS_SIZE);
+    unsigned int params[] = { PROGRAM_ADDRESS_SIZE };
+    read_n_command_parameters(1, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("jmp", "to %"PRIu64, opc_p->p1);
+    EXPLAIN_OPCODE_WITH("jmp", "to %"PRIu64, opc_p->p[0]);
 #endif 
 
-    if( minx_binary_exists_at(opc_p->p1) || opc_p->p1 == END_OF_PROGRAM) {
-        program_pointer = opc_p->p1;
+    if( minx_binary_exists_at(opc_p->p[0]) || opc_p->p[0] == END_OF_PROGRAM) {
+        program_pointer = opc_p->p[0];
     }
     else {
         FATAL_DESC_ERROR("Cannot jump");
@@ -1068,16 +1192,16 @@ static void opc_jmp_func() {
  *
  */
 static void opc_jmpiz_func() {
-    
-    read_2_command_parameters(REGISTER_ADDRESS_SIZE, PROGRAM_ADDRESS_SIZE);
+    unsigned int params[] = { REGISTER_ADDRESS_SIZE, PROGRAM_ADDRESS_SIZE };
+    read_n_command_parameters(2, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("jmpiz", "to %"PRIu64" if reg %"PRIu64" == 0", opc_p->p2, opc_p->p1);
+    EXPLAIN_OPCODE_WITH("jmpiz", "to %"PRIu64" if reg %"PRIu64" == 0", opc_p->p[1], opc_p->p[0]);
 #endif 
 
-    if( minx_binary_exists_at(opc_p->p2) || opc_p->p2 == END_OF_PROGRAM) {
-        if( find_register(opc_p->p1)->value == 0x0000 ) {
-            program_pointer = opc_p->p2;
+    if( minx_binary_exists_at(opc_p->p[1]) || opc_p->p[1] == END_OF_PROGRAM) {
+        if( find_register(opc_p->p[0])->value == 0x0000 ) {
+            program_pointer = opc_p->p[1];
         }
         else {
             program_pointer += ( OPC_SIZE + REGISTER_ADDRESS_SIZE + PROGRAM_ADDRESS_SIZE );
@@ -1096,16 +1220,16 @@ static void opc_jmpiz_func() {
  *
  */
 static void opc_jmpnz_func() {
-    
-    read_2_command_parameters(REGISTER_ADDRESS_SIZE, PROGRAM_ADDRESS_SIZE);
+    unsigned int params[] = { REGISTER_ADDRESS_SIZE, PROGRAM_ADDRESS_SIZE }; 
+    read_n_command_parameters(2, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("jmpnz", "to %"PRIu64" if reg %"PRIu64" != 0", opc_p->p2, opc_p->p1);
+    EXPLAIN_OPCODE_WITH("jmpnz", "to %"PRIu64" if reg %"PRIu64" != 0", opc_p->p[1], opc_p->p[0]);
 #endif 
 
-    if( minx_binary_exists_at(opc_p->p2) || opc_p->p2 == END_OF_PROGRAM) {
-        if( find_register(opc_p->p1)->value != 0x0000 ) {
-            program_pointer = opc_p->p2;
+    if( minx_binary_exists_at(opc_p->p[1]) || opc_p->p[1] == END_OF_PROGRAM) {
+        if( find_register(opc_p->p[0])->value != 0x0000 ) {
+            program_pointer = opc_p->p[1];
         }
         else {
             program_pointer += ( OPC_SIZE + REGISTER_ADDRESS_SIZE + PROGRAM_ADDRESS_SIZE );
@@ -1124,21 +1248,21 @@ static void opc_jmpnz_func() {
  * if akku is zero then jump else jump
  */
 static void opc_ifzjmp_func() {
-    
-    read_2_command_parameters(PROGRAM_ADDRESS_SIZE, PROGRAM_ADDRESS_SIZE);
+    unsigned int params[] = { PROGRAM_ADDRESS_SIZE, PROGRAM_ADDRESS_SIZE }; 
+    read_n_command_parameters(2, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("jmpnz", "to %"PRIu64" if akku == 0, else to %"PRIu64, opc_p->p1, opc_p->p2);
+    EXPLAIN_OPCODE_WITH("jmpnz", "to %"PRIu64" if akku == 0, else to %"PRIu64, opc_p->p[0], opc_p->p[1]);
 #endif 
 
-    if( (minx_binary_exists_at(opc_p->p1) || opc_p->p1 == END_OF_PROGRAM) && 
-        (minx_binary_exists_at(opc_p->p2) || opc_p->p2 == END_OF_PROGRAM)) {
+    if( (minx_binary_exists_at(opc_p->p[0]) || opc_p->p[0] == END_OF_PROGRAM) && 
+        (minx_binary_exists_at(opc_p->p[1]) || opc_p->p[1] == END_OF_PROGRAM)) {
 
         if( akku == 0x0000 ) {
-            program_pointer = opc_p->p1;
+            program_pointer = opc_p->p[0];
         }
         else {
-            program_pointer = opc_p->p2;
+            program_pointer = opc_p->p[1];
         }
     } 
     else {
@@ -1196,6 +1320,321 @@ static void opc_pprog_func (void) {
 
 #endif //DEBUGGING
     program_pointer += OPC_SIZE;
+}
+
+/*
+ * Command:                 ALLOC 
+ * Parameters:              1, register-address
+ * Affects Program Pointer: NO
+ *
+ * Breaking DRY rule here, as opc_alloci_func() is almost the same
+ *
+ */
+static void opc_alloc_func(void) {
+
+    HeapNode    *h;
+    void        *memory;
+    unsigned int params[] = { REGISTER_ADDRESS_SIZE };
+    read_n_command_parameters(1, params);
+
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE_WITH("alloc", "%"PRIu64" Bytes", opc_p->p[0]);
+#endif
+
+    memory = malloc(opc_p->p[0]);
+    if( !memory || !(h = find_or_create_unused_heapnode()) ) {
+        clrbit(statusregister, ALLOC_BIT);
+        akku = (uint64_t)0x00;
+    }
+    else {
+        h->used         = HEAPNODE_USED;
+        h->size         = opc_p->p[0];
+        h->real_size    = opc_p->p[0];
+        h->memory       = memory;
+
+        setbit(statusregister, ALLOC_BIT);
+        akku = h->first_byte_addr;
+    }
+
+    program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE);
+}
+
+/*
+ * Command:                 ALLOCI
+ * Parameters:              1, value
+ * Affects Program Pointer: NO
+ *
+ * Breaking DRY rule here, as opc_alloc_func() is almost the same
+ *
+ */
+static void opc_alloci_func(void) {
+
+    HeapNode    *h;
+    void        *memory;
+    unsigned int params[] = { VALUE_SIZE };
+    read_n_command_parameters(1, params);
+
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE_WITH("alloci", "%"PRIu64" Bytes", opc_p->p[0]);
+#endif
+
+    memory = malloc(opc_p->p[0]);
+    if( !memory || !(h = find_or_create_unused_heapnode()) ) {
+        clrbit(statusregister, ALLOC_BIT);
+        akku = (uint64_t)0x00;
+    }
+    else {
+        h->used         = HEAPNODE_USED;
+        h->size         = opc_p->p[0];
+        h->real_size    = opc_p->p[0];
+        h->memory       = memory;
+
+        setbit(statusregister, ALLOC_BIT);
+        akku = h->first_byte_addr;
+    }
+    
+    program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE);
+}
+
+
+/*
+ * Command:                 RESIZE 
+ * Parameters:              1, heap-address, register-address 
+ * Affects Program Pointer: NO
+ *
+ * Breaking DRY rule here, as opc_resizei_func() is almost the same
+ *
+ */
+static void opc_resize_func(void) {
+    unsigned int params[] = { HEAP_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE };
+    read_n_command_parameters(2, params);
+
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE_WITH("resize", "heap %"PRIu64" to %"PRIu64" Bytes", 
+            opc_p->p[0], opc_p->p[1]);
+#endif 
+
+    HeapNode *h = find_heapnode(opc_p->p[0]);
+    if( h == NULL ) {
+        FATAL_DESC_ERROR("Memory could not be accessed");
+    }
+
+    if( opc_p->p[1] == h->size ){ 
+        clrbit(statusregister, RESIZE_BIT);
+        return;
+    }
+
+    /*
+     * if the resize value is smaller as the actual size or the _real_ size,
+     * just set the size variable in the heapnode
+     */
+    if( opc_p->p[1] <= h->size || opc_p->p[1] <= h->real_size) {
+        h->size = opc_p->p[1];
+    }
+    /*
+     * if the parameter says, the memory should be resized, do it!
+     */
+    else {
+        h->memory = realloc(h->memory, opc_p->p[1]);
+        h->real_size = h->size = opc_p->p[1];
+    }
+
+    setbit(statusregister, RESIZE_BIT);
+
+    program_pointer += (OPC_SIZE + HEAP_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE);
+}
+
+/*
+ * Command:                 RESIZEI
+ * Parameters:              1, heap-address, value 
+ * Affects Program Pointer: NO
+ *
+ * Breaking DRY rule here, as opc_resize_func() is almost the same
+ *
+ */
+static void opc_resizei_func(void) {
+    unsigned int params[] = { HEAP_ADDRESS_SIZE, VALUE_SIZE };
+    read_n_command_parameters(2, params);
+
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE_WITH("resizei", "heap %"PRIu64" to %"PRIu64" Bytes", 
+            opc_p->p[0], opc_p->p[1]);
+#endif 
+
+    HeapNode *h = find_heapnode(opc_p->p[0]);
+    if( h == NULL ) {
+        FATAL_DESC_ERROR("Memory could not be accessed");
+    }
+
+    if( opc_p->p[1] == h->size ){ 
+        clrbit(statusregister, RESIZE_BIT);
+        return;
+    }
+
+    /*
+     * if the resize value is smaller as the actual size or the _real_ size,
+     * just set the size variable in the heapnode
+     */
+    if( opc_p->p[1] <= h->size || opc_p->p[1] <= h->real_size) {
+        h->size = opc_p->p[1];
+    }
+    /*
+     * if the parameter says, the memory should be resized, do it!
+     */
+    else { //if( opc_p->p[2] > h->size ) {
+        h->memory = realloc(h->memory, opc_p->p[1]);
+        h->real_size = h->size = opc_p->p[1];
+    }
+        
+    setbit(statusregister, RESIZE_BIT);
+
+    program_pointer += (OPC_SIZE + HEAP_ADDRESS_SIZE + VALUE_SIZE);
+}
+
+/*
+ * Command:                 FREE 
+ * Parameters:              1, heap-address
+ * Affects Program Pointer: NO
+ *
+ *
+ */
+static void opc_free_func(void) {
+    unsigned int params[] = { HEAP_ADDRESS_SIZE };
+    read_n_command_parameters(1, params);
+
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE_WITH("free", "heap %"PRIu64, opc_p->p[0]);
+#endif
+    
+    HeapNode *h         = find_heapnode(registers[opc_p->p[0]].value);
+    h->used             = HEAPNODE_NOT_USED;
+    h->memory           = memset(h->memory, 0x00, h->real_size);
+
+    program_pointer += (OPC_SIZE + HEAP_ADDRESS_SIZE);
+}
+
+/*
+ * Command:                 PUT
+ * Parameters:              3, heap-address, register-address, register-address
+ * Affects Program Pointer: NO
+ *
+ *
+ */
+static void opc_put_func(void) {
+    unsigned int params[] = {   HEAP_ADDRESS_SIZE, 
+                                REGISTER_ADDRESS_SIZE, 
+                                REGISTER_ADDRESS_SIZE };
+    read_n_command_parameters(3, params);
+
+    HeapNode        *h;
+    void            *mem;
+    uint64_t        mask;
+    unsigned int    masked_bytes;
+
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE_WITH("put", 
+            "into heap %"PRIu64" val of reg %"PRIu64"(%"PRIu64" Bytes)", 
+            opc_p->p[0], 
+            opc_p->p[1],
+            opc_p->p[2]
+            );
+#endif 
+
+    /*
+     * A register has 8 Byte. So, we can only put 8 byte at once. 
+     * I will not read more than one register to put, because it is so ugly!
+     */
+    if( opc_p->p[2] > (uint64_t)8 ) {
+        FATAL_DESC_ERROR("Cannot read more than 8 Byte from register");
+    }
+
+    h   = find_heapnode(registers[opc_p->p[0]].value);
+    mem = get_memory_from_heapnode(h, opc_p->p[0]);
+
+    /*
+     * Build the mask to mask the bytes from heap, so in the register there is
+     * just the data from heap and not the artifacts from prior use!
+     */
+    for(mask = 0x00, masked_bytes = opc_p->p[2]; masked_bytes; masked_bytes--) {
+        mask = (mask<<8) | 0xFF;
+    }
+
+    memcpy(&registers[opc_p->p[1]].value, mem, opc_p->p[2]);
+    registers[opc_p->p[1]].value &= mask;
+
+    program_pointer += (OPC_SIZE + HEAP_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE);
+}
+
+/*
+ * Command:                 READ
+ * Parameters:              3, heap-address, register-address, register-address
+ * Affects Program Pointer: NO
+ *
+ *
+ */
+static void opc_read_func(void) {
+    unsigned int params[] = {   HEAP_ADDRESS_SIZE,
+                                REGISTER_ADDRESS_SIZE,
+                                REGISTER_ADDRESS_SIZE };
+    read_n_command_parameters(3, params);
+
+    HeapNode    *h;
+    void        *mem;
+
+#ifdef DEBUGGING 
+    EXPLAIN_OPCODE_WITH("read",
+            "from heap %"PRIu64" %"PRIu64" Byte into reg %"PRIu64,
+            opc_p->p[0],
+            opc_p->p[2],
+            opc_p->p[1]
+            );
+#endif 
+
+    /*
+     * A register has 8 Byte. So, we can only put 8 byte at once. 
+     * I will not read more than one register to put, because it is so ugly!
+     */
+    if( opc_p->p[2] > (uint64_t)8 ) {
+        FATAL_DESC_ERROR("Cannot read more than 8 Byte from register");
+    }
+    else if ( opc_p->p[2] != 0 ) {
+        h   = find_heapnode(registers[opc_p->p[0]].value);
+        mem = get_memory_from_heapnode(h, opc_p->p[0]);
+
+        /*
+         * set the target register to 0x00, so the previous stored data is
+         * completely gone when setting the read data from the heap.
+         */
+        registers[opc_p->p[1]].value = 0x00;
+        memcpy(&registers[opc_p->p[1]].value, mem, opc_p->p[2]);
+    }
+    /*
+     * else do nothing (if the size is set to zero) 
+     */
+
+}
+
+/*
+ * Command:                 GETSIZE
+ * Parameters:              1, heap-address
+ * Affects Program Pointer: NO
+ *
+ *
+ */
+static void opc_getsize_func(void) {
+    unsigned int params[] = { HEAP_ADDRESS_SIZE };
+    read_n_command_parameters(1, params);
+
+    HeapNode *h;
+
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE_WITH("GETSIZE", "of heap %"PRIu64" into akku", opc_p->p[0]);
+#endif 
+
+    h       = find_heapnode(registers[opc_p->p[0]].value);
+    akku    = h->size; 
+
+    program_pointer += (OPC_SIZE + HEAP_ADDRESS_SIZE);
 }
 
 /*

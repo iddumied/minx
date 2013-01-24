@@ -75,6 +75,15 @@
 #define         OPC_PREGS           0x51
 #define         OPC_PPROG           0x52
 
+#define         OPC_ALLOC           0x60
+#define         OPC_ALLOCI          0x61
+#define         OPC_RESIZE          0x62
+#define         OPC_RESIZEI         0x63
+#define         OPC_FREE            0x64
+#define         OPC_PUT             0x65
+#define         OPC_READ            0x66
+#define         OPC_GETSIZE         0x67
+
 /* 
  * defines for size in bytes 
  */
@@ -82,6 +91,7 @@
 #define         OPC_SIZE                2 /*16 bit*/
 #define         VALUE_SIZE              8 /*64 bit*/
 #define         REGISTER_ADDRESS_SIZE   2 /*16 bit*/
+#define         HEAP_ADDRESS_SIZE       2 /*16 bit*/
 #define         REGISTER_MASK           0x0000FFFF /* currently, only take 2 Byte */
 #define         PROGRAM_ADDRESS_SIZE    8 /*64 bit, because program_pointer is 64 bit*/
 
@@ -104,6 +114,8 @@ typedef struct {
 #define         END_OF_PROGRAM      ((uint64_t)-1) /* last address is END_OF_PROGRAM */
 
 #define         OVERFLOW_BIT    0
+#define         ALLOC_BIT       1
+#define         RESIZE_BIT      2
 
 #define         setbit(byte,bitnum)     do { byte |=  0x0001<<bitnum; } while(0)
 #define         clrbit(byte,bitnum)     do { byte &= !0x0001<<bitnum; } while(0)
@@ -112,9 +124,34 @@ typedef struct {
  * command parameters parsing helper struct
  */
 typedef struct {
-    uint64_t    p1;
-    uint64_t    p2;
+    unsigned int    len;
+    uint64_t        p[];
 } CommandParameters;
+
+/*
+ *
+ * Heap 
+ *
+ * used: if this heapnode is used, this value is UINT8_MAX
+ * when it is unused it is less than UINT8_MAX, and gets decremented each
+ * VPU_MEM_CLEANUP times. If it is zero, it is removed from memory (free()).
+ *
+ * first_byte_addr: address of the first byte of this set of memory. Used for
+ * the program.
+ *
+ * size: size of the memory. Used for both internals and the program.
+ * *memory: pointer to the memory.
+ */
+typedef struct {
+    uint8_t     used;
+    uint64_t    first_byte_addr;
+    uint64_t    size;
+    uint64_t    real_size;
+    void        *memory;
+} HeapNode;
+
+#define HEAPNODE_USED           UINT8_MAX
+#define HEAPNODE_NOT_USED       0
 
 /*
  * Function prototypes 
