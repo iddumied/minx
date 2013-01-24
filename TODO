@@ -102,3 +102,4 @@ TODO:
 		The address of the memory can be generated randomly, if security
 		requires it.
 
+18) Outsource the heap stuff 
