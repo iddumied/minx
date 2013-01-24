@@ -1567,8 +1567,8 @@ static void opc_put_func(void) {
      * A register has 8 Byte. So, we can only put 8 byte at once. 
      * I will not read more than one register to put, because it is so ugly!
      */
-    if( opc_p->p[2] > (uint64_t)8 ) {
-        FATAL_DESC_ERROR("Cannot read more than 8 Byte from register");
+    if( opc_p->p[2] > (uint64_t)REGISTER_SIZE ) {
+        FATAL_DESC_ERROR("Cannot read more than "REGISTER_SIZE" Byte from register");
     }
 
     h   = find_heapnode(registers[opc_p->p[0]].value);
@@ -1617,8 +1617,8 @@ static void opc_read_func(void) {
      * A register has 8 Byte. So, we can only put 8 byte at once. 
      * I will not read more than one register to put, because it is so ugly!
      */
-    if( opc_p->p[2] > (uint64_t)8 ) {
-        FATAL_DESC_ERROR("Cannot read more than 8 Byte from register");
+    if( opc_p->p[2] > (uint64_t)REGISTER_SIZE ) {
+        FATAL_DESC_ERROR("Cannot read more than "REGISTER_SIZE" Byte from register");
     }
     else if ( opc_p->p[2] != 0 ) {
         h   = find_heapnode(registers[opc_p->p[0]].value);
