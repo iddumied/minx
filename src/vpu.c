@@ -409,23 +409,44 @@ static HeapNode* find_heapnode(uint64_t ptr) {
 
 /*
  * finds a unused heapnode in the heapnodes-array or creates a new one.
+ *
+ * @return A new or a alreay allocated HeapNode.
  */
 static HeapNode* find_or_create_unused_heapnode() {
     HeapNode *new = NULL;
     uint64_t i;
+
+    /*
+     * search in the already existing heapnodes, if there is an unused one.
+     */
     for( i = 0 ; i < heapnodes_count ; i++ ) {
         if( heapnodes[i].used == HEAPNODE_NOT_USED ) {
             new = &heapnodes[i];
             break;
         }
     }
+
+    /*
+     * if there was no unused HeapNode in the 'heapnodes'-array, allocate a new
+     * one.
+     */
     if( new == NULL ) {
 
         /*
          * reallocate with more heapnodes than required for future use.
+         * remember, how many new heapnodes were allocated here:
          */
         unsigned int new_heapnodes_count;
 
+        /*
+         * this is just currently hardcoded, maybe it will be configurable later
+         * on! Oh yes, it should be configurable later on!
+         *
+         * If there are less than 20 HeapNodes alreay, allocate 10.
+         * If there are less than 50 HeapNodes, allocate 5 new ones.
+         * Else allocate 5 Heapnodes.
+         *
+         */
         if( heapnodes_count < 20 ) {
             new_heapnodes_count = 10;
         }
@@ -436,8 +457,19 @@ static HeapNode* find_or_create_unused_heapnode() {
             new_heapnodes_count = 2;
         }
 
+        /*
+         * Do the realloc()
+         */
         heapnodes = realloc(heapnodes, sizeof(HeapNode) * (heapnodes_count+new_heapnodes_count));
 
+        /*
+         * for all new HeapNodes, set them to NOT USED and set all fields to
+         * standard values.
+         *
+         * One Problem still exists: the first_byte_addr has to be calculated
+         * when the heapnode is used the first time.
+         *
+         */
         for( i = (heapnodes_count + new_heapnodes_count -1 ); i > heapnodes_count; i--) {
             heapnodes[i].used = HEAPNODE_NOT_USED;
             heapnodes[i].first_byte_addr    = (uint64_t) 0x00;
@@ -458,6 +490,25 @@ static HeapNode* find_or_create_unused_heapnode() {
     return new;
 }
 
+/*
+ * get char* to memory from heapnode 
+ *
+ * @param h the HeapNode were to get the memory from 
+ * @param addr the memory address
+ *
+ * @return char* to the location of the memory addressed by the 'addr' parameter
+ *
+ * The function calculates the internal address automatically.
+ * The 'internal address' is the offset for the first byte, the 'addr' has - so
+ * the memory can be accessed via index:
+ *
+ *  - get the address of the first byte of the heapnode (which is stored in the
+ *    heapnode)
+ *  - subtract this address from the 'addr' parameter, the result is the index
+ *    of the memory inside the heapnode.
+ *  - return a char-ptr to the memory location.
+ *
+ */
 static char* get_memory_from_heapnode(HeapNode *h, uint64_t addr) {
     char * mem = (char*)h->memory;
     if( h->first_byte_addr > addr || addr - h->first_byte_addr > h->size ) {
