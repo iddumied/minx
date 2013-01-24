@@ -1559,7 +1559,7 @@ static void opc_put_func(void) {
             "into heap %"PRIu64" val of reg %"PRIu64"(%"PRIu64" Bytes)", 
             opc_p->p[0], 
             opc_p->p[1],
-            opc_p->p[2]
+            registers[opc_p->p[2]].value
             );
 #endif 
 
@@ -1567,7 +1567,7 @@ static void opc_put_func(void) {
      * A register has 8 Byte. So, we can only put 8 byte at once. 
      * I will not read more than one register to put, because it is so ugly!
      */
-    if( opc_p->p[2] > (uint64_t)REGISTER_SIZE ) {
+    if( registers[opc_p->p[2]].value > (uint64_t)REGISTER_SIZE ) {
         FATAL_DESC_ERROR("Cannot read more than 8 Byte from register");
     }
 
@@ -1578,11 +1578,11 @@ static void opc_put_func(void) {
      * Build the mask to mask the bytes from heap, so in the register there is
      * just the data from heap and not the artifacts from prior use!
      */
-    for(mask = 0x00, masked_bytes = opc_p->p[2]; masked_bytes; masked_bytes--) {
+    for(mask = 0x00, masked_bytes = registers[opc_p->p[2]]; masked_bytes; masked_bytes--) {
         mask = (mask<<8) | 0xFF;
     }
 
-    memcpy(&registers[opc_p->p[1]].value, mem, opc_p->p[2]);
+    memcpy(&registers[opc_p->p[1]].value, mem, registers[opc_p->p[2]].value);
     registers[opc_p->p[1]].value &= mask;
 
     program_pointer += (OPC_SIZE + HEAP_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE);
@@ -1608,7 +1608,7 @@ static void opc_read_func(void) {
     EXPLAIN_OPCODE_WITH("read",
             "from heap %"PRIu64" %"PRIu64" Byte into reg %"PRIu64,
             opc_p->p[0],
-            opc_p->p[2],
+            registers[opc_p->p[2]].value,
             opc_p->p[1]
             );
 #endif 
@@ -1617,10 +1617,10 @@ static void opc_read_func(void) {
      * A register has 8 Byte. So, we can only put 8 byte at once. 
      * I will not read more than one register to put, because it is so ugly!
      */
-    if( opc_p->p[2] > (uint64_t)REGISTER_SIZE ) {
+    if( registers[opc_p->p[2]].value > (uint64_t)REGISTER_SIZE ) {
         FATAL_DESC_ERROR("Cannot read more than 8 Byte from register");
     }
-    else if ( opc_p->p[2] != 0 ) {
+    else if ( registers[opc_p->p[2]].value != 0 ) {
         h   = find_heapnode(registers[opc_p->p[0]].value);
         mem = get_memory_from_heapnode(h, opc_p->p[0]);
 
@@ -1629,7 +1629,7 @@ static void opc_read_func(void) {
          * completely gone when setting the read data from the heap.
          */
         registers[opc_p->p[1]].value = 0x00;
-        memcpy(&registers[opc_p->p[1]].value, mem, opc_p->p[2]);
+        memcpy(&registers[opc_p->p[1]].value, mem, registers[opc_p->p[2]].value);
     }
     /*
      * else do nothing (if the size is set to zero) 
