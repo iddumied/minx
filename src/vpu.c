@@ -1349,13 +1349,22 @@ static void opc_alloci_func(void) {
  *
  */
 static void opc_resize_func(void) {
+    int result;
     unsigned int params[] = { HEAP_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE };
     read_n_command_parameters(2, params);
 
 #ifdef DEBUGGING
     EXPLAIN_OPCODE_WITH("resize", "heap %"PRIu64" to %"PRIu64" Bytes", 
-            opc_p->p[0], opc_p->p[1]);
+            registers[opc_p->p[0]].value, registers[opc_p->p[1]].values);
 #endif 
+
+    result = minx_vpu_heap_resize(  registers[opc_p->p[0]].value, 
+                                    registers[opc_p->p[1]].value);
+
+    if( result ) 
+        setbit(statusregister, RESIZE_BIT);
+    else 
+        clrbit(statusregister, RESIZE_BIT);
 
     program_pointer += (OPC_SIZE + HEAP_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE);
 }
@@ -1369,6 +1378,7 @@ static void opc_resize_func(void) {
  *
  */
 static void opc_resizei_func(void) {
+    int result;
     unsigned int params[] = { HEAP_ADDRESS_SIZE, VALUE_SIZE };
     read_n_command_parameters(2, params);
 
@@ -1376,6 +1386,13 @@ static void opc_resizei_func(void) {
     EXPLAIN_OPCODE_WITH("resizei", "heap %"PRIu64" to %"PRIu64" Bytes", 
             opc_p->p[0], opc_p->p[1]);
 #endif 
+
+    result = minx_vpu_heap_resize(registers[opc_p->p[0]].value, opc_p->p[1]);
+
+    if( result ) 
+        setbit(statusregister, RESIZE_BIT);
+    else 
+        clrbit(statusregister, RESIZE_BIT);
 
     program_pointer += (OPC_SIZE + HEAP_ADDRESS_SIZE + VALUE_SIZE);
 }
@@ -1394,15 +1411,17 @@ static void opc_free_func(void) {
     read_n_command_parameters(1, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("free", "heap %"PRIu64, opc_p->p[0]);
+    EXPLAIN_OPCODE_WITH("free", "heap %"PRIu64, registers[opc_p->p[0]].value);
 #endif
+
+    minx_vpu_heap_free(registers[opc_p->p[0]].value);
     
     program_pointer += (OPC_SIZE + HEAP_ADDRESS_SIZE);
 }
 
 /*
  * Command:                 PUT
- * Parameters:              3, heap-address, register-address, register-address
+ * Parameters:              3, heap-address, register-address, register-address, register-address
  * Affects Program Pointer: NO
  *
  *
@@ -1415,38 +1434,62 @@ static void opc_put_func(void) {
 
 #ifdef DEBUGGING
     EXPLAIN_OPCODE_WITH("put", 
-            "at address %"PRIu64" val of reg %"PRIu64"(%"PRIu64") (%"PRIu64" Bytes)", 
-            registers[opc_p->p[0]].value, 
-            opc_p->p[1],
+            "into heap %"PRIu64" at offset %"PRIu64" value %"PRIu64" (%"PRIu64" Bytes)",
+            registers[opc_p->p[0]].value,
             registers[opc_p->p[1]].value,
-            registers[opc_p->p[2]].value
+            registers[opc_p->p[2]].value,
+            registers[opc_p->p[3]].value,
             );
 #endif 
+
+    if( registers[opc_p->p[3]].value > 8) {
+        FATAL_DESC_ERROR("Cannot put more than 8 bytes!");
+    }
+
+    minx_vpu_heap_put(  registers[opc_p->p[0]].value,
+                        registers[opc_p->p[1]].value,
+                        registers[opc_p->p[2]].value,
+                        (unsigned int)registers[opc_p->p[3]].value);
 
     program_pointer += (OPC_SIZE + HEAP_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE);
 }
 
 /*
  * Command:                 READ
- * Parameters:              3, heap-address, register-address, register-address
+ * Parameters:              3, heap-address, register-address, register-address, register-address
  * Affects Program Pointer: NO
  *
+ * Read from heap (addr from reg)
+ *      at offset (offs from reg)
+ *      n bytes   (num from reg)
+ *      into register (register hardcoded)
  *
  */
 static void opc_read_func(void) {
     unsigned int params[] = {   HEAP_ADDRESS_SIZE,
                                 REGISTER_ADDRESS_SIZE,
+                                REGISTER_ADDRESS_SIZE,
                                 REGISTER_ADDRESS_SIZE };
-    read_n_command_parameters(3, params);
+    read_n_command_parameters(4, params);
 
 #ifdef DEBUGGING 
     EXPLAIN_OPCODE_WITH("read",
-            "from address %"PRIu64" %"PRIu64" Byte into reg %"PRIu64,
-            opc_p->p[0],
+            "from heap %"PRIu64" at offset %"PRIu64" %"PRIu64" Bytes into %"PRIu64,
+            registers[opc_p->p[0]].value,
+            registers[opc_p->p[1]].value,
             registers[opc_p->p[2]].value,
-            opc_p->p[1]
+            opc_p->p[3]
             );
 #endif 
+
+    if(registers[opc_p->p[2]].value > 8) {
+        FATAL_DESC_ERROR("Cannot read more than 8 bytes!");
+    }
+
+    minx_vpu_heap_read( registers[opc_p->p[0]].value,
+                        registers[opc_p->p[1]].value,
+                        registers[opc_p->p[2]].value,
+                        &(registers[opc_p->p[3]].value));
 
     program_pointer += (OPC_SIZE + HEAP_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE);
 }
@@ -1463,8 +1506,11 @@ static void opc_getsize_func(void) {
     read_n_command_parameters(1, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("GETSIZE", "of heap %"PRIu64" into akku", opc_p->p[0]);
+    EXPLAIN_OPCODE_WITH("GETSIZE", "of heap %"PRIu64" into akku", 
+                        registers[opc_p->p[0]].value);
 #endif 
+
+    akku = minx_vpu_heap_get_size(registers[opc_p->p[0]].value);
 
     program_pointer += (OPC_SIZE + HEAP_ADDRESS_SIZE);
 }
