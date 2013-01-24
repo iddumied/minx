@@ -19,7 +19,7 @@ static void         setup_heap                      (void);
 static void         shutdown_heap                   (void);
 static HeapNode*    find_heapnode                   (uint64_t ptr);
 static HeapNode*    find_or_create_unused_heapnode  (void);
-static void*        get_memory_from_heapnode        (HeapNode *h, uint64_t addr);
+static char*        get_memory_from_heapnode        (HeapNode *h, uint64_t addr);
 
 static void         opc_nop_func            (void);
 static void         opc_call_func           (void);
@@ -393,7 +393,7 @@ static HeapNode* find_or_create_unused_heapnode() {
     return new;
 }
 
-static void* get_memory_from_heapnode(HeapNode *h, uint64_t addr) {
+static char* get_memory_from_heapnode(HeapNode *h, uint64_t addr) {
     char * mem = (char*)h->memory;
     if( h->first_byte_addr > addr || h->first_byte_addr - addr > h->size ) {
         FATAL_DESC_ERROR("tried to access memory that does not exist");
@@ -1282,11 +1282,11 @@ static void opc_pmems_func(void) {
             printf("M: %"PRIu64"\n", i);
             printf("0x00000000 : ");
             for(j = 0; j < heapnodes[i].size; j++ ) {
-                if( ((char)heapnodes[i].memory)[j] == 0 ) {
+                if( heapnodes[i].memory[j] == 0 ) {
                     printf("0x00 ");
                 }
                 else {
-                    printf("%#02x ", ((char)heapnodes[i].memory)[j]);
+                    printf("%#02x ", heapnodes[i].memory[j]);
                 }
 
                 if((j+1) % 8 == 0) {
@@ -1324,11 +1324,11 @@ static void opc_pmem_func(void) {
         unsigned int line = 0;
         printf("0x00000000 : ");
         for( i = 0 ; i < h->size; i++ ) {
-            if( ((char)h->memory)[i] == 0 ) {
+            if( h->memory[i] == 0 ) {
                 printf("0x00 ");
             }
             else {
-                printf("%#02x ", ((char)h->memory)[i]);
+                printf("%#02x ", h->memory[i]);
             }
 
             if((i+1) % 8 == 0) {
@@ -1354,7 +1354,7 @@ static void opc_pmem_func(void) {
 static void opc_alloc_func(void) {
 
     HeapNode    *h;
-    void        *memory;
+    char        *memory;
     unsigned int params[] = { REGISTER_ADDRESS_SIZE };
     read_n_command_parameters(1, params);
 
@@ -1362,8 +1362,8 @@ static void opc_alloc_func(void) {
     EXPLAIN_OPCODE_WITH("alloc", "%"PRIu64" Bytes", opc_p->p[0]);
 #endif
 
-    memory = malloc(opc_p->p[0]);
-    if( !memory || !(h = find_or_create_unused_heapnode()) ) {
+    memory = (char*) malloc(opc_p->p[0]);
+    if( memory == NULL || !(h = find_or_create_unused_heapnode()) ) {
         clrbit(statusregister, ALLOC_BIT);
         akku = (uint64_t)0x00;
     }
@@ -1399,8 +1399,8 @@ static void opc_alloci_func(void) {
     EXPLAIN_OPCODE_WITH("alloci", "%"PRIu64" Bytes", opc_p->p[0]);
 #endif
 
-    memory = malloc(opc_p->p[0]);
-    if( !memory || !(h = find_or_create_unused_heapnode()) ) {
+    memory = (char*) malloc(opc_p->p[0]);
+    if( memory == NULL || !(h = find_or_create_unused_heapnode()) ) {
         clrbit(statusregister, ALLOC_BIT);
         akku = (uint64_t)0x00;
     }
@@ -1456,7 +1456,7 @@ static void opc_resize_func(void) {
      * if the parameter says, the memory should be resized, do it!
      */
     else {
-        h->memory = realloc(h->memory, opc_p->p[1]);
+        h->memory = (char*) realloc(h->memory, opc_p->p[1]);
         h->real_size = h->size = opc_p->p[1];
     }
 
@@ -1503,7 +1503,7 @@ static void opc_resizei_func(void) {
      * if the parameter says, the memory should be resized, do it!
      */
     else { //if( opc_p->p[2] > h->size ) {
-        h->memory = realloc(h->memory, opc_p->p[1]);
+        h->memory = (char*) realloc(h->memory, opc_p->p[1]);
         h->real_size = h->size = opc_p->p[1];
     }
         
@@ -1517,6 +1517,8 @@ static void opc_resizei_func(void) {
  * Parameters:              1, heap-address
  * Affects Program Pointer: NO
  *
+ * This opcode does not really remove the memory, it just marks it as unused. So
+ * if later on memory is required, this one can be used.
  *
  */
 static void opc_free_func(void) {
@@ -1529,7 +1531,7 @@ static void opc_free_func(void) {
     
     HeapNode *h         = find_heapnode(registers[opc_p->p[0]].value);
     h->used             = HEAPNODE_NOT_USED;
-    h->memory           = memset(h->memory, 0x00, h->real_size);
+    h->memory           = (char*) memset(h->memory, 0x00, h->real_size);
 
     program_pointer += (OPC_SIZE + HEAP_ADDRESS_SIZE);
 }
@@ -1548,7 +1550,7 @@ static void opc_put_func(void) {
     read_n_command_parameters(3, params);
 
     HeapNode        *h;
-    void            *mem;
+    char            *mem;
     uint64_t        mask;
     unsigned int    masked_bytes;
 
@@ -1600,7 +1602,7 @@ static void opc_read_func(void) {
     read_n_command_parameters(3, params);
 
     HeapNode    *h;
-    void        *mem;
+    char        *mem;
 
 #ifdef DEBUGGING 
     EXPLAIN_OPCODE_WITH("read",

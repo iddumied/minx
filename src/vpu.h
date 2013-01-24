@@ -149,7 +149,7 @@ typedef struct {
     uint64_t    first_byte_addr;
     uint64_t    size;
     uint64_t    real_size;
-    void        *memory;
+    char        *memory;
 } HeapNode;
 
 #define HEAPNODE_USED           UINT8_MAX
