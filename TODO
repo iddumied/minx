@@ -60,4 +60,4 @@ TODO:
 15) Clean up the opcodes-protocol and release it as v1.0.0 to guarantee no more
 	changes of its core functionality.
 
-
+16) Add Disassembler 
