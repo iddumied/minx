@@ -5,7 +5,7 @@
 
 #include <stdio.h>
 
-#include "minx.h"
+#include "print_prefixes.h"
 
 #define minxvpudbgprintf(f,...)                                             \
     do {                                                                    \

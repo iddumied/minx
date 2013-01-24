@@ -44,10 +44,19 @@ stack
 opcodes
 -------
 
-'Register'	stands for 16 Bit (2 Byte) register address 
-'Value'		stands for 64 Bit (8 Byte) value
-'Adress'	stands for 64 Bit (8 Byte) code address
-'Memory'    stands for 16 Bit (2 Byte) register address where a memory address is stored
+'Register'	    stands for 16 Bit (2 Byte) register address 
+
+'Value'		    stands for 64 Bit (8 Byte) value
+
+'Adress'	    stands for 64 Bit (8 Byte) code address
+
+'Memory'        stands for 16 Bit (2 Byte) register address where a memory
+                address is stored, this memory has to be the first byte address 
+                of allocated memory!
+
+'MemoryAddr'    stands for 16 Bit (2 Byte) register address where a memory
+                address is stored. This memory address can be anywhere in the 
+                memory!
 
 code | Short ex.| arguments				        | Expl.
 -----+----------+-------------------------------+-----------------------
@@ -105,6 +114,8 @@ will be ignored automatically! The 0x5? block is reserved for them.
 0x50 | PSTACK   | none                          | print stack
 0x51 | PREGS    | none                          | print registers
 0x52 | PPROG    | none                          | print program
+0x53 | PMEMS    | none                          | print all allocatet mems
+0x54 | PMEM     | Memory                        | print memory
 -----+----------+-------------------------------+--------------------------- 
 
 Heap opcodes:
@@ -117,9 +128,7 @@ Heap opcodes:
 0x62 | RESIZE   | Memory, Register              | ptr to first byte or 0x00 in akku
 0x63 | RESIZEI  | Memory, Value                 | ptr to first byte or 0x00 in akku
 0x64 | FREE     | Memory                        | Register where the addr to the first byte of the memory stands
-
-the following opcodes take the address of the memory from the akku:
-0x65 | PUT      | Memory, Register, Register    | (register, size(max 8 Byte))
-0x66 | READ     | Memory, Register, Register    | (register, size(max 8 Byte))
+0x65 | PUT      | MemoryAddr, Register, Register| (register, size(max 8 Byte))
+0x66 | READ     | MemoryAddr, Register, Register| (register, size(max 8 Byte))
 0x67 | GETSIZE  | Memory                        | load size of the memory into akku
 -----+----------+-------------------------------+--------------------------- 

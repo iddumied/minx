@@ -1,5 +1,5 @@
-#ifndef __MINX_MAIN_H__
-#define __MINX_MAIN_H__
+#ifndef __MINX_PRINT_PREFIXES_H__
+#define __MINX_PRINT_PREFIXES_H__
 
 #define MINX_PRINT_PREFIX               "[minx]"
 #define MINX_VPU_PRINT_PREFIX           "[minx][vpu]"
@@ -10,4 +10,4 @@
 #define MINX_CONFIG_PREFIX              "[minx][conf]"
 
 
-#endif // __MINX_MAIN_H__
+#endif // __MINX_PRINT_PREFIXES_H__

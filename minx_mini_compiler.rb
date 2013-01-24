@@ -78,9 +78,9 @@ class Op < Struct.new :opc, :args; end
 def create_args(opc, args)
   res = ""
   args.each_with_index do |arg, i| 
-    if @ops[opc].args[i] == REGISTER
+    if [REGISTER, MEMORY].include? @ops[opc].args[i]
       res << [arg.to_i(16)].pack("S") # pack for 16 bit if register address
-    elsif @ops[opc].args[i] == ADDRESS || @ops[opc].args[i] == VALUE
+    elsif [ADDRESS, VALUE].include? @ops[opc].args[i]
       res << [arg.to_i(16)].pack("Q") # pack for 64 bit if adress or value
     end
   end

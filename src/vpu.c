@@ -20,7 +20,7 @@ static void         setup_heap                      (void);
 static void         shutdown_heap                   (void);
 static HeapNode*    find_heapnode                   (uint64_t ptr);
 static HeapNode*    find_or_create_unused_heapnode  (void);
-static void*        get_memory_from_heapnode        (HeapNode *h, uint64_t addr);
+static char*        get_memory_from_heapnode        (HeapNode *h, uint64_t addr);
 
 /*
  * opcodes prototypes
@@ -74,6 +74,8 @@ static void         opc_ifzjmp_func         (void);
 static void         opc_pstack_func         (void);
 static void         opc_pregs_func          (void);
 static void         opc_pprog_func          (void);
+static void         opc_pmems_func          (void);
+static void         opc_pmem_func           (void);
 
 static void         opc_alloc_func          (void);
 static void         opc_alloci_func         (void);
@@ -162,6 +164,8 @@ static void ((*opc_funcs[])(void)) = {
     [OPC_PSTACK]    = opc_pstack_func,
     [OPC_PREGS]     = opc_pregs_func,
     [OPC_PPROG]     = opc_pprog_func,
+    [OPC_PMEMS]     = opc_pmems_func,
+    [OPC_PMEM]      = opc_pmem_func,
 
     [OPC_ALLOC]     = opc_alloc_func,
     [OPC_ALLOCI]    = opc_alloci_func,
@@ -304,14 +308,14 @@ static void run() {
     minxvpudbgprint("run");
 #endif //DEBUGGING
 
-    uint16_t *opcode = (uint16_t*) malloc(sizeof(*opcode));
+    uint16_t *opcode = (uint16_t*) malloc(sizeof(uint16_t));
 
     while( __vpu_running__ && !program_pointer_is(END_OF_PROGRAM) ) {
 
 #if (defined DEBUGGING || defined DEBUG)
         fflush(stdout);
 #endif // (defined DEBUGGING || defined DEBUG)
-        opcode = minx_binary_get_at(program_pointer, OPC_SIZE, opcode);
+        opcode = (uint16_t*)minx_binary_get_at(program_pointer, OPC_SIZE, opcode);
         run_opcode(*opcode);
     }
 
@@ -324,7 +328,6 @@ static void run() {
     }
 #endif //if (defined VERBOSITY)
 
-    free(opcode);
 } //static void run()
 
 /*
@@ -375,11 +378,7 @@ static void setup_heap() {
 }
 
 static void shutdown_heap() {
-    uint64_t i;
-    for(i = 0 ; i < heapnodes_count ; i++) {
-        free(heapnodes[i].memory);
-    }
-    free(heapnodes);
+    //free(heapnodes);
 }
 
 /*
@@ -389,12 +388,23 @@ static void shutdown_heap() {
  * If the address is INSIDE of a heapnode, the heapnode has to be returned!
  */
 static HeapNode* find_heapnode(uint64_t ptr) {
-    uint64_t i;
-    for(i = 0; i < heapnodes_count && heapnodes[i].first_byte_addr != ptr; i++);
-    if( i == heapnodes_count ) {
-        return NULL;
+    uint64_t i, local_ptr;
+    HeapNode *node = NULL;
+    for(i = 0; i < heapnodes_count && node == NULL; i++) {
+        if( heapnodes[i].first_byte_addr > ptr ) {
+            /* next */
+        }
+        if( heapnodes[i].first_byte_addr == ptr ) {
+            node = &heapnodes[i];
+        }
+        else {
+            local_ptr = ptr - heapnodes[i].first_byte_addr;
+            if( local_ptr <= heapnodes[i].size ) {
+                node = &heapnodes[i];
+            }
+        }
     }
-    return &(heapnodes[i]);
+    return node;
 }
 
 /*
@@ -448,12 +458,12 @@ static HeapNode* find_or_create_unused_heapnode() {
     return new;
 }
 
-static void* get_memory_from_heapnode(HeapNode *h, uint64_t addr) {
+static char* get_memory_from_heapnode(HeapNode *h, uint64_t addr) {
     char * mem = (char*)h->memory;
-    if( h->first_byte_addr > addr || h->first_byte_addr - addr > h->size ) {
+    if( h->first_byte_addr > addr || addr - h->first_byte_addr > h->size ) {
         FATAL_DESC_ERROR("tried to access memory that does not exist");
     }
-    uint64_t local_ptr = h->first_byte_addr - addr;
+    uint64_t local_ptr = addr - h->first_byte_addr;
     return &mem[local_ptr];
 }
 
@@ -1323,6 +1333,83 @@ static void opc_pprog_func (void) {
 }
 
 /*
+ * Command:                 PMEMS
+ * Parameters:              0
+ * Affects Program Pointer: NO 
+ */
+static void opc_pmems_func(void) {
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE("pmems");
+
+    if( minx_config_get(CONF_SRC_DEBUGGING)->b ) {
+        uint64_t i;
+        unsigned int line = 0, j = 0;
+        for( i = 0 ; i < heapnodes_count; i++ ) {
+            printf("M: %"PRIu64"\n", i);
+            printf("0x00000000 : ");
+            for(j = 0; j < heapnodes[i].size; j++ ) {
+                if( heapnodes[i].memory[j] == 0 ) {
+                    printf("0x00 ");
+                }
+                else {
+                    printf("%#02x ", heapnodes[i].memory[j]);
+                }
+
+                if((j+1) % 8 == 0) {
+                    printf("\n%#010x : ", ++line);
+                }
+            }
+            printf("\n");
+        }
+        printf("\n");
+    }
+#endif
+    program_pointer += OPC_SIZE;
+}
+
+/*
+ * Command:                 PMEM 
+ * Parameters:              1, heapnode-address
+ * Affects Program Pointer: NO
+ *
+ *
+ */
+static void opc_pmem_func(void) {
+#ifdef DEBUGGING
+    if( !minx_config_get(CONF_SRC_DEBUGGING)->b ) {
+        EXPLAIN_OPCODE("pmem");
+    }
+    else {
+        unsigned int params[] = { REGISTER_ADDRESS_SIZE };
+        read_n_command_parameters(1, params);
+
+        EXPLAIN_OPCODE_WITH("pmem", "memory: %"PRIu64, registers[opc_p->p[0]].value);
+
+        HeapNode *h = find_heapnode(registers[opc_p->p[0]].value);
+        uint64_t i;
+        unsigned int line = 0;
+        printf("0x00000000 : ");
+        for( i = 0 ; i < h->size; i++ ) {
+            if( h->memory[i] == 0 ) {
+                printf("0x00 ");
+            }
+            else {
+                printf("%#02x ", h->memory[i]);
+            }
+
+            if((i+1) % 8 == 0) {
+                printf("\n%#010x : ", ++line);
+            }
+        }
+        printf("\n");
+    }
+
+#endif
+    program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE);
+}
+
+
+/*
  * Command:                 ALLOC 
  * Parameters:              1, register-address
  * Affects Program Pointer: NO
@@ -1333,16 +1420,16 @@ static void opc_pprog_func (void) {
 static void opc_alloc_func(void) {
 
     HeapNode    *h;
-    void        *memory;
+    char        *memory;
     unsigned int params[] = { REGISTER_ADDRESS_SIZE };
     read_n_command_parameters(1, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("alloc", "%"PRIu64" Bytes", opc_p->p[0]);
+    EXPLAIN_OPCODE_WITH("alloc", "%"PRIu64" Bytes", registers[opc_p->p[0]].value);
 #endif
 
-    memory = malloc(opc_p->p[0]);
-    if( !memory || !(h = find_or_create_unused_heapnode()) ) {
+    memory = (char*) malloc(opc_p->p[0]);
+    if( memory == NULL || !(h = find_or_create_unused_heapnode()) ) {
         clrbit(statusregister, ALLOC_BIT);
         akku = (uint64_t)0x00;
     }
@@ -1378,8 +1465,8 @@ static void opc_alloci_func(void) {
     EXPLAIN_OPCODE_WITH("alloci", "%"PRIu64" Bytes", opc_p->p[0]);
 #endif
 
-    memory = malloc(opc_p->p[0]);
-    if( !memory || !(h = find_or_create_unused_heapnode()) ) {
+    memory = (char*) malloc(opc_p->p[0]);
+    if( memory == NULL || !(h = find_or_create_unused_heapnode()) ) {
         clrbit(statusregister, ALLOC_BIT);
         akku = (uint64_t)0x00;
     }
@@ -1435,7 +1522,7 @@ static void opc_resize_func(void) {
      * if the parameter says, the memory should be resized, do it!
      */
     else {
-        h->memory = realloc(h->memory, opc_p->p[1]);
+        h->memory = (char*) realloc(h->memory, opc_p->p[1]);
         h->real_size = h->size = opc_p->p[1];
     }
 
@@ -1482,7 +1569,7 @@ static void opc_resizei_func(void) {
      * if the parameter says, the memory should be resized, do it!
      */
     else { //if( opc_p->p[2] > h->size ) {
-        h->memory = realloc(h->memory, opc_p->p[1]);
+        h->memory = (char*) realloc(h->memory, opc_p->p[1]);
         h->real_size = h->size = opc_p->p[1];
     }
         
@@ -1496,6 +1583,8 @@ static void opc_resizei_func(void) {
  * Parameters:              1, heap-address
  * Affects Program Pointer: NO
  *
+ * This opcode does not really remove the memory, it just marks it as unused. So
+ * if later on memory is required, this one can be used.
  *
  */
 static void opc_free_func(void) {
@@ -1508,7 +1597,7 @@ static void opc_free_func(void) {
     
     HeapNode *h         = find_heapnode(registers[opc_p->p[0]].value);
     h->used             = HEAPNODE_NOT_USED;
-    h->memory           = memset(h->memory, 0x00, h->real_size);
+    h->memory           = (char*) memset(h->memory, 0x00, h->real_size);
 
     program_pointer += (OPC_SIZE + HEAP_ADDRESS_SIZE);
 }
@@ -1527,16 +1616,15 @@ static void opc_put_func(void) {
     read_n_command_parameters(3, params);
 
     HeapNode        *h;
-    void            *mem;
-    uint64_t        mask;
-    unsigned int    masked_bytes;
+    char            *mem;
 
 #ifdef DEBUGGING
     EXPLAIN_OPCODE_WITH("put", 
-            "into heap %"PRIu64" val of reg %"PRIu64"(%"PRIu64" Bytes)", 
-            opc_p->p[0], 
+            "at address %"PRIu64" val of reg %"PRIu64"(%"PRIu64") (%"PRIu64" Bytes)", 
+            registers[opc_p->p[0]].value, 
             opc_p->p[1],
-            opc_p->p[2]
+            registers[opc_p->p[1]].value,
+            registers[opc_p->p[2]].value
             );
 #endif 
 
@@ -1544,25 +1632,25 @@ static void opc_put_func(void) {
      * A register has 8 Byte. So, we can only put 8 byte at once. 
      * I will not read more than one register to put, because it is so ugly!
      */
-    if( opc_p->p[2] > (uint64_t)8 ) {
+    if( registers[opc_p->p[2]].value > (uint64_t)REGISTER_SIZE ) {
         FATAL_DESC_ERROR("Cannot read more than 8 Byte from register");
     }
 
     h   = find_heapnode(registers[opc_p->p[0]].value);
-    mem = get_memory_from_heapnode(h, opc_p->p[0]);
+    mem = get_memory_from_heapnode(h, registers[opc_p->p[0]].value);
 
     /*
-     * Build the mask to mask the bytes from heap, so in the register there is
-     * just the data from heap and not the artifacts from prior use!
+     * Ensure, the old value in this memory is really gone
      */
-    for(mask = 0x00, masked_bytes = opc_p->p[2]; masked_bytes; masked_bytes--) {
-        mask = (mask<<8) | 0xFF;
-    }
+    memset(mem, 0x00, registers[opc_p->p[2]].value);
 
-    memcpy(&registers[opc_p->p[1]].value, mem, opc_p->p[2]);
-    registers[opc_p->p[1]].value &= mask;
+    /*
+     * Copy the value of register(opc_p->p[1]) to mem, but only
+     * register(opc_p->p[2]) byte.
+     */
+    memcpy(mem, &registers[opc_p->p[1]].value, registers[opc_p->p[2]].value);
 
-    program_pointer += (OPC_SIZE + HEAP_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE);
+    program_pointer += (OPC_SIZE + HEAP_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE);
 }
 
 /*
@@ -1579,13 +1667,13 @@ static void opc_read_func(void) {
     read_n_command_parameters(3, params);
 
     HeapNode    *h;
-    void        *mem;
+    char        *mem;
 
 #ifdef DEBUGGING 
     EXPLAIN_OPCODE_WITH("read",
-            "from heap %"PRIu64" %"PRIu64" Byte into reg %"PRIu64,
+            "from address %"PRIu64" %"PRIu64" Byte into reg %"PRIu64,
             opc_p->p[0],
-            opc_p->p[2],
+            registers[opc_p->p[2]].value,
             opc_p->p[1]
             );
 #endif 
@@ -1594,10 +1682,10 @@ static void opc_read_func(void) {
      * A register has 8 Byte. So, we can only put 8 byte at once. 
      * I will not read more than one register to put, because it is so ugly!
      */
-    if( opc_p->p[2] > (uint64_t)8 ) {
+    if( registers[opc_p->p[2]].value > (uint64_t)REGISTER_SIZE ) {
         FATAL_DESC_ERROR("Cannot read more than 8 Byte from register");
     }
-    else if ( opc_p->p[2] != 0 ) {
+    else if ( registers[opc_p->p[2]].value != 0 ) {
         h   = find_heapnode(registers[opc_p->p[0]].value);
         mem = get_memory_from_heapnode(h, opc_p->p[0]);
 
@@ -1606,12 +1694,13 @@ static void opc_read_func(void) {
          * completely gone when setting the read data from the heap.
          */
         registers[opc_p->p[1]].value = 0x00;
-        memcpy(&registers[opc_p->p[1]].value, mem, opc_p->p[2]);
+        memcpy(&registers[opc_p->p[1]].value, mem, registers[opc_p->p[2]].value);
     }
     /*
      * else do nothing (if the size is set to zero) 
      */
 
+    program_pointer += (OPC_SIZE + HEAP_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE);
 }
 
 /*
