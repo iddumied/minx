@@ -329,12 +329,23 @@ static void shutdown_heap() {
  * If the address is INSIDE of a heapnode, the heapnode has to be returned!
  */
 static HeapNode* find_heapnode(uint64_t ptr) {
-    uint64_t i;
-    for(i = 0; i < heapnodes_count && heapnodes[i].first_byte_addr != ptr; i++);
-    if( i == heapnodes_count ) {
-        return NULL;
+    uint64_t i, local_ptr;
+    HeapNode *node = NULL;
+    for(i = 0; i < heapnodes_count && node == NULL; i++) {
+        if( heapnodes[i].first_byte_addr > ptr ) {
+            /* next */
+        }
+        if( heapnodes[i].first_byte_addr == ptr ) {
+            node = &heapnodes[i];
+        }
+        else {
+            local_ptr = ptr - heapnodes[i].first_byte_addr;
+            if( local_ptr <= heapnodes[i].size ) {
+                node = &heapnodes[i];
+            }
+        }
     }
-    return &(heapnodes[i]);
+    return node;
 }
 
 /*
@@ -390,10 +401,10 @@ static HeapNode* find_or_create_unused_heapnode() {
 
 static char* get_memory_from_heapnode(HeapNode *h, uint64_t addr) {
     char * mem = (char*)h->memory;
-    if( h->first_byte_addr > addr || h->first_byte_addr - addr > h->size ) {
+    if( h->first_byte_addr > addr || addr - h->first_byte_addr > h->size ) {
         FATAL_DESC_ERROR("tried to access memory that does not exist");
     }
-    uint64_t local_ptr = h->first_byte_addr - addr;
+    uint64_t local_ptr = addr - h->first_byte_addr;
     return &mem[local_ptr];
 }
 
