@@ -319,7 +319,7 @@ static void setup_heap() {
 }
 
 static void shutdown_heap() {
-    free(heapnodes);
+    //free(heapnodes);
 }
 
 /*
