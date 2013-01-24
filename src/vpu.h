@@ -14,7 +14,7 @@
 #if (defined DEBUG | defined VERBOSITY)
 #include <stdio.h>
 
-#include "minx.h"
+#include "print_prefixes.h"
 #endif //if (defined DEBUG | defined VERBOSITY)
 
 /*
