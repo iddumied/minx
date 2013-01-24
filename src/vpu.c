@@ -1359,7 +1359,7 @@ static void opc_alloc_func(void) {
     read_n_command_parameters(1, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("alloc", "%"PRIu64" Bytes", opc_p->p[0]);
+    EXPLAIN_OPCODE_WITH("alloc", "%"PRIu64" Bytes", registers[opc_p->p[0]].value);
 #endif
 
     memory = (char*) malloc(opc_p->p[0]);
