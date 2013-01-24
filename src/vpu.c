@@ -1640,6 +1640,7 @@ static void opc_read_func(void) {
      * else do nothing (if the size is set to zero) 
      */
 
+    program_pointer += (OPC_SIZE + HEAP_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE);
 }
 
 /*
