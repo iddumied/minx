@@ -1,6 +1,7 @@
 #ifndef __minx_vpu_VPU_HEAP_H__
 #define __minx_vpu_VPU_HEAP_H__
 
+#include <stdlib.h>
 #include <stdint.h>
 
 /*
@@ -58,7 +59,6 @@ typedef struct {
      */
 } HeapNode;
 
-#define HEAPNODE_USED           UINT8_MAX
 /*
  * All values != HEAPNODE_USED are HEAPNODE_NOT_USED. 
  *
@@ -66,7 +66,11 @@ typedef struct {
  * later, it should be possible to configure the VPU to remove not used memory
  * automatically based on some statistics or so.
  */
-#define HEAPNODE_NOT_USED       0
+enum {
+    HEAPNODE_NOT_ALLOCATED = 0,
+    HEAPNODE_NOT_USED,
+    HEAPNODE_USED,
+}
 
 /*
  * setup function for heap.
