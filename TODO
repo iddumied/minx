@@ -91,4 +91,5 @@ TODO:
 
 		resize first alloc to 10 Byte. What happens or better: what should happen?
 
+19) Add a global shutdown function and use it in the FATAL_*ERROR macros!
 
