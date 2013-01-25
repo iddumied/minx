@@ -18,6 +18,9 @@ static long get_file_size(FILE *f);
  */
 
 void minx_binary_init(FILE *f) {
+
+    minx_error_register_shutdown_function(minx_binary_shutdown);
+
     filesize = get_file_size(f);
     binary = (char*) malloc( sizeof(char) * filesize );
     size_t readsize = 1024;

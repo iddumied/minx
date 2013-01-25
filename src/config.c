@@ -38,6 +38,7 @@ static ConfigurationKeyMap confkeys[] = {
  */
 
 void minx_config_init() {
+    minx_error_register_shutdown_function(minx_config_shutdown);
 }
 
 void minx_config_shutdown() {

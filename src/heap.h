@@ -1,6 +1,8 @@
 #ifndef __MINX_VPU_HEAP_H__
 #define __MINX_VPU_HEAP_H__
 
+#include "error.h"
+
 /*
  *
  * Heap 

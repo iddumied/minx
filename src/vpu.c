@@ -200,6 +200,17 @@ static void ((*opc_funcs[])(void)) = {
  * -----------------------------------------------------------------------------
  */
 
+void minx_vpu_init(void) {
+    minx_error_register_shutdown_function(minx_vpu_shutdown);
+
+    __vpu_running__ = 1;
+    
+    init_registers();
+    setup_heap();
+    stack = empty_stack();
+    opc_p = (CommandParameters*) malloc( sizeof(*opc_p) );
+}
+
 /*
  * Public run function 
  *
@@ -222,16 +233,11 @@ void minx_vpu_run() {
     minxvpudbgprint("Starting\n");
 #endif
 
-    __vpu_running__ = 1;
-
-    /* alloc standard registers */
-    init_registers();
-    setup_heap();
-    stack = empty_stack();
-    opc_p = (CommandParameters*) malloc( sizeof(*opc_p) );
-
     run();
 
+    /*
+     * Just if run() is ready! 
+     */
     free(registers);
     free(opc_p);
     stackdelete(stack);
