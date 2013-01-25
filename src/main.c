@@ -33,7 +33,7 @@ int main(int argc, char **args) {
     FILE *f = fopen(file, "r");
     */
 
-    minx_error_setup();
+    minx_error_init();
     minx_config_init();
     minx_config_parse(argc, args);
     minx_binary_init(f);

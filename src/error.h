@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-
 void    minx_error_init                         (void);
 void    minx_error_shutdown                     (void);
 void    minx_error_global_shutdown              (void);
