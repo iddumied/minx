@@ -10,9 +10,7 @@
 void handle_signal(int signal) {
     if( signal == SIGINT || signal == SIGKILL ) {
         printf("[%i]: Shutdown ...", signal);
-        minx_binary_shutdown();
-        minx_config_shutdown();
-        minx_vpu_shutdown();
+        minx_error_global_shutdown();
         printf("done.\n");
     }
 }
