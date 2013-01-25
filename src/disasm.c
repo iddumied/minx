@@ -1,5 +1,7 @@
 #include "disasm.h"
 
+static void print_parameters(unsigned int *params);
+
 static struct {
     char            *desc;
     unsigned int    params[];
@@ -63,6 +65,17 @@ void minx_disasm_run() {
 
     while(minx_binary_exists_at(program_pointer)) {
         opcode = minx_get_opcode(program_pointer);
-        printf("%s", opcode_map[opcode].desc);
+        printf("%s", opcode_map[*opcode].desc);
+        print_parameters(opcode_map[*opcode].params);
     }
+}
+
+static void print_parameters(unsigned int *params) {
+    unsigned int i;
+    for(i = 0; params[i]; i++) {
+        printf("%"PRIu64, params[i]);
+        if(params[i+1])
+            printf(", ");
+    }
+    printf("\n");
 }
