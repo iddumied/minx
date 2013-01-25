@@ -29,7 +29,7 @@ void minx_error_shutdown() {
 void minx_error_global_shutdown(void) {
     unsigned int i;
     for(i = shutdown_functions_cnt; i ; i-- ) {
-        shutdown_functions[i]();
+        shutdown_functions[i-1]();
     }
 }
 
