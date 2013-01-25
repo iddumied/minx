@@ -98,6 +98,7 @@ TODO:
 		much more easy and should be faster, too. 
 
 		This requires a running implementation of a map (use it from utilc!)
+		-> as the implementation of a map in utilc sucks, write your own!
 
 		The address of the memory can be generated randomly, if security
 		requires it.
