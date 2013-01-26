@@ -99,8 +99,6 @@ static uint16_t                 register_count  = 0;
 
 static Stack                *   stack           = NULL;
 static CommandParameters    *   opc_p           = NULL;
-static HeapNode             *   heapnodes       = NULL;
-static uint64_t                 heapnodes_count = 0;
 
 /*
  * -----------------------------------------------------------------------------
@@ -1361,7 +1359,7 @@ static void opc_resize_func(void) {
 
 #ifdef DEBUGGING
     EXPLAIN_OPCODE_WITH("resize", "heap %"PRIu64" to %"PRIu64" Bytes", 
-            registers[opc_p->p[0]].value, registers[opc_p->p[1]].values);
+            registers[opc_p->p[0]].value, registers[opc_p->p[1]].value);
 #endif 
 
     result = minx_vpu_heap_resize(  registers[opc_p->p[0]].value, 
@@ -1451,7 +1449,7 @@ static void opc_put_func(void) {
             registers[opc_p->p[0]].value,
             registers[opc_p->p[1]].value,
             registers[opc_p->p[2]].value,
-            registers[opc_p->p[3]].value,
+            registers[opc_p->p[3]].value
             );
 #endif 
 
