@@ -126,19 +126,19 @@ int minx_vpu_heap_resize(uint64_t heap, uint64_t new_size) {
     /*
      * if the size is decreased, just set the size variable to the smaller value
      * and don't do any realloc() call, for the speed!
-     */
-    if(h->size > new_size) {
-        h->size = new_size;
-        goto no_err;
-    }
-    /*
+     * 
+     * OR
+     *
      * If the new_size is greater than the actual size, but smaller than the
      * real size, just set the size variable, for the speed!
      */
-    else if(h->size < new_size && h->real_size > new_size) {
+    if( (h->size > new_size) || 
+        (h->size < new_size && h->real_size > new_size) ) {
+
         h->size = new_size;
         goto no_err;
     }
+    
     /*
      * And finally, if the new_size is greater than the real size, do the realloc.
      */
