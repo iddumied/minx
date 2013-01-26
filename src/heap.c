@@ -5,6 +5,7 @@
  */
 static HeapNode*    create_new_heapnode             (void);
 static uint64_t     get_next_memory_id              (void);
+static HeapNode*    find_heap                       (uint64_t heap);
 
 /*
  * static variables
@@ -142,4 +143,19 @@ static HeapNode* create_new_heapnode() {
 
 static uint64_t get_next_memory_id() {
     return memory_id_counter++;
+}
+
+/*
+ * Currently, the find_heap() function does a linear search. Lateron, when this
+ * stuff gets optimized (sorted), we should do a binary search!
+ */
+static HeapNode* find_heap(uint64_t heapID) {
+    uint64_t i;
+    HeapNode *found = NULL ;
+    for(i = 0; i < heapnodes_count && found == NULL; i++) {
+        if(heapnodes[i]->memoryID == heapID) {
+            found = heapnodes[i];
+        }
+    }
+    return found;
 }
