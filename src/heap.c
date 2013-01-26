@@ -6,6 +6,9 @@
 static HeapNode*    create_new_heapnode             (void);
 static uint64_t     get_next_memory_id              (void);
 static HeapNode*    find_heap                       (uint64_t heap);
+static void         check_if_memory_exists          (HeapNode *h, 
+                                                    uint64_t from, 
+                                                    unsigned int to);
 
 /*
  * static variables
@@ -205,19 +208,7 @@ int minx_vpu_heap_put(uint64_t heap, uint64_t offset, uint64_t val, unsigned int
     if(h == NULL)
         goto heap_not_found;
 
-    /*
-     * Do some security stuff here:
-     *
-     * - check if the memory exists at 'offset'
-     *
-     * - calculate the last address where data is put. If this address exists,
-     *   everything is okay, else fail hard.
-     */
-    if(h->size < offset)
-        FATAL_DESC_ERROR("Cannot acces memory at unallocated address");
-    uint64_t last_put_addr = offset + bytes;
-    if(h->size < last_put_addr)
-        FATAL_DESC_ERROR("Not enought memory to write to");
+    check_if_memory_exists(h, offset, bytes);
 
     memcpy(&h->memory[offset], &val, bytes); 
 
@@ -290,4 +281,29 @@ static HeapNode* find_heap(uint64_t heapID) {
         }
     }
     return found;
+}
+
+/*
+ * Do some security stuff here:
+ *
+ * - check if the memory exists at 'offset'
+ *
+ * - calculate the last address where data is put. If this address exists,
+ *   everything is okay, else fail hard.
+ *
+ * @param h the HeapNode to check 
+ * @param from first address (offset)
+ * @param to how many bytes to check, this can maximal be 8, so no problem with
+ * uint
+ *
+ * ------------------------------------------------
+ * This function exits the VPU if there is a error!
+ * ------------------------------------------------
+ */
+static void check_if_memory_exists(HeapNode *h, uint64_t from, unsigned int to) {
+    if(h->size < from)
+        FATAL_DESC_ERROR("Cannot acces memory at unallocated address");
+    uint64_t last_put_addr = from + to;
+    if(h->size < last_put_addr)
+        FATAL_DESC_ERROR("Not enought memory to write to");
 }
