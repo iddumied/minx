@@ -91,3 +91,6 @@ TODO:
 
 		resize first alloc to 10 Byte. What happens or better: what should happen?
 
+20) BUG: Remove this 'Invalid Pointer' errors (just with 'export MALLOC_CHECK_=1') 
+
+21) Include mtrace() when debugging minx for memory leaks and maybe more
