@@ -118,13 +118,19 @@ int minx_vpu_heap_resize(uint64_t heap, uint64_t new_size) {
         goto err;
 
     /*
-     * if the size is already set, everything is okay
+     * if the size is already set, everything is okay. If the new_size is equal
+     * to the real size (but maybe not to the set size) just set the size
+     * variable of the mem.
      */
-    if(h->size == new_size)
-        goto no_err;
+    if(h->size == new_size || h->real_size == new_size) {
+        /*
+         * No effect on h->size == new_size but on h->real_size == new_size
+         */
+        h->size = new_size;
 
-    if(h->real_size == new_size) {
-        h->size = h->real_size;
+        /*
+         * nothing to do!
+         */
         goto no_err;
     }
 
