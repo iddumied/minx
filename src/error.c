@@ -1,6 +1,5 @@
 #include "error.h"
 
-typedef void(*ShutdownFunctionPtr)(void);
 static ShutdownFunctionPtr  *shutdown_functions;
 static unsigned int         shutdown_functions_cnt;
 
