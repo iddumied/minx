@@ -26,7 +26,8 @@ static uint64_t     memory_id_counter;
  */
 
 void minx_vpu_heap_setup(void) {
-    heapnodes                   = (HeapNode**) malloc( sizeof(*heapnodes) );
+    heapnodes                   = (HeapNode**)  malloc( sizeof(HeapNode*) );
+    heapnodes[0]                = (HeapNode*)   malloc( sizeof(HeapNode) );
 
     heapnodes[0]->used_state    = HEAPNODE_NOT_ALLOCATED;
     heapnodes[0]->memoryID      = 0;
@@ -42,6 +43,7 @@ void minx_vpu_heap_shutdown(void) {
     uint64_t i;
     for(i = heapnodes_count; i; i--) {
         free(heapnodes[i-1]->memory);
+        free(heapnodes[i-1]);
     }
     free(heapnodes);
 }
@@ -318,8 +320,8 @@ void minx_vpu_heap_print_heap() {
  * heapnodes_count and returns a ptr to the new heapnode
  */
 static HeapNode* create_new_heapnode() {
-    HeapNode *node = (HeapNode*) malloc( sizeof(*node) );
-    heapnodes = realloc(heapnodes, sizeof(*heapnodes) * heapnodes_count+1);
+    HeapNode *node = (HeapNode*) malloc( sizeof(HeapNode) );
+    heapnodes = (HeapNode**) realloc(heapnodes, sizeof(HeapNode*) * heapnodes_count+1);
     heapnodes[heapnodes_count] = node;
     heapnodes_count++;
 
