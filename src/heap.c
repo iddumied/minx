@@ -205,7 +205,23 @@ void minx_vpu_heap_put(uint64_t heap, uint64_t offset, uint64_t val, unsigned in
 void minx_vpu_heap_read(uint64_t heap, uint64_t offset, unsigned int bytes, uint64_t *dest) {
 }
 
+/*
+ * The minx_vpu_heap_free() function does NOT remove the HeapNode from the
+ * memory if it gets called. It just marks it as not used, so for later use,
+ * this heapnode can be used again.
+ *
+ * But it sets the memory to 0x00!
+ */
 void minx_vpu_heap_free(uint64_t heap) {
+    HeapNode *h = find_heap(heap);
+    if(h == NULL)
+        goto ready;
+
+    h->used_state   = HEAPNODE_NOT_USED;
+    h->memory       = memset(h->memory, 0x00, h->real_size);
+
+ready:
+    return;
 }
 
 /*
