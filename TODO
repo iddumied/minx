@@ -82,23 +82,9 @@ TODO:
 
 16) Add Disassembler 
 
-17) The Memory management SUCKS so hard! 
-	Example:
-		alloc returns address 0x00F0, alloc was 5 Byte
-		-> so the last address of the memory is 0xF5
-
-		next alloc returns address 0x00F6, alloc was also 5 Byte
-
-		resize first alloc to 10 Byte. What happens or better: what should happen?
-
-	Idea to improve this:
-		Organize memory in a Map.
-		Each Memory gets a adress. Bytes in the memory are addressed with a
-		offset, not via an address! That's much better, because management is
-		much more easy and should be faster, too. 
-		
-		The address of the memory can be generated randomly, if security
-		requires it.
+17.1) (addition to already done TODO #17) Organize the memory map, for fast
+		memory lookup and so on. The map has to be ordered to do a fast lookup
+		of the memory!
 
 19) Add a global shutdown function and use it in the FATAL_*ERROR macros!
 
