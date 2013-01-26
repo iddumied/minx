@@ -73,10 +73,10 @@ enum {
 }
 
 /*
- * If the alloc failed, 0x00 should be returned
- *
+ * If the anything failed, 0x00 should be returned, else 1
  */
-#define MINX_VPU_HEAP_UNABLE_TO_ALLOC       ((uint64_t)0x00)
+#define MINX_VPU_HEAP_OK                    ((uint64_t)0x01)
+#define MINX_VPU_HEAP_ERROR                 ((uint64_t)0x00)
 
 /*
  * setup function for heap.
