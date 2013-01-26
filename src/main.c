@@ -6,6 +6,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <mcheck.h>
 
 void handle_signal(int signal) {
     if( signal == SIGINT || signal == SIGKILL ) {
@@ -34,6 +35,11 @@ int main(int argc, char **args) {
     minx_error_init();
     minx_config_init();
     minx_config_parse(argc, args);
+
+    if(minx_config_get(CONF_MVPU_DEBUGGING)->b) {
+        mtrace();
+    }
+
     minx_binary_init(f);
     minx_vpu_init();
 
