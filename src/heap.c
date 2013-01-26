@@ -199,7 +199,32 @@ err:
     return 0;
 }
 
-void minx_vpu_heap_put(uint64_t heap, uint64_t offset, uint64_t val, unsigned int bytes) {
+int minx_vpu_heap_put(uint64_t heap, uint64_t offset, uint64_t val, unsigned int bytes) {
+    HeapNode *h = find_heap(heap);
+
+    if(h == NULL)
+        goto heap_not_found;
+
+    /*
+     * Do some security stuff here:
+     *
+     * - check if the memory exists at 'offset'
+     *
+     * - calculate the last address where data is put. If this address exists,
+     *   everything is okay, else fail hard.
+     */
+    if(h->size < offset)
+        FATAL_DESC_ERROR("Cannot acces memory at unallocated address");
+    uint64_t last_put_addr = offset + bytes;
+    if(h->size < last_put_addr)
+        FATAL_DESC_ERROR("Not enought memory to write to");
+
+    memcpy(&h->memory[offset], &val, bytes); 
+
+    return MINX_VPU_HEAP_OK;
+
+heap_not_found:
+    return MINX_VPU_HEAP_ERROR;
 }
 
 int minx_vpu_heap_read(uint64_t heap, uint64_t offset, unsigned int bytes, uint64_t *dest) {
