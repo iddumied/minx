@@ -62,14 +62,41 @@ uint64_t minx_vpu_heap_alloc(uint64_t size) {
     /*
      * If no unused/unallocated heapnode was found, create a new one.
      */
-    if( node == NULL ) {
+    if(node == NULL) {
         node = create_new_heapnode();
+        if(node == NULL) {
+            goto failed_to_alloc;
+        }
     }
 
     /*
      * node is set here, if it is HEAPNODE_NOT_USED, it has some memory, if it
      * is HEAPNODE_NOT_ALLOCATED it is completely new!
      */
+
+    if(node->used_state == HEAPNODE_NOT_USED) {
+        /*
+         * Resize it for fitting the required size
+         */
+        if(size != node->size) {
+            minx_vpu_heap_resize(node->memoryID, size);
+        }
+    }
+    else if (node->used_state == HEAPNODE_NOT_ALLOCATED) {
+        node->memory = (char*) malloc(size);
+        if(node->memory) { /* if malloc worked */
+            node->size      = size;
+            node->real_size = size;
+        }
+        else {
+            goto failed_to_alloc;
+        }
+
+    }
+
+    return node->memoryID;
+failed_to_alloc:
+    return MINX_VPU_HEAP_UNABLE_TO_ALLOC;
 }
 
 int minx_vpu_heap_resize(uint64_t heap, uint64_t new_size) {
