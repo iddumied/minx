@@ -219,6 +219,19 @@ heap_not_found:
 }
 
 int minx_vpu_heap_read(uint64_t heap, uint64_t offset, unsigned int bytes, uint64_t *dest) {
+    HeapNode *h = find_heap(heap);
+
+    if(h == NULL)
+        goto err;
+    
+    check_if_memory_exists(h, offset, bytes);
+
+    memcpy(dest, &h->memory[offset], bytes);
+
+    return MINX_VPU_HEAP_OK;
+
+err:
+    return MINX_VPU_HEAP_ERROR;
 }
 
 /*
