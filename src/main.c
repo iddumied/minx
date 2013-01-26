@@ -3,6 +3,10 @@
 #include "binary_reader.h"
 #include "vpu.h"
 
+#ifdef DISASSEMBLE
+#include "disasm.h"
+#endif // DISASSEMBLE
+
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -35,7 +39,19 @@ int main(int argc, char **args) {
     minx_config_init();
     minx_config_parse(argc, args);
     minx_binary_init(f);
+
+#ifdef DISASSEMBLE
+    if( minx_config_get(CONF_DISASM)->b ) {
+        minx_disasm_run();
+    }
+    else {
+        minx_vpu_run();
+    }
+#else /* for the readability */
     minx_vpu_run();
+#endif //DISASSEMBLE
+
+
     minx_binary_shutdown();
     minx_config_shutdown();
 
