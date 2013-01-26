@@ -73,6 +73,12 @@ enum {
 }
 
 /*
+ * If the alloc failed, 0x00 should be returned
+ *
+ */
+#define MINX_VPU_HEAP_UNABLE_TO_ALLOC       ((uint64_t)0x00)
+
+/*
  * setup function for heap.
  *
  * This function gets called before the binary is loaded or run, but after the
