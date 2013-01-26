@@ -200,7 +200,8 @@ void minx_vpu_init(void) {
     init_registers();
     minx_vpu_heap_setup();
     stack = empty_stack();
-    opc_p = (CommandParameters*) malloc( sizeof(*opc_p) );
+    opc_p = (CommandParameters*) malloc( 
+            sizeof(CommandParameters) + (sizeof(uint64_t)*MAX_PARAMETER_COUNT) );
 }
 
 /*
