@@ -70,8 +70,6 @@ static uint64_t program_pointer;
 void minx_disasm_run() {
     program_pointer = 0x00;
     uint16_t *opcode;
-    unsigned int i;
-
     while(minx_binary_exists_at(program_pointer)) {
         opcode = minx_binary_get_at(program_pointer, OPC_SIZE, opcode);
         printf("%s", opcode_map[*opcode].desc);
@@ -82,7 +80,7 @@ void minx_disasm_run() {
 static void print_parameters(unsigned int *params) {
     unsigned int i;
     for(i = 0; params[i]; i++) {
-        printf("%"PRIu64, params[i]);
+        printf("%u", params[i]);
         if(params[i+1])
             printf(", ");
     }
