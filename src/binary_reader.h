@@ -21,7 +21,6 @@ void *          minx_binary_get_at      (   uint64_t p,
                                             unsigned int number_of_bytes, 
                                             void *dest);
 
-uint16_t *      minx_get_opcode         (uint64_t p);
 signed int      minx_binary_exists_at   (uint64_t p);
 
 #ifdef DEBUGGING

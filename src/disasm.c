@@ -73,7 +73,7 @@ void minx_disasm_run() {
     unsigned int i;
 
     while(minx_binary_exists_at(program_pointer)) {
-        opcode = minx_get_opcode(program_pointer);
+        opcode = minx_binary_get_at(program_pointer, OPC_SIZE, opcode);
         printf("%s", opcode_map[*opcode].desc);
         print_parameters(opcode_map[*opcode].params);
     }
