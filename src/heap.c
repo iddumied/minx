@@ -42,10 +42,8 @@ void minx_vpu_heap_setup(void) {
 void minx_vpu_heap_shutdown(void) {
     uint64_t i;
     for(i = heapnodes_count; i; i--) {
-        free(heapnodes[i-1]->memory);
         free(heapnodes[i-1]);
     }
-    free(heapnodes);
 }
 
 /*
