@@ -1232,26 +1232,7 @@ static void opc_pmems_func(void) {
     EXPLAIN_OPCODE("pmems");
 
     if( minx_config_get(CONF_SRC_DEBUGGING)->b ) {
-        uint64_t i;
-        unsigned int line = 0, j = 0;
-        for( i = 0 ; i < heapnodes_count; i++ ) {
-            printf("M: %"PRIu64"\n", i);
-            printf("0x00000000 : ");
-            for(j = 0; j < heapnodes[i].size; j++ ) {
-                if( heapnodes[i].memory[j] == 0 ) {
-                    printf("0x00 ");
-                }
-                else {
-                    printf("%#02x ", heapnodes[i].memory[j]);
-                }
-
-                if((j+1) % 8 == 0) {
-                    printf("\n%#010x : ", ++line);
-                }
-            }
-            printf("\n");
-        }
-        printf("\n");
+        minx_vpu_heap_print_heap();
     }
 #endif
     program_pointer += OPC_SIZE;
@@ -1266,34 +1247,14 @@ static void opc_pmems_func(void) {
  */
 static void opc_pmem_func(void) {
 #ifdef DEBUGGING
-    if( !minx_config_get(CONF_SRC_DEBUGGING)->b ) {
-        EXPLAIN_OPCODE("pmem");
-    }
-    else {
+    if( minx_config_get(CONF_SRC_DEBUGGING)->b ) {
         unsigned int params[] = { REGISTER_ADDRESS_SIZE };
         read_n_command_parameters(1, params);
 
         EXPLAIN_OPCODE_WITH("pmem", "memory: %"PRIu64, registers[opc_p->p[0]].value);
 
-        HeapNode *h = find_heapnode(registers[opc_p->p[0]].value);
-        uint64_t i;
-        unsigned int line = 0;
-        printf("0x00000000 : ");
-        for( i = 0 ; i < h->size; i++ ) {
-            if( h->memory[i] == 0 ) {
-                printf("0x00 ");
-            }
-            else {
-                printf("%#02x ", h->memory[i]);
-            }
-
-            if((i+1) % 8 == 0) {
-                printf("\n%#010x : ", ++line);
-            }
-        }
-        printf("\n");
+        minx_vpu_heap_print_heapnode(registers[opc_p->p[0]].value);
     }
-
 #endif
     program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE);
 }

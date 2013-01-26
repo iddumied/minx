@@ -254,6 +254,61 @@ err:
     return MINX_VPU_HEAP_ERROR;
 }
 
+#ifdef DEBUGGING
+void minx_vpu_heap_print_heapnode(uint64_t heap) {
+    HeapNode *h = find_heap(heap);
+
+    if(h == NULL)
+        goto ready;
+    
+    uint64_t i;
+    unsigned int line = 0;
+    printf("0x00000000 : ");
+    for( i = 0 ; i < h->size; i++ ) {
+        if( h->memory[i] == 0 ) {
+            printf("0x00 ");
+        }
+        else {
+            printf("%#02x ", h->memory[i]);
+        }
+
+        if((i+1) % 8 == 0) {
+            printf("\n%#010x : ", ++line);
+        }
+    }
+    printf("\n");
+
+
+ready:
+    return;
+}
+#endif //DEBUGGING
+
+#ifdef DEBUGGING
+void minx_vpu_heap_print_heap() {
+    uint64_t i;
+    unsigned int line = 0, j = 0;
+    for(i = 0 ; i < heapnodes_count; i++) {
+        printf("ID: %"PRIu64"\n", heapnodes[i]->memoryID);
+        printf("0x00000000 : ");
+        for(j = 0; j < heapnodes[i]->size; j++ ) {
+            if( heapnodes[i]->memory[j] == 0 ) {
+                printf("0x00 ");
+            }
+            else {
+                printf("%#02x ", heapnodes[i]->memory[j]);
+            }
+
+            if((j+1) % 8 == 0) {
+                printf("\n%#010x : ", ++line);
+            }
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+#endif //DEBUGGING
+
 /*
  * static function implementations
  */

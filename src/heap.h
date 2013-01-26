@@ -5,6 +5,11 @@
 #include <stdint.h>
 #include <string.h>
 
+#ifdef DEBUGGING
+#include <inttypes.h>
+#include <stdio.h>
+#endif //DEBUGGING
+
 #include "error.h"
 
 #include "error.h"
@@ -75,7 +80,7 @@ enum {
     HEAPNODE_NOT_ALLOCATED = 0,
     HEAPNODE_NOT_USED,
     HEAPNODE_USED,
-}
+};
 
 /*
  * If the anything failed, 0x00 should be returned, else 1
@@ -115,6 +120,11 @@ int         minx_vpu_heap_read      (   uint64_t heap,
                                         uint64_t *dest);
 
 int         minx_vpu_heap_free      (uint64_t heap);
+
+#ifdef DEBUGGING
+void        minx_vpu_heap_print_heapnode     (uint64_t heap);
+void        minx_vpu_heap_print_heap         ();
+#endif // DEBUGGING
 
 
 #endif // __minx_vpu_VPU_HEAP_H__

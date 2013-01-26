@@ -16,6 +16,7 @@ CC=/usr/bin/gcc
 
 MAIN_SRC=${SRC}/main.c
 VPU_SRC=${SRC}/vpu.c
+HEAP_SRC=${SRC}/heap.c
 SIMPLE_READER_SRC=${SRC}/simple_reader.c
 BINARY_READER_SRC=${SRC}/binary_reader.c
 CONFIG_SRC=${SRC}/config.c
@@ -23,6 +24,7 @@ ERROR_SRC=${SRC}/error.c
 
 MAIN_OUT=${BIN}/main.o
 VPU_OUT=${BIN}/vpu.o
+HEAP_OUT=${BIN}/heap.o
 SIMPLE_READER_OUT=${BIN}/simple_reader.o
 BINARY_READER_OUT=${BIN}/binary_reader.o
 CONFIG_OUT=${BIN}/config.o
@@ -54,7 +56,7 @@ CFLAGS += -c
 # Compiling the VPU
 #
 # 
-minx: utilc compile_error compile_config compile_main compile_vpu compile_binary_reader
+minx: utilc compile_heap compile_error compile_config compile_main compile_vpu compile_binary_reader
 	echo "minx:"
 	echo "WARNING: This is maybe not stable, use 'make simple_vpu' instead!"
 	echo "linking..."
@@ -63,11 +65,12 @@ minx: utilc compile_error compile_config compile_main compile_vpu compile_binary
 		${ERROR_OUT}\
 		${MAIN_OUT}\
 		${VPU_OUT}\
+		${HEAP_OUT}\
 		${BINARY_READER_OUT}\
 		${BIN}/${UTILC_STACK_OUT} -o ${BINARY}
 	echo "ready!"
 
-simple_vpu: utilc compile_error compile_config compile_main compile_vpu compile_simple_reader
+simple_vpu: utilc compile_heap compile_error compile_config compile_main compile_vpu compile_simple_reader
 	echo "simple_vpu:"
 	echo "linking..."
 	${CC}\
@@ -75,6 +78,7 @@ simple_vpu: utilc compile_error compile_config compile_main compile_vpu compile_
 		${ERROR_OUT}\
 		${MAIN_OUT}\
 		${VPU_OUT}\
+		${HEAP_OUT}\
 		${SIMPLE_READER_OUT}\
 		${BIN}/${UTILC_STACK_OUT} -o ${BINARY}
 	echo "ready!"
@@ -102,6 +106,10 @@ compile_error:
 compile_binary_reader:
 	echo "compile_binary_reader:"
 	${CC} ${CFLAGS} ${MINX_FLAGS} ${HEADERS} ${BINARY_READER_SRC} -o ${BINARY_READER_OUT}
+
+compile_heap:
+	echo "compile_heap:"
+	${CC} ${CFLAGS} ${MINX_FLAGS} ${HEADERS} ${HEAP_SRC} -o ${HEAP_OUT}
 
 clean:
 	rm -v ${BIN}/*.o
