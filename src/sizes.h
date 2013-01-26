@@ -9,4 +9,6 @@
 #define         PROGRAM_ADDRESS_SIZE    8 /*64 bit, because program_pointer is 64 bit*/
 #define         REGISTER_SIZE           VALUE_SIZE
 
+#define         MAX_PARAMETER_COUNT     5
+
 #endif // __MINX_VPU_SIZES_H__

@@ -62,7 +62,7 @@ opcodes
 
 'size'          stands for size in byte, maximal 8
 
-
+Maximal 5 parameters at the moment!
 
 code | Short ex.| arguments				        | Expl.
 -----+----------+-------------------------------+-----------------------
