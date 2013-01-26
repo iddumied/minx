@@ -19,12 +19,14 @@ VPU_SRC=${SRC}/vpu.c
 SIMPLE_READER_SRC=${SRC}/simple_reader.c
 BINARY_READER_SRC=${SRC}/binary_reader.c
 CONFIG_SRC=${SRC}/config.c
+ERROR_SRC=${SRC}/error.c
 
 MAIN_OUT=${BIN}/main.o
 VPU_OUT=${BIN}/vpu.o
 SIMPLE_READER_OUT=${BIN}/simple_reader.o
 BINARY_READER_OUT=${BIN}/binary_reader.o
 CONFIG_OUT=${BIN}/config.o
+ERROR_OUT=${BIN}/error.o
 
 BINARY=${BIN}/minx
 
@@ -52,23 +54,25 @@ CFLAGS += -c
 # Compiling the VPU
 #
 # 
-minx: utilc compile_config compile_main compile_vpu compile_binary_reader
+minx: utilc compile_error compile_config compile_main compile_vpu compile_binary_reader
 	echo "minx:"
 	echo "WARNING: This is maybe not stable, use 'make simple_vpu' instead!"
 	echo "linking..."
 	${CC}\
 		${CONFIG_OUT}\
+		${ERROR_OUT}\
 		${MAIN_OUT}\
 		${VPU_OUT}\
 		${BINARY_READER_OUT}\
 		${BIN}/${UTILC_STACK_OUT} -o ${BINARY}
 	echo "ready!"
 
-simple_vpu: utilc compile_config compile_main compile_vpu compile_simple_reader
+simple_vpu: utilc compile_error compile_config compile_main compile_vpu compile_simple_reader
 	echo "simple_vpu:"
 	echo "linking..."
 	${CC}\
 		${CONFIG_OUT}\
+		${ERROR_OUT}\
 		${MAIN_OUT}\
 		${VPU_OUT}\
 		${SIMPLE_READER_OUT}\
@@ -90,6 +94,10 @@ compile_simple_reader:
 compile_config:
 	echo "compile_config:"
 	${CC} ${CFLAGS} ${MINX_FLAGS} ${HEADERS} ${CONFIG_SRC} -o ${CONFIG_OUT}
+
+compile_error:
+	echo "compile_error:"
+	${CC} ${CFLAGS} ${MINX_FLAGS} ${HEADERS} ${ERROR_SRC} -o ${ERROR_OUT}
 
 compile_binary_reader:
 	echo "compile_binary_reader:"

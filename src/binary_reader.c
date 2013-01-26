@@ -36,6 +36,9 @@ static void     read_until      (uint64_t p);
  */ 
 
 void minx_binary_init(FILE *f) {
+
+    minx_error_register_shutdown_function(minx_binary_shutdown);
+
     binary_init     = 0;
     binary_size     = 0;
     binary          = NULL;

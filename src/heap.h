@@ -7,6 +7,8 @@
 
 #include "error.h"
 
+#include "error.h"
+
 /*
  *
  * Heap 
