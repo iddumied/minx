@@ -1,13 +1,14 @@
 #include "error.h"
 
-static void (**shutdown_functions)(void);
-static unsigned int shutdown_functions_cnt;
+typedef void(*ShutdownFunctionPtr)(void);
+static ShutdownFunctionPtr  *shutdown_functions;
+static unsigned int         shutdown_functions_cnt;
 
 /*
  * init function for the error module
  */
 void minx_error_init() {
-    shutdown_functions      = (void(**)(void)) malloc(sizeof(*shutdown_functions));
+    shutdown_functions      = (ShutdownFunctionPtr*) malloc(sizeof(ShutdownFunctionPtr));
     shutdown_functions_cnt  = 0;
 
     minx_error_register_shutdown_function(minx_error_shutdown);
@@ -37,10 +38,9 @@ void minx_error_global_shutdown(void) {
  * register shutdown function
  */
 void minx_error_register_shutdown_function(void (*func)(void)) {
-    shutdown_functions = realloc(shutdown_functions, 
-            sizeof(*shutdown_functions) * shutdown_functions_cnt+1);
+    shutdown_functions = (ShutdownFunctionPtr*) realloc(shutdown_functions, 
+            sizeof(ShutdownFunctionPtr) * (shutdown_functions_cnt+1));
 
     shutdown_functions[shutdown_functions_cnt] = func;
-
     shutdown_functions_cnt++;
 }
