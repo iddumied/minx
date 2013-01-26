@@ -1401,9 +1401,10 @@ static void opc_free_func(void) {
 static void opc_put_func(void) {
     int result;
     unsigned int params[] = {   HEAP_ADDRESS_SIZE, 
+                                REGISTER_ADDRESS_SIZE,
                                 REGISTER_ADDRESS_SIZE, 
                                 REGISTER_ADDRESS_SIZE };
-    read_n_command_parameters(3, params);
+    read_n_command_parameters(4, params);
 
 #ifdef DEBUGGING
     EXPLAIN_OPCODE_WITH("put", 
@@ -1419,10 +1420,11 @@ static void opc_put_func(void) {
         FATAL_DESC_ERROR("Cannot put more than 8 bytes!");
     }
 
-    result = minx_vpu_heap_put( registers[opc_p->p[0]].value,
-                                registers[opc_p->p[1]].value,
-                                registers[opc_p->p[2]].value,
+    result = minx_vpu_heap_put( registers[opc_p->p[0]].value, /* the heap */
+                                registers[opc_p->p[1]].value, /* the offset */
+                                registers[opc_p->p[2]].value, /* the value */
                                 (unsigned int)registers[opc_p->p[3]].value);
+                                /* and the size */
 
     if(result)
         setbit(statusregister, PUT_BIT);
