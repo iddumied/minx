@@ -202,7 +202,7 @@ err:
 void minx_vpu_heap_put(uint64_t heap, uint64_t offset, uint64_t val, unsigned int bytes) {
 }
 
-void minx_vpu_heap_read(uint64_t heap, uint64_t offset, unsigned int bytes, uint64_t *dest) {
+int minx_vpu_heap_read(uint64_t heap, uint64_t offset, unsigned int bytes, uint64_t *dest) {
 }
 
 /*
@@ -212,16 +212,17 @@ void minx_vpu_heap_read(uint64_t heap, uint64_t offset, unsigned int bytes, uint
  *
  * But it sets the memory to 0x00!
  */
-void minx_vpu_heap_free(uint64_t heap) {
+int minx_vpu_heap_free(uint64_t heap) {
     HeapNode *h = find_heap(heap);
     if(h == NULL)
-        goto ready;
+        goto err;
 
     h->used_state   = HEAPNODE_NOT_USED;
     h->memory       = memset(h->memory, 0x00, h->real_size);
 
-ready:
-    return;
+    return MINX_VPU_HEAP_OK;
+err:
+    return MINX_VPU_HEAP_ERROR;
 }
 
 /*
