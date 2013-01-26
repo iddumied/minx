@@ -27,9 +27,8 @@ void minx_error_shutdown() {
  * first!
  */
 void minx_error_global_shutdown(void) {
-    unsigned int i;
-    for(i = shutdown_functions_cnt; i ; i-- ) {
-        shutdown_functions[i-1]();
+    for(; shutdown_functions_cnt ; shutdown_functions_cnt-- ) {
+        shutdown_functions[shutdown_functions_cnt-1]();
     }
 }
 
