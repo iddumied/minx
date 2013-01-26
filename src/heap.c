@@ -105,6 +105,11 @@ failed_to_alloc:
 
 int minx_vpu_heap_resize(uint64_t heap, uint64_t new_size) {
     HeapNode *h = find_heap(heap);
+
+    /*
+     * pointer to backup the memory if the realloc fails
+     */
+    char *backup_memory;
     
     /*
      * return if heap is not found, the vpu has the problem now!
@@ -143,7 +148,24 @@ int minx_vpu_heap_resize(uint64_t heap, uint64_t new_size) {
      * And finally, if the new_size is greater than the real size, do the realloc.
      */
     else {
+
+        /*
+         * If the memory realloc fails, we have our pointer to the memory
+         * backuped and can reset it.
+         *
+         * So if realloc fails, we still have the memory and it causes no memory
+         * leak here.
+         */
+        backup_memory = h->memory;
         h->memory = (char*) realloc(h->memory, new_size);
+        if(h->memory == NULL) {
+            h->memory = backup_memory;
+            goto err;
+        }
+
+        /*
+         * If the realloc() worked, set the new size.
+         */
         h->real_size = h->size = new_size;
     }
 
