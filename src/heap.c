@@ -182,6 +182,21 @@ err:
 }
 
 uint64_t minx_vpu_heap_get_size(uint64_t heap) {
+    HeapNode *h = find_heap(heap);
+    if(h == NULL)
+        goto err;
+    return h->size;
+
+    /*
+     * On error, do not return MINX_VPU_HEAP_ERROR, because if this value
+     * changes in future and no one cares about this function, it could cause
+     * weird errors! 
+     *
+     * If the get_size failes because the heapnode does not exist, return zero.
+     * This is true if the heapnode does not exist!
+     */
+err:
+    return 0;
 }
 
 void minx_vpu_heap_put(uint64_t heap, uint64_t offset, uint64_t val, unsigned int bytes) {
