@@ -6,6 +6,7 @@
 #include "opcodes.h"
 #include "debug.h"
 #include "binary_reader.h"
+#include "sizes.h"
 
 void minx_disasm_run(void);
 
