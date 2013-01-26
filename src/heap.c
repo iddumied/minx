@@ -100,10 +100,57 @@ uint64_t minx_vpu_heap_alloc(uint64_t size) {
 
     return node->memoryID;
 failed_to_alloc:
-    return MINX_VPU_HEAP_UNABLE_TO_ALLOC;
+    return MINX_VPU_HEAP_ERROR;
 }
 
 int minx_vpu_heap_resize(uint64_t heap, uint64_t new_size) {
+    HeapNode *h = find_heap(heap);
+    
+    /*
+     * return if heap is not found, the vpu has the problem now!
+     */
+    if(h == NULL)
+        goto err;
+
+    /*
+     * if the size is already set, everything is okay
+     */
+    if(h->size == new_size)
+        goto no_err;
+
+    if(h->real_size == new_size) {
+        h->size = h->real_size;
+        goto no_err;
+    }
+
+    /*
+     * if the size is decreased, just set the size variable to the smaller value
+     * and don't do any realloc() call, for the speed!
+     */
+    if(h->size > new_size) {
+        h->size = new_size;
+        goto no_err;
+    }
+    /*
+     * If the new_size is greater than the actual size, but smaller than the
+     * real size, just set the size variable, for the speed!
+     */
+    else if(h->size < new_size && h->real_size > new_size) {
+        h->size = new_size;
+        goto no_err;
+    }
+    /*
+     * And finally, if the new_size is greater than the real size, do the realloc.
+     */
+    else {
+        h->memory = (char*) realloc(h->memory, new_size);
+        h->real_size = h->size = new_size;
+    }
+
+no_err:
+    return MINX_VPU_HEAP_OK;
+err:
+    return MINX_VPU_HEAP_ERROR;
 }
 
 uint64_t minx_vpu_heap_get_size(uint64_t heap) {
