@@ -1407,6 +1407,7 @@ static void opc_resizei_func(void) {
  *
  */
 static void opc_free_func(void) {
+    int result;
     unsigned int params[] = { HEAP_ADDRESS_SIZE };
     read_n_command_parameters(1, params);
 
@@ -1414,7 +1415,12 @@ static void opc_free_func(void) {
     EXPLAIN_OPCODE_WITH("free", "heap %"PRIu64, registers[opc_p->p[0]].value);
 #endif
 
-    minx_vpu_heap_free(registers[opc_p->p[0]].value);
+    result = minx_vpu_heap_free(registers[opc_p->p[0]].value);
+
+    if(result)
+        setbit(statusregister, FREE_BIT);
+    else
+        clrbit(statusregister, FREE_BIT);
     
     program_pointer += (OPC_SIZE + HEAP_ADDRESS_SIZE);
 }
@@ -1427,6 +1433,7 @@ static void opc_free_func(void) {
  *
  */
 static void opc_put_func(void) {
+    int result;
     unsigned int params[] = {   HEAP_ADDRESS_SIZE, 
                                 REGISTER_ADDRESS_SIZE, 
                                 REGISTER_ADDRESS_SIZE };
@@ -1446,10 +1453,15 @@ static void opc_put_func(void) {
         FATAL_DESC_ERROR("Cannot put more than 8 bytes!");
     }
 
-    minx_vpu_heap_put(  registers[opc_p->p[0]].value,
-                        registers[opc_p->p[1]].value,
-                        registers[opc_p->p[2]].value,
-                        (unsigned int)registers[opc_p->p[3]].value);
+    result = minx_vpu_heap_put( registers[opc_p->p[0]].value,
+                                registers[opc_p->p[1]].value,
+                                registers[opc_p->p[2]].value,
+                                (unsigned int)registers[opc_p->p[3]].value);
+
+    if(result)
+        setbit(statusregister, PUT_BIT);
+    else
+        clrbit(statusregister, PUT_BIT);
 
     program_pointer += (OPC_SIZE + HEAP_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE);
 }
@@ -1466,6 +1478,7 @@ static void opc_put_func(void) {
  *
  */
 static void opc_read_func(void) {
+    int result;
     unsigned int params[] = {   HEAP_ADDRESS_SIZE,
                                 REGISTER_ADDRESS_SIZE,
                                 REGISTER_ADDRESS_SIZE,
@@ -1486,10 +1499,15 @@ static void opc_read_func(void) {
         FATAL_DESC_ERROR("Cannot read more than 8 bytes!");
     }
 
-    minx_vpu_heap_read( registers[opc_p->p[0]].value,
-                        registers[opc_p->p[1]].value,
-                        registers[opc_p->p[2]].value,
-                        &(registers[opc_p->p[3]].value));
+    result = minx_vpu_heap_read(registers[opc_p->p[0]].value,
+                                registers[opc_p->p[1]].value,
+                                registers[opc_p->p[2]].value,
+                                &(registers[opc_p->p[3]].value));
+
+    if(result)
+        setbit(statusregister, READ_BIT);
+    else
+        clrbit(statusregister, READ_BIT);
 
     program_pointer += (OPC_SIZE + HEAP_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE);
 }
