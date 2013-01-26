@@ -17,6 +17,7 @@ void minx_error_init() {
  * shutdown function for the error module
  */
 void minx_error_shutdown() {
+    free(shutdown_functions);
 }
 
 /*
