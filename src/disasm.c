@@ -1,3 +1,5 @@
+#ifdef DISASSEMBLE
+
 #include "disasm.h"
 
 static void print_parameters(unsigned int *params);
@@ -86,3 +88,5 @@ static void print_parameters(unsigned int *params) {
     }
     printf("\n");
 }
+
+#endif // DISASSEMBLE
