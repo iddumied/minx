@@ -14,6 +14,7 @@ void    minx_error_register_shutdown_function   (void(*func)(void));
                                 printf( "minx: FATAL ERROR.\n"              \
                                         "func %s\nline %i\n"                \
                                         "Aborting\n", __func__,__LINE__);   \
+                                minx_error_global_shutdown();               \
                                 exit(1);                                    \
                             } while (0);
 
@@ -23,6 +24,7 @@ void    minx_error_register_shutdown_function   (void(*func)(void));
                                             "%s\n"                          \
                                             "Aborting.\n"                   \
                                             ,__func__,__LINE__,desc);       \
+                                    minx_error_global_shutdown();           \
                                     exit(1);                                \
                                 } while (0);
 
