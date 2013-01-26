@@ -198,7 +198,7 @@ void minx_vpu_init(void) {
     __vpu_running__ = 1;
     
     init_registers();
-    setup_heap();
+    minx_vpu_heap_setup();
     stack = empty_stack();
     opc_p = (CommandParameters*) malloc( sizeof(*opc_p) );
 }
@@ -233,7 +233,7 @@ void minx_vpu_run() {
     free(registers);
     free(opc_p);
     stackdelete(stack);
-    shutdown_heap();
+    minx_vpu_heap_shutdown();
 }
 
 /*
