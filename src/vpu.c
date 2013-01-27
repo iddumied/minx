@@ -288,9 +288,9 @@ static Register* find_register(uint64_t addr) {
 #endif 
 
     if( !register_exists(addr) ) {
-        FATAL_DESC_ERROR("Register does not exist");
+        FATAL_F_ERROR("Register %"PRIu64" does not exist!", addr);
     }
-    return &registers[ addr & REGISTER_MASK ]; 
+    return &registers[ addr ]; 
 }
 
 /*
