@@ -31,7 +31,7 @@ void    minx_error_register_shutdown_function   (void(*func)(void));
 #define FATAL_F_ERROR(f,...)    do {                                        \
                                     printf("minx: FATAL ERROR.\n"           \
                                            f                                \
-                                           "\nAborting."                    \
+                                           "\nAborting.\n"                  \
                                            ,__VA_ARGS__);                   \
                                     minx_error_global_shutdown();           \
                                     exit(1);                                \
