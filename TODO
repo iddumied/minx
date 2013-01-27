@@ -94,3 +94,7 @@ TODO:
 20) BUG: Remove this 'Invalid Pointer' errors (just with 'export MALLOC_CHECK_=1') 
 
 21) Include mtrace() when debugging minx for memory leaks and maybe more
+
+22) Interrupts? What about interrupts? We need a jump-to address for a
+	interrupt and a way to register this address for a particular interrupt type
+	such as SIGINT.
