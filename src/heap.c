@@ -348,6 +348,11 @@ static HeapNode* find_heap(uint64_t heapID) {
             found = heapnodes[i];
         }
     }
+
+    if(found == NULL) {
+        FATAL_F_ERROR("Cannot find memory with ID %"PRIu64"!", heapID);
+    }
+
     return found;
 }
 
