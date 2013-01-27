@@ -119,6 +119,7 @@ def read_file f
   lines = File.readlines(f)
   lines.each do |line| 
     next if line.start_with? ";" or line.start_with? "#"
+    next if line.strip.empty? 
     process_line(line)
   end
 end
