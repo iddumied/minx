@@ -175,10 +175,6 @@ static void ((*opc_funcs[])(void)) = {
  * -----------------------------------------------------------------------------
  */
 
-/*
- * These macros are always valid, also if the register_map was reordered,
- * because there are in a row and defined as so.
- */
 #define program_pointer                 (registers[0x0000].value)
 #define akku                            (registers[0x0002].value)
 #define statusregister                  (registers[0x0003].value)
@@ -192,6 +188,16 @@ static void ((*opc_funcs[])(void)) = {
  * -----------------------------------------------------------------------------
  */
 
+/*
+ * Public init function 
+ *
+ * starts the VPU:
+ *  - set __vpu_running__ to 1
+ *  - init stuff
+ *      - init the registers
+ *      - init the stack 
+ *      - init the command parameters storage 
+ */
 void minx_vpu_init(void) {
     minx_error_register_shutdown_function(minx_vpu_shutdown);
 
@@ -205,19 +211,16 @@ void minx_vpu_init(void) {
 }
 
 /*
- * Public run function 
- *
- * starts the VPU:
- *  - set __vpu_running__ to 1
- *  - init stuff
- *      - init the registers
- *      - init the stack 
- *      - init the command parameters storage 
+ * Public run function
  *  - run 
  *  - cleanup 
  *      - free the registers 
  *      - free the stack 
  *      - free the command parameters storage
+ *
+ *  The cleanup is done here, because the cleanup _must_ be done after run()
+ *  ended. If there is a force-shutdown, run() ends and the cleanup will be 
+ *  done.
  * 
  */
 void minx_vpu_run() {
@@ -275,12 +278,8 @@ static void init_registers() {
 }
 
 /*
- * find a register in the register_map by it's address.
- *
- * @param addr address of the register. Here is 64 Bit required, because
- * parameters are read into 64 bit memory, masking is done in _this_ function
- * and nowhere else. So if a opcode function reads it's parameters, they are
- * saved in 64 bit and passed to this function if necessary.
+ * find a register in the register_map by it's address. If the requested
+ * register does not exist, fail.
  */
 static Register* find_register(uint64_t addr) {
 #if (defined DEBUGGING | defined DEBUG)
