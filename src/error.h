@@ -28,5 +28,6 @@ void    minx_error_register_shutdown_function   (void(*func)(void));
                                     exit(1);                                \
                                 } while (0);
 
+typedef void(*ShutdownFunctionPtr)(void);
 
 #endif // __MINX_ERROR_H__
