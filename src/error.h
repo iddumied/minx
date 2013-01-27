@@ -16,7 +16,7 @@ void    minx_error_register_shutdown_function   (void(*func)(void));
                                         "Aborting\n", __func__,__LINE__);   \
                                 minx_error_global_shutdown();               \
                                 exit(1);                                    \
-                            } while (0);
+                            } while (0)
 
 #define FATAL_DESC_ERROR(desc)  do {                                        \
                                     printf( "minx: FATAL ERROR.\n"          \
@@ -26,7 +26,16 @@ void    minx_error_register_shutdown_function   (void(*func)(void));
                                             ,__func__,__LINE__,desc);       \
                                     minx_error_global_shutdown();           \
                                     exit(1);                                \
-                                } while (0);
+                                } while (0)
+
+#define FATAL_F_ERROR(f,...)    do {                                        \
+                                    printf("minx: FATAL ERROR.\n"           \
+                                           f                                \
+                                           "\nAborting."                    \
+                                           ,__VA_ARGS__);                   \
+                                    minx_error_global_shutdown();           \
+                                    exit(1);                                \
+                                } while(0)
 
 typedef void(*ShutdownFunctionPtr)(void);
 
