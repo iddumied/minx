@@ -111,8 +111,8 @@ uint64_t    minx_vpu_heap_get_size  (uint64_t heap);
 
 int         minx_vpu_heap_put       (   uint64_t heap, 
                                         uint64_t offset, 
-                                        uint64_t val, 
-                                        unsigned int bytes);
+                                        unsigned int bytes,
+                                        uint64_t val );
 
 int         minx_vpu_heap_read      (   uint64_t heap, 
                                         uint64_t offset, 

@@ -202,7 +202,7 @@ err:
     return 0;
 }
 
-int minx_vpu_heap_put(uint64_t heap, uint64_t offset, uint64_t val, unsigned int bytes) {
+int minx_vpu_heap_put(uint64_t heap, uint64_t offset, unsigned int bytes, uint64_t val) {
     HeapNode *h = find_heap(heap);
 
     if(h == NULL)

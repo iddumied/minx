@@ -1408,23 +1408,22 @@ static void opc_put_func(void) {
 
 #ifdef DEBUGGING
     EXPLAIN_OPCODE_WITH("put", 
-            "into heap %"PRIu64" at offset %"PRIu64" value %"PRIu64" (%"PRIu64" Bytes)",
+            "into heap %"PRIu64" at offset %"PRIu64" %u bytes from %"PRIu64,
             registers[opc_p->p[0]].value,
             registers[opc_p->p[1]].value,
-            registers[opc_p->p[2]].value,
+            (unsigned int)registers[opc_p->p[2]].value,
             registers[opc_p->p[3]].value
             );
 #endif 
 
-    if( registers[opc_p->p[3]].value > 8) {
+    if( registers[opc_p->p[2]].value > 8) {
         FATAL_DESC_ERROR("Cannot put more than 8 bytes!");
     }
 
     result = minx_vpu_heap_put( registers[opc_p->p[0]].value, /* the heap */
                                 registers[opc_p->p[1]].value, /* the offset */
-                                registers[opc_p->p[2]].value, /* the value */
-                                (unsigned int)registers[opc_p->p[3]].value);
-                                /* and the size */
+                                (unsigned int)registers[opc_p->p[2]].value, /* the size */
+                                registers[opc_p->p[3]].value); /* the value */
 
     if(result)
         setbit(statusregister, PUT_BIT);
@@ -1463,14 +1462,14 @@ static void opc_read_func(void) {
             );
 #endif 
 
-    if(registers[opc_p->p[3]].value > 8) {
+    if(registers[opc_p->p[2]].value > 8) {
         FATAL_DESC_ERROR("Cannot read more than 8 bytes!");
     }
 
     result = minx_vpu_heap_read(registers[opc_p->p[0]].value, /* the heap */
                                 registers[opc_p->p[1]].value, /* the offset */
-                                registers[opc_p->p[3]].value, /* the bytecount */
-                                &(registers[opc_p->p[2]].value)); /* the dest */
+                                registers[opc_p->p[2]].value, /* the bytecount */
+                                &(registers[opc_p->p[3]].value)); /* the dest */
 
     if(result)
         setbit(statusregister, READ_BIT);
