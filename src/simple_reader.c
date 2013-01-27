@@ -36,10 +36,10 @@ void minx_binary_shutdown() {
     free(binary);
 }
 
-void * minx_binary_get_at(  uint64_t p, 
-                            unsigned int number_of_bytes, 
-                            uint64_t *dest, 
-                            size_t destsize) {
+void * minx_binary_get_at(  uint64_t        p, 
+                            unsigned int    number_of_bytes, 
+                            void            *dest, 
+                            size_t          destsize) {
 
     memset(dest, 0x00, destsize);
     memcpy(dest, &binary[p], number_of_bytes);

@@ -19,7 +19,7 @@ void            minx_binary_init        ( FILE *f );
 void            minx_binary_shutdown    (void);
 void *          minx_binary_get_at      (   uint64_t p, 
                                             unsigned int number_of_bytes, 
-                                            uint64_t *dest,
+                                            void *dest,
                                             size_t destsize);
 
 uint16_t *      minx_get_opcode         (uint64_t p);
