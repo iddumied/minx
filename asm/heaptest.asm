@@ -36,4 +36,42 @@ CMP 0xBC 0xBB
 ; jump back to the INC instruction, which is at byte 34 = 0x22
 ; 2 + 2 + 8 Bytes 
 JMPNZ 0x02 0x22
+
+;
+; If the program arrives here, the memory with the memoryID zero has size 
+; 0x1F which is 31 Bytes
+;
+; So lets put something there!
+; 
+; Do NOT override register 0xFF, it contains the memoryID!
+;
+
+; 8 Byte value (max) in 0xBB
+MOVI 0xBB 0xFFFFFFFFFFFFFFFF
+
+; no offset please!
+MOVI 0xBC 0x00
+
+; but all 8 bytes 
+MOVI 0xBD 0x08
+
+; write 8 byte to the beginning of the heap
+PUT 0xFF 0xBC 0xBD 0xBB
+
+; now at offset 8 write the next 8 bytes 
+ADDR 0xBC 0xBD 
+PUT 0xFF 0xBC 0xBD 0xBB
+
+; and some more at offset 16+4
+ADDR 0xBC 0xBD
+; 4 bytes left 
+ADDIR 0xBC 0x04 
+
+; PUT!
+PUT 0xFF 0xBC 0xBD 0xBB
+
+; and now free the whole shit again!
+FREE 0xFF
+
+; EOP
 JMP 0xFFFFFFFFFFFFFFFF
