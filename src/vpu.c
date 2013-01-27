@@ -494,11 +494,11 @@ static void opc_mov_func() {
 #ifdef DEBUGGING
     EXPLAIN_OPCODE_WITH("mov", 
             "R%"PRIu64" <- %"PRIu64" (R%"PRIu64")", 
-            opc_p->p[1], 
-            find_register(opc_p->p[2])->value, opc_p->p[2]);
+            opc_p->p[0], 
+            find_register(opc_p->p[1])->value, opc_p->p[1]);
 #endif 
 
-    find_register(opc_p->p[1])->value = find_register(opc_p->p[2])->value;
+    find_register(opc_p->p[0])->value = find_register(opc_p->p[1])->value;
     program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE);
 }
 
