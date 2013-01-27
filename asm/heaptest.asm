@@ -14,7 +14,7 @@ ALLOC 0xBB
 
 ; save the memoryID
 ; 2 + 2 + 2 Bytes 
-MOV 0xFF 0xBB
+MOV 0xFF 0x02
 
 ; resize-maximum in 0xBC
 ; 2 + 2 + 8 Bytes
