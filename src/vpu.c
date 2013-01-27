@@ -212,15 +212,6 @@ void minx_vpu_init(void) {
 
 /*
  * Public run function
- *  - run 
- *  - cleanup 
- *      - free the registers 
- *      - free the stack 
- *      - free the command parameters storage
- *
- *  The cleanup is done here, because the cleanup _must_ be done after run()
- *  ended. If there is a force-shutdown, run() ends and the cleanup will be 
- *  done.
  * 
  */
 void minx_vpu_run() {
@@ -230,22 +221,27 @@ void minx_vpu_run() {
 #endif
 
     run();
-
-    /*
-     * Just if run() is ready! 
-     */
-    free(registers);
-    free(opc_p);
-    stackdelete(stack);
-    minx_vpu_heap_shutdown();
 }
 
 /*
  * public shutdown function 
  * used to force-shutdown the VPU.
+ *
+ *  - cleanup 
+ *      - free the registers 
+ *      - free the stack 
+ *      - free the command parameters storage
+ *
+ * The cleanup must be done here, because if the global shutdown is started from
+ * a fatal, after the shutdown() calls, exit() will be called.
  */
 void minx_vpu_shutdown() {
     __vpu_running__ = 0;
+    
+    free(registers);
+    free(opc_p);
+    stackdelete(stack);
+    minx_vpu_heap_shutdown();
 }
 
 
