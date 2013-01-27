@@ -56,21 +56,7 @@ CFLAGS += -c
 # Compiling the VPU
 #
 # 
-minx: utilc compile_heap compile_error compile_config compile_main compile_vpu compile_binary_reader
-	echo "minx:"
-	echo "WARNING: This is maybe not stable, use 'make simple_vpu' instead!"
-	echo "linking..."
-	${CC}\
-		${CONFIG_OUT}\
-		${ERROR_OUT}\
-		${MAIN_OUT}\
-		${VPU_OUT}\
-		${HEAP_OUT}\
-		${BINARY_READER_OUT}\
-		${BIN}/${UTILC_STACK_OUT} -o ${BINARY}
-	echo "ready!"
-
-simple_vpu: utilc compile_heap compile_error compile_config compile_main compile_vpu compile_simple_reader
+minx: utilc compile_heap compile_error compile_config compile_main compile_vpu compile_simple_reader
 	echo "simple_vpu:"
 	echo "linking..."
 	${CC}\
