@@ -29,7 +29,7 @@ static Configuration    configuration[] = {
  */
 static ConfigurationKeyMap confkeys[] = {
     {   .type   = CONF_VERBOSITY,               .configkey = "-v"           },
-    {   .type   = CONF_MVPU_DEBUGGING,           .configkey = "--minx-debug"},
+    {   .type   = CONF_MVPU_DEBUGGING,          .configkey = "--minx-debug" },
     {   .type   = CONF_SRC_DEBUGGING,           .configkey = "-d"           },
     {   .type   = CONF_PRINT_REGS_AT_EOP,       .configkey = "--regs"       },
     {   .type   = CONF_DISASM,                  .configkey = "--disasm"     },
@@ -40,6 +40,7 @@ static ConfigurationKeyMap confkeys[] = {
  */
 
 void minx_config_init() {
+    minx_error_register_shutdown_function(minx_config_shutdown);
 }
 
 void minx_config_shutdown() {

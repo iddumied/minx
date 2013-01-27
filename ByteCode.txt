@@ -44,7 +44,7 @@ stack
 opcodes
 -------
 
-'Register'	    stands for 16 Bit (2 Byte) register address 
+'Register'	    stands for 16 Bit (2 Byte) register address (shortcut 'reg')
 
 'Value'		    stands for 64 Bit (8 Byte) value
 
@@ -57,6 +57,12 @@ opcodes
 'MemoryAddr'    stands for 16 Bit (2 Byte) register address where a memory
                 address is stored. This memory address can be anywhere in the 
                 memory!
+
+'offset'        stands for memory offset in byte
+
+'size'          stands for size in byte, maximal 8
+
+Maximal 5 parameters at the moment!
 
 code | Short ex.| arguments				        | Expl.
 -----+----------+-------------------------------+-----------------------
@@ -123,12 +129,12 @@ Heap opcodes:
 - the size of the memory is in byte.
 
 -----+----------+-------------------------------+--------------------------- 
-0x60 | ALLOC    | Register                      | ptr to first byte or 0x00 in akku
-0x61 | ALLOCI   | Value                         | ptr to first byte or 0x00 in akku
-0x62 | RESIZE   | Memory, Register              | ptr to first byte or 0x00 in akku
-0x63 | RESIZEI  | Memory, Value                 | ptr to first byte or 0x00 in akku
-0x64 | FREE     | Memory                        | Register where the addr to the first byte of the memory stands
-0x65 | PUT      | MemoryAddr, Register, Register| (register, size(max 8 Byte))
-0x66 | READ     | MemoryAddr, Register, Register| (register, size(max 8 Byte))
+0x60 | ALLOC    | Register                      | MemID or 0x00 in akku
+0x61 | ALLOCI   | Value                         | MemID or 0x00 in akku
+0x62 | RESIZE   | MemoryAddr, Register          | 
+0x63 | RESIZEI  | MemoryAddr, Value             | 
+0x64 | FREE     | MemoryAddr                    | 
+0x65 | PUT      | MemoryAddr, offset, size, reg | offset in mem, size (max 8 Byte), register to read from
+0x66 | READ     | MemoryAddr, offset, size, reg | offset in mem, size (max 8 Byte), register to put into 
 0x67 | GETSIZE  | Memory                        | load size of the memory into akku
 -----+----------+-------------------------------+--------------------------- 

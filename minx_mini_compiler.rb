@@ -67,8 +67,8 @@ class Op < Struct.new :opc, :args; end
   "RESIZE" => Op.new(0x62, [MEMORY, REGISTER]), 
   "RESIZEI"=> Op.new(0x63, [MEMORY, VALUE]), 
   "FREE" =>   Op.new(0x64, [MEMORY]), 
-  "PUT" =>    Op.new(0x65, [MEMORY, REGISTER, REGISTER]), 
-  "READ" =>   Op.new(0x66, [MEMORY, REGISTER, REGISTER]), 
+  "PUT" =>    Op.new(0x65, [MEMORY, REGISTER, REGISTER, REGISTER]), 
+  "READ" =>   Op.new(0x66, [MEMORY, REGISTER, REGISTER, REGISTER]), 
   "GETSIZE"=> Op.new(0x67, [MEMORY]), 
 }
 
@@ -119,6 +119,7 @@ def read_file f
   lines = File.readlines(f)
   lines.each do |line| 
     next if line.start_with? ";" or line.start_with? "#"
+    next if line.strip.empty? 
     process_line(line)
   end
 end
@@ -133,9 +134,7 @@ else
   read_file( ARGV.first )
 end
 
-puts "code is: \"#{@code}\""
-sleep 0.5
-puts "write to file: "
+print "#{ARGV.first} ->"
 
 if ARGV.empty?
   filename = gets.chop

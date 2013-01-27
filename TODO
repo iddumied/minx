@@ -82,13 +82,14 @@ TODO:
 
 16) Add Disassembler 
 
-17) The Memory management SUCKS so hard! 
-	Example:
-		alloc returns address 0x00F0, alloc was 5 Byte
-		-> so the last address of the memory is 0xF5
+17.1) (addition to already done TODO #17) Organize the memory map, for fast
+		memory lookup and so on. The map has to be ordered to do a fast lookup
+		of the memory!
 
-		next alloc returns address 0x00F6, alloc was also 5 Byte
+20) BUG: Remove this 'Invalid Pointer' errors (just with 'export MALLOC_CHECK_=1') 
 
-		resize first alloc to 10 Byte. What happens or better: what should happen?
+21) Include mtrace() when debugging minx for memory leaks and maybe more
 
-
+22) Interrupts? What about interrupts? We need a jump-to address for a
+	interrupt and a way to register this address for a particular interrupt type
+	such as SIGINT.

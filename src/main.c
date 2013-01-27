@@ -1,4 +1,5 @@
 #include "main.h"
+#include "error.h"
 #include "config.h"
 #include "binary_reader.h"
 #include "vpu.h"
@@ -9,13 +10,12 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <mcheck.h>
 
 void handle_signal(int signal) {
     if( signal == SIGINT || signal == SIGKILL ) {
         printf("[%i]: Shutdown ...", signal);
-        minx_binary_shutdown();
-        minx_config_shutdown();
-        minx_vpu_shutdown();
+        minx_error_global_shutdown();
         printf("done.\n");
     }
 }
@@ -36,8 +36,14 @@ int main(int argc, char **args) {
     FILE *f = fopen(file, "r");
     */
 
+    minx_error_init();
     minx_config_init();
     minx_config_parse(argc, args);
+
+    if(minx_config_get(CONF_MVPU_DEBUGGING)->b) {
+        mtrace();
+    }
+
     minx_binary_init(f);
 
 #ifdef DISASSEMBLE
@@ -45,15 +51,20 @@ int main(int argc, char **args) {
         minx_disasm_run();
     }
     else {
+        minx_vpu_init();
         minx_vpu_run();
+        minx_vpu_shutdown();
     }
 #else /* for the readability */
+    minx_vpu_init();
     minx_vpu_run();
+    minx_vpu_shutdown();
 #endif //DISASSEMBLE
 
 
     minx_binary_shutdown();
     minx_config_shutdown();
+    minx_error_shutdown();
 
     fclose(f);
     return 0;
