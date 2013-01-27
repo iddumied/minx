@@ -1433,7 +1433,11 @@ static void opc_put_func(void) {
     else
         clrbit(statusregister, PUT_BIT);
 
-    program_pointer += (OPC_SIZE + HEAP_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE);
+    program_pointer += (OPC_SIZE + 
+                        HEAP_ADDRESS_SIZE + 
+                        REGISTER_ADDRESS_SIZE + 
+                        REGISTER_ADDRESS_SIZE + 
+                        REGISTER_ADDRESS_SIZE);
 }
 
 /*
