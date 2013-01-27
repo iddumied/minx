@@ -67,8 +67,8 @@ class Op < Struct.new :opc, :args; end
   "RESIZE" => Op.new(0x62, [MEMORY, REGISTER]), 
   "RESIZEI"=> Op.new(0x63, [MEMORY, VALUE]), 
   "FREE" =>   Op.new(0x64, [MEMORY]), 
-  "PUT" =>    Op.new(0x65, [MEMORY, REGISTER, REGISTER]), 
-  "READ" =>   Op.new(0x66, [MEMORY, REGISTER, REGISTER]), 
+  "PUT" =>    Op.new(0x65, [MEMORY, REGISTER, REGISTER, REGISTER]), 
+  "READ" =>   Op.new(0x66, [MEMORY, REGISTER, REGISTER, REGISTER]), 
   "GETSIZE"=> Op.new(0x67, [MEMORY]), 
 }
 
