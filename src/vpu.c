@@ -9,8 +9,6 @@
 static void         init_registers                  (void);
 static Register*    find_register                   (uint64_t addr);
 
-static void         run                             (void);
-
 static void         read_n_command_parameters       (unsigned int n,
                                                     unsigned int sizes[]);
 
@@ -92,8 +90,6 @@ static void         print_register          (unsigned int i);
  *          static variables
  * -----------------------------------------------------------------------------
  */
-static int                      __vpu_running__;
-
 static Register             *   registers       = NULL;
 static uint16_t                 register_count  = 0;
 
@@ -201,8 +197,6 @@ static void ((*opc_funcs[])(void)) = {
 void minx_vpu_init(void) {
     minx_error_register_shutdown_function(minx_vpu_shutdown);
 
-    __vpu_running__ = 1;
-    
     init_registers();
     minx_vpu_heap_setup();
     stack = empty_stack();
@@ -212,15 +206,39 @@ void minx_vpu_init(void) {
 
 /*
  * Public run function
+ *
+ * - allocates memory for storing the actual opcode
+ * - run while __vpu_running__
+ * - run while current program pointer doesn't point to END_OF_PROGRAM
+ * - at END_OF_PROGRAM, if compiled with VERBOSITY and config set, print registers
+ * - cleanup the memory, allocated by this function.
  * 
  */
 void minx_vpu_run() {
-
 #if (defined DEBUGGING | defined DEBUG)
-    minxvpudbgprint("Starting\n");
+    minxvpudbgprint("Starting the VPU\n");
 #endif
 
-    run();
+    uint16_t *opcode = (uint16_t*) malloc(sizeof(uint16_t));
+
+    while( !program_pointer_is(END_OF_PROGRAM) ) {
+
+#if (defined DEBUGGING || defined DEBUG)
+        fflush(stdout);
+#endif // (defined DEBUGGING || defined DEBUG)
+        opcode = (uint16_t*)minx_binary_get_at(program_pointer, OPC_SIZE, opcode, sizeof(*opcode));
+        run_opcode(*opcode);
+    }
+
+#if (defined VERBOSITY)
+    if( minx_config_get(CONF_PRINT_REGS_AT_EOP)->b ) {
+        unsigned int i;
+        for( i = 0; i < register_count ; i++ ) {
+            print_register(i);
+        }
+    }
+#endif //if (defined VERBOSITY)
+
 }
 
 /*
@@ -236,8 +254,6 @@ void minx_vpu_run() {
  * a fatal, after the shutdown() calls, exit() will be called.
  */
 void minx_vpu_shutdown() {
-    __vpu_running__ = 0;
-    
     free(registers);
     free(opc_p);
     stackdelete(stack);
@@ -287,42 +303,6 @@ static Register* find_register(uint64_t addr) {
     }
     return &registers[ addr ]; 
 }
-
-/*
- * run function 
- *
- * - allocates memory for storing the actual opcode
- * - run while __vpu_running__
- * - run while current program pointer doesn't point to END_OF_PROGRAM
- * - at END_OF_PROGRAM, if compiled with VERBOSITY and config set, print registers
- * - cleanup the memory, allocated by this function.
- */
-static void run() {
-#if (defined DEBUGGING | defined DEBUG)
-    minxvpudbgprint("run");
-#endif //DEBUGGING
-
-    uint16_t *opcode = (uint16_t*) malloc(sizeof(uint16_t));
-
-    while( __vpu_running__ && !program_pointer_is(END_OF_PROGRAM) ) {
-
-#if (defined DEBUGGING || defined DEBUG)
-        fflush(stdout);
-#endif // (defined DEBUGGING || defined DEBUG)
-        opcode = (uint16_t*)minx_binary_get_at(program_pointer, OPC_SIZE, opcode, sizeof(*opcode));
-        run_opcode(*opcode);
-    }
-
-#if (defined VERBOSITY)
-    if( minx_config_get(CONF_PRINT_REGS_AT_EOP)->b ) {
-        unsigned int i;
-        for( i = 0; i < register_count ; i++ ) {
-            print_register(i);
-        }
-    }
-#endif //if (defined VERBOSITY)
-
-} //static void run()
 
 /*
  * runs the opcode, passed to the function by finding it in the opc_funcs array.
