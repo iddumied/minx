@@ -344,7 +344,7 @@ static void run_opcode(uint16_t cmd) {
 
     void (*opc_func)(void) = opc_funcs[cmd];
     if( opc_func == NULL ) {
-        FATAL_DESC_ERROR("Tried to execute unknown opcode!");
+        FATAL_F_ERROR("Tried to execute unknown opcode %"PRIu16"!", cmd);
     }
     opc_func();
 
