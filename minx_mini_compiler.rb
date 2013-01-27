@@ -134,9 +134,7 @@ else
   read_file( ARGV.first )
 end
 
-puts "code is: \"#{@code}\""
-sleep 0.5
-puts "write to file: "
+print "#{ARGV.first} ->"
 
 if ARGV.empty?
   filename = gets.chop
