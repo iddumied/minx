@@ -1483,7 +1483,11 @@ static void opc_read_func(void) {
     else
         clrbit(statusregister, READ_BIT);
 
-    program_pointer += (OPC_SIZE + HEAP_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE + REGISTER_ADDRESS_SIZE);
+    program_pointer += (OPC_SIZE + 
+                        HEAP_ADDRESS_SIZE + 
+                        REGISTER_ADDRESS_SIZE + 
+                        REGISTER_ADDRESS_SIZE + 
+                        REGISTER_ADDRESS_SIZE);
 }
 
 /*
