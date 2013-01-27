@@ -314,7 +314,7 @@ static void run() {
 #if (defined DEBUGGING || defined DEBUG)
         fflush(stdout);
 #endif // (defined DEBUGGING || defined DEBUG)
-        opcode = (uint16_t*)minx_binary_get_at(program_pointer, OPC_SIZE, opcode);
+        opcode = (uint16_t*)minx_binary_get_at(program_pointer, OPC_SIZE, opcode, sizeof(*opcode));
         run_opcode(*opcode);
     }
 
@@ -390,7 +390,7 @@ static void read_n_command_parameters(unsigned int n, unsigned int sizes[]) {
     unsigned int    i;
 
     for(i = 0 ; i < n ; i++ ) {
-        opc_p->p[i] = *((uint64_t*) minx_binary_get_at(next_pos, sizes[i], &opc_p->p[i]));
+        opc_p->p[i] = *((uint64_t*) minx_binary_get_at(next_pos, sizes[i], &opc_p->p[i], sizeof(uint64_t)));
         next_pos += sizes[i];
     }
 }
@@ -492,7 +492,10 @@ static void opc_mov_func() {
     read_n_command_parameters(2, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("mov", "%"PRIu64" <- %"PRIu64, opc_p->p[1], opc_p->p[2]);
+    EXPLAIN_OPCODE_WITH("mov", 
+            "R%"PRIu64" <- %"PRIu64" (R%"PRIu64")", 
+            opc_p->p[1], 
+            find_register(opc_p->p[2])->value, opc_p->p[2]);
 #endif 
 
     find_register(opc_p->p[1])->value = find_register(opc_p->p[2])->value;
@@ -1252,9 +1255,9 @@ static void opc_pmem_func(void) {
         unsigned int params[] = { REGISTER_ADDRESS_SIZE };
         read_n_command_parameters(1, params);
 
-        EXPLAIN_OPCODE_WITH("pmem", "memory: %"PRIu64, registers[opc_p->p[0]].value);
+        EXPLAIN_OPCODE_WITH("pmem", "memory: %"PRIu64, find_register(opc_p->p[0])->value);
 
-        minx_vpu_heap_print_heapnode(registers[opc_p->p[0]].value);
+        minx_vpu_heap_print_heapnode(find_register(opc_p->p[0])->value);
     }
 #endif
     program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE);
@@ -1275,10 +1278,10 @@ static void opc_alloc_func(void) {
     read_n_command_parameters(1, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("alloc", "%"PRIu64" Bytes", registers[opc_p->p[0]].value);
+    EXPLAIN_OPCODE_WITH("alloc", "%"PRIu64" Bytes", find_register(opc_p->p[0])->value);
 #endif
 
-    akku = minx_vpu_heap_alloc(registers[opc_p->p[0]].value);
+    akku = minx_vpu_heap_alloc(find_register(opc_p->p[0])->value);
 
     program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE);
 }
@@ -1321,11 +1324,11 @@ static void opc_resize_func(void) {
 
 #ifdef DEBUGGING
     EXPLAIN_OPCODE_WITH("resize", "heap %"PRIu64" to %"PRIu64" Bytes", 
-            registers[opc_p->p[0]].value, registers[opc_p->p[1]].value);
+            find_register(opc_p->p[0])->value, find_register(opc_p->p[1])->value);
 #endif 
 
-    result = minx_vpu_heap_resize(  registers[opc_p->p[0]].value, 
-                                    registers[opc_p->p[1]].value);
+    result = minx_vpu_heap_resize(  find_register(opc_p->p[0])->value, 
+                                    find_register(opc_p->p[1])->value);
 
     if( result ) 
         setbit(statusregister, RESIZE_BIT);
@@ -1353,7 +1356,7 @@ static void opc_resizei_func(void) {
             opc_p->p[0], opc_p->p[1]);
 #endif 
 
-    result = minx_vpu_heap_resize(registers[opc_p->p[0]].value, opc_p->p[1]);
+    result = minx_vpu_heap_resize(find_register(opc_p->p[0])->value, opc_p->p[1]);
 
     if( result ) 
         setbit(statusregister, RESIZE_BIT);
@@ -1378,10 +1381,10 @@ static void opc_free_func(void) {
     read_n_command_parameters(1, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("free", "heap %"PRIu64, registers[opc_p->p[0]].value);
+    EXPLAIN_OPCODE_WITH("free", "heap %"PRIu64, find_register(opc_p->p[0])->value);
 #endif
 
-    result = minx_vpu_heap_free(registers[opc_p->p[0]].value);
+    result = minx_vpu_heap_free(find_register(opc_p->p[0])->value);
 
     if(result)
         setbit(statusregister, FREE_BIT);
@@ -1409,21 +1412,21 @@ static void opc_put_func(void) {
 #ifdef DEBUGGING
     EXPLAIN_OPCODE_WITH("put", 
             "into heap %"PRIu64" at offset %"PRIu64" %u bytes from %"PRIu64,
-            registers[opc_p->p[0]].value,
-            registers[opc_p->p[1]].value,
+            find_register(opc_p->p[0])->value,
+            find_register(opc_p->p[1])->value,
             (unsigned int)registers[opc_p->p[2]].value,
-            registers[opc_p->p[3]].value
+            find_register(opc_p->p[3])->value
             );
 #endif 
 
-    if( registers[opc_p->p[2]].value > 8) {
+    if( find_register(opc_p->p[2])->value > 8) {
         FATAL_DESC_ERROR("Cannot put more than 8 bytes!");
     }
 
-    result = minx_vpu_heap_put( registers[opc_p->p[0]].value, /* the heap */
-                                registers[opc_p->p[1]].value, /* the offset */
-                                (unsigned int)registers[opc_p->p[2]].value, /* the size */
-                                registers[opc_p->p[3]].value); /* the value */
+    result = minx_vpu_heap_put( find_register(opc_p->p[0])->value, /* the heap */
+                                find_register(opc_p->p[1])->value, /* the offset */
+                                (unsigned int)find_register(opc_p->p[2])->value, /* the size */
+                                find_register(opc_p->p[3])->value); /* the value */
 
     if(result)
         setbit(statusregister, PUT_BIT);
@@ -1455,21 +1458,21 @@ static void opc_read_func(void) {
 #ifdef DEBUGGING 
     EXPLAIN_OPCODE_WITH("read",
             "from heap %"PRIu64" at offset %"PRIu64" %"PRIu64" Bytes into %"PRIu64,
-            registers[opc_p->p[0]].value,
-            registers[opc_p->p[1]].value,
-            registers[opc_p->p[2]].value,
+            find_register(opc_p->p[0])->value,
+            find_register(opc_p->p[1])->value,
+            find_register(opc_p->p[2])->value,
             opc_p->p[3]
             );
 #endif 
 
-    if(registers[opc_p->p[2]].value > 8) {
+    if(find_register(opc_p->p[2])->value > 8) {
         FATAL_DESC_ERROR("Cannot read more than 8 bytes!");
     }
 
-    result = minx_vpu_heap_read(registers[opc_p->p[0]].value, /* the heap */
-                                registers[opc_p->p[1]].value, /* the offset */
-                                registers[opc_p->p[2]].value, /* the bytecount */
-                                &(registers[opc_p->p[3]].value)); /* the dest */
+    result = minx_vpu_heap_read(find_register(opc_p->p[0])->value, /* the heap */
+                                find_register(opc_p->p[1])->value, /* the offset */
+                                find_register(opc_p->p[2])->value, /* the bytecount */
+                                &(find_register(opc_p->p[3])->value)); /* the dest */
 
     if(result)
         setbit(statusregister, READ_BIT);
@@ -1492,10 +1495,10 @@ static void opc_getsize_func(void) {
 
 #ifdef DEBUGGING
     EXPLAIN_OPCODE_WITH("GETSIZE", "of heap %"PRIu64" into akku", 
-                        registers[opc_p->p[0]].value);
+                        find_register(opc_p->p[0])->value);
 #endif 
 
-    akku = minx_vpu_heap_get_size(registers[opc_p->p[0]].value);
+    akku = minx_vpu_heap_get_size(find_register(opc_p->p[0])->value);
 
     program_pointer += (OPC_SIZE + HEAP_ADDRESS_SIZE);
 }
@@ -1508,7 +1511,7 @@ static void opc_getsize_func(void) {
 
 #if (defined VERBOSITY | defined DEBUGGING)
 static void print_register(unsigned int i) {
-    printf( MINX_VPU_REGISTER_PREFIX"[%03i] = %"PRIu64"\n", i, registers[i].value );
+    printf( MINX_VPU_REGISTER_PREFIX"[%03i] = %"PRIu64"\n", i, find_register(i)->value );
 }
 #endif //(defined VERBOSITY | defined DEBUGGING)
 
