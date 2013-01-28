@@ -83,8 +83,6 @@ static void print_parameters(unsigned int *params) {
     uint16_t *param16bit = malloc( sizeof(uint16_t) );
     uint64_t *param64bit = malloc( sizeof(uint64_t) );
 
-    unsigned int param_size;
-
     for(i = 0; params[i]; i++) {
         printf(" %u: ", i);
 
