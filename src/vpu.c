@@ -62,6 +62,7 @@ static void         opc_jmp_func            (void);
 static void         opc_jmpiz_func          (void);
 static void         opc_jmpnz_func          (void);
 static void         opc_ifzjmp_func         (void);
+static void         opc_exit_func           (void);
 
 static void         opc_pstack_func         (void);
 static void         opc_pregs_func          (void);
@@ -92,6 +93,9 @@ static void         print_register          (unsigned int i);
  */
 static Register             *   registers       = NULL;
 static uint16_t                 register_count  = 0;
+
+static int                      __running__     = 1;
+static int                      __exit_code__   = 0;
 
 static Stack                *   stack           = NULL;
 static CommandParameters    *   opc_p           = NULL;
@@ -148,6 +152,7 @@ static void ((*opc_funcs[])(void)) = {
     [OPC_JMPIZ]     = opc_jmpiz_func,
     [OPC_JMPNZ]     = opc_jmpnz_func,
     [OPC_IFZJMP]    = opc_ifzjmp_func,
+    [OPC_EXIT]      = opc_exit_func,
 
     [OPC_PSTACK]    = opc_pstack_func,
     [OPC_PREGS]     = opc_pregs_func,
@@ -197,6 +202,9 @@ static void ((*opc_funcs[])(void)) = {
 void minx_vpu_init(void) {
     minx_error_register_shutdown_function(minx_vpu_shutdown);
 
+    __running__     = 1;
+    __exit_code__   = 0;
+
     init_registers();
     minx_vpu_heap_setup();
     stack = empty_stack();
@@ -208,20 +216,20 @@ void minx_vpu_init(void) {
  * Public run function
  *
  * - allocates memory for storing the actual opcode
- * - run while __vpu_running__
+ * - run while __running__
  * - run while current program pointer doesn't point to END_OF_PROGRAM
  * - at END_OF_PROGRAM, if compiled with VERBOSITY and config set, print registers
  * - cleanup the memory, allocated by this function.
  * 
  */
-void minx_vpu_run() {
+int minx_vpu_run() {
 #if (defined DEBUGGING | defined DEBUG)
     minxvpudbgprint("Starting the VPU\n");
 #endif
 
     uint16_t *opcode = (uint16_t*) malloc(sizeof(uint16_t));
 
-    while( !program_pointer_is(END_OF_PROGRAM) ) {
+    while( __running__ && !program_pointer_is(END_OF_PROGRAM) ) {
 
 #if (defined DEBUGGING || defined DEBUG)
         fflush(stdout);
@@ -239,6 +247,7 @@ void minx_vpu_run() {
     }
 #endif //if (defined VERBOSITY)
 
+    return __exit_code__;
 }
 
 /*
@@ -1147,6 +1156,28 @@ static void opc_ifzjmp_func() {
     else {
         FATAL_DESC_ERROR("Cannot jump");
     }
+}
+
+/*
+ * Command:                 EXIT
+ * Parameters:              1: register-address
+ * Affects Program Pointer: NO 
+ */
+static void opc_exit_func() {
+    unsigned int params[] = { REGISTER_ADDRESS_SIZE };
+    read_n_command_parameters(1, params);
+
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE_WITH("exit", "code: %i", find_register(opc_p->p[0])->value);
+#endif
+
+    __running__     = 0;
+    __exit_code__   = find_register(opc_p->p[0])->value;
+
+    /*
+     * No need to increment the program_pointer, but do for the convention!
+     */
+    program_pointer += (OPC_SIZE + REGISTER_ADDRESS_SIZE);
 }
 
 /*

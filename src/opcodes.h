@@ -45,6 +45,7 @@
 #define         OPC_JMPIZ		    0x41
 #define         OPC_JMPNZ		    0x42
 #define         OPC_IFZJMP		    0x43
+#define         OPC_EXIT            0x44
 
 #define         OPC_PSTACK          0x50
 #define         OPC_PREGS           0x51

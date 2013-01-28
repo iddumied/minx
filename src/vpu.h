@@ -72,7 +72,7 @@ typedef struct {
  */
 
 void    minx_vpu_init(void);
-void    minx_vpu_run(void);
+int     minx_vpu_run(void);
 void    minx_vpu_shutdown(void);
 extern void stack_print_binary(Stack*);
 

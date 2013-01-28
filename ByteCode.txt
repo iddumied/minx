@@ -110,6 +110,7 @@ code | Short ex.| arguments				        | Expl.
 0x41 | JMPIZ	| Register, Adress		        | jump if register is zero
 0x42 | JMPNZ	| Register, Adress		        | jump if register is not zero
 0x43 | IFZJMP	| Adress, Adress			    | if akku is zero jump, else jump
+0x44 | EXIT     | Register                      | Exit with errorcode from register
 -----+----------+-------------------------------+--------------------------- 
 
 These are special debugging opcodes and are only print when compiled with 

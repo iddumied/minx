@@ -36,6 +36,8 @@ int main(int argc, char **args) {
     FILE *f = fopen(file, "r");
     */
 
+    int exit_code;
+
     minx_error_init();
     minx_config_init();
     minx_config_parse(argc, args);
@@ -52,12 +54,12 @@ int main(int argc, char **args) {
     }
     else {
         minx_vpu_init();
-        minx_vpu_run();
+        exit_code = minx_vpu_run();
         minx_vpu_shutdown();
     }
 #else /* for the readability */
     minx_vpu_init();
-    minx_vpu_run();
+    exit_code = minx_vpu_run();
     minx_vpu_shutdown();
 #endif //DISASSEMBLE
 
@@ -67,5 +69,5 @@ int main(int argc, char **args) {
     minx_error_shutdown();
 
     fclose(f);
-    return 0;
+    return exit_code;
 }
