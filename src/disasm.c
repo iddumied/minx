@@ -70,6 +70,7 @@ static uint64_t program_pointer;
 void minx_disasm_run() {
     program_pointer = 0x00;
     uint16_t *opcode = (uint16_t*) malloc(sizeof(uint16_t));
+
     while(minx_binary_exists_at(program_pointer)) {
         opcode = minx_binary_get_at(program_pointer, OPC_SIZE, opcode, sizeof(*opcode));
         printf("%s", opcode_map[*opcode].desc);
@@ -83,6 +84,8 @@ static void print_parameters(unsigned int *params) {
     uint16_t *param16bit = malloc( sizeof(uint16_t) );
     uint64_t *param64bit = malloc( sizeof(uint64_t) );
 
+    int in_hex = minx_config_get(CONF_HEX)->b;
+
     for(i = 0; params[i]; i++) {
         printf(" %u: ", i);
 
@@ -92,7 +95,12 @@ static void print_parameters(unsigned int *params) {
                                                         param16bit,
                                                         params[i]);
 
-            printf("%#010"PRIx16, *param16bit);
+            if(in_hex) {
+                printf("%#010"PRIx16, *param16bit);
+            }
+            else {
+                printf("%"PRIu16, *param16bit);
+            }
         }
         else { /* param 8 byte = 64 bit */
             param64bit = (uint64_t*) minx_binary_get_at(program_pointer,
@@ -100,7 +108,12 @@ static void print_parameters(unsigned int *params) {
                                                         param64bit,
                                                         params[i]);
 
-            printf("%#010"PRIx64, *param64bit);
+            if(in_hex) {
+                printf("%#010"PRIx64, *param64bit);
+            }
+            else {
+                printf("%"PRIu16, *param16bit);
+            }
         }
         
         if(params[i+1])

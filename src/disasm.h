@@ -3,6 +3,7 @@
 
 #include <inttypes.h>
 
+#include "config.h"
 #include "opcodes.h"
 #include "debug.h"
 #include "binary_reader.h"
