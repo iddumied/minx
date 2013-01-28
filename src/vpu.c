@@ -467,10 +467,12 @@ static void opc_mov_func() {
     read_n_command_parameters(2, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("mov", 
-            "R%"PRIu64" <- %"PRIu64" (R%"PRIu64")", 
-            opc_p->p[0], 
-            find_register(opc_p->p[1])->value, opc_p->p[1]);
+    EXPLAIN_OPCODE_WITH_HEXF_WITH("mov", 
+            "R%"PRIu64" <_ R%"PRIu64" (%#010"PRIx64")",
+            "R%"PRIu64" <_ R%"PRIu64" (%"PRIu64")",
+                opc_p->p[0], 
+                opc_p->p[1],
+                find_register(opc_p->p[1])->value); 
 #endif 
 
     find_register(opc_p->p[0])->value = find_register(opc_p->p[1])->value;
@@ -489,7 +491,10 @@ static void opc_movi_func() {
     read_n_command_parameters(2, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("movi", "%"PRIu64" <- %"PRIu64, opc_p->p[0], opc_p->p[1]);
+    EXPLAIN_OPCODE_WITH_HEXF_WITH("movi",
+            "R%"PRIu64" <- %#010"PRIx64, 
+            "R%"PRIu64" <- %"PRIu64, 
+            opc_p->p[0], opc_p->p[1]);
 #endif 
 
     find_register(opc_p->p[0])->value = opc_p->p[1];
@@ -1052,7 +1057,10 @@ static void opc_jmp_func() {
     read_n_command_parameters(1, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("jmp", "to %"PRIu64, opc_p->p[0]);
+    EXPLAIN_OPCODE_WITH_HEXF_WITH("jmp",
+            "to %#010"PRIx64,
+            "to %"PRIu64, 
+            opc_p->p[0]);
 #endif 
 
     if( minx_binary_exists_at(opc_p->p[0]) || opc_p->p[0] == END_OF_PROGRAM) {
@@ -1075,7 +1083,11 @@ static void opc_jmpiz_func() {
     read_n_command_parameters(2, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("jmpiz", "to %"PRIu64" if reg %"PRIu64" == 0", opc_p->p[1], opc_p->p[0]);
+    EXPLAIN_OPCODE_WITH_HEXF_WITH("jmpiz",
+            "to %#010"PRIx64" if reg %"PRIu64" == 0",
+            "to %"PRIu64" if reg %"PRIu64" == 0", 
+            opc_p->p[1], 
+            opc_p->p[0]);
 #endif 
 
     if( minx_binary_exists_at(opc_p->p[1]) || opc_p->p[1] == END_OF_PROGRAM) {
@@ -1103,7 +1115,11 @@ static void opc_jmpnz_func() {
     read_n_command_parameters(2, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("jmpnz", "to %"PRIu64" if reg %"PRIu64" != 0", opc_p->p[1], opc_p->p[0]);
+    EXPLAIN_OPCODE_WITH_HEXF_WITH("jmpnz",
+            "to %#010"PRIx64" if reg %"PRIu64" != 0",
+            "to %"PRIu64" if reg %"PRIu64" != 0", 
+            opc_p->p[1], 
+            opc_p->p[0]);
 #endif 
 
     if( minx_binary_exists_at(opc_p->p[1]) || opc_p->p[1] == END_OF_PROGRAM) {
@@ -1131,7 +1147,11 @@ static void opc_ifzjmp_func() {
     read_n_command_parameters(2, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("jmpnz", "to %"PRIu64" if akku == 0, else to %"PRIu64, opc_p->p[0], opc_p->p[1]);
+    EXPLAIN_OPCODE_WITH_HEXF_WITH("jmpnz",
+            "to %#010"PRIx64" if akku == 0, else to %#010"PRIx64,
+            "to %"PRIu64" if akku == 0, else to %"PRIu64, 
+            opc_p->p[0], 
+            opc_p->p[1]);
 #endif 
 
     if( (minx_binary_exists_at(opc_p->p[0]) || opc_p->p[0] == END_OF_PROGRAM) && 
@@ -1385,13 +1405,14 @@ static void opc_put_func(void) {
     read_n_command_parameters(4, params);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("put", 
-            "into heap %"PRIu64" at offset %"PRIu64" %u bytes from %"PRIu64,
-            find_register(opc_p->p[0])->value,
-            find_register(opc_p->p[1])->value,
-            (unsigned int)registers[opc_p->p[2]].value,
-            find_register(opc_p->p[3])->value
-            );
+    EXPLAIN_OPCODE_WITH_HEXF_WITH("put",
+                "into heap %"PRIu64" at offset %"PRIu64" %u bytes from %#010"PRIx64,
+                "into heap %"PRIu64" at offset %"PRIu64" %u bytes from %"PRIu64,
+                find_register(opc_p->p[0])->value,
+                find_register(opc_p->p[1])->value,
+                (unsigned int)registers[opc_p->p[2]].value,
+                find_register(opc_p->p[3])->value
+                );
 #endif 
 
     if( find_register(opc_p->p[2])->value > 8) {
