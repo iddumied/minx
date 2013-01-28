@@ -49,6 +49,18 @@
         }                                                                   \
     } while(0)
 
+#define EXPLAIN_OPCODE_WITH_HEXF_WITH(opc,hexf,nonhexf,...)                 \
+    do {                                                                    \
+        if(minx_config_get(CONF_SRC_DEBUGGING)->b) {                        \
+            if(minx_config_get(CONF_HEX)->b)                                \
+                printf(MINX_VPU_OP_PRINT_PREFIX": %s ("hexf")\n",           \
+                        opc, __VA_ARGS__);                                  \
+            else                                                            \
+                printf(MINX_VPU_OP_PRINT_PREFIX": %s ("nonhexf")\n",        \
+                        opc, __VA_ARGS__);                                  \
+        }                                                                   \
+    } while(0)
+
 #endif //__MINX_DEBUG_H__
 
 #endif //DEBUG
