@@ -1494,7 +1494,12 @@ static void opc_getsize_func(void) {
 
 #if (defined VERBOSITY | defined DEBUGGING)
 static void print_register(unsigned int i) {
-    printf( MINX_VPU_REGISTER_PREFIX"[%03i] = %"PRIu64"\n", i, find_register(i)->value );
+    if( minx_config_get(CONF_HEX)->b ) {
+        printf( MINX_VPU_REGISTER_PREFIX"[%03i] = %#010"PRIx64"\n", i, find_register(i)->value );
+    }
+    else {
+        printf( MINX_VPU_REGISTER_PREFIX"[%03i] = %"PRIu64"\n", i, find_register(i)->value );
+    }
 }
 #endif //(defined VERBOSITY | defined DEBUGGING)
 
