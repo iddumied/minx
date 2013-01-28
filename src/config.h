@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "config.h"
 #include "error.h"
 #include "debug.h"
 
@@ -13,6 +14,7 @@ typedef enum {
     CONF_SRC_DEBUGGING,     /* only if compiled with DEBUGGING */
     CONF_PRINT_REGS_AT_EOP, /* print registers at end of program */
     CONF_DISASM,            /* only start diassembler */
+    CONF_HEX,               /* print always in hex */
 } ConfigurationType;
 
 typedef union {
