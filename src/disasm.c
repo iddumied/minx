@@ -93,7 +93,8 @@ static void print_parameters(unsigned int *params) {
                                                         params[i],
                                                         param16bit,
                                                         params[i]);
-            printf("%"PRIu16, param16bit);
+
+            printf("%#010"PRIx16, *param16bit);
         }
         else { /* param 8 byte = 64 bit */
             param64bit = (uint64_t*) minx_binary_get_at(program_pointer,
@@ -101,7 +102,7 @@ static void print_parameters(unsigned int *params) {
                                                         param64bit,
                                                         params[i]);
 
-            printf("%"PRIu64, param64bit);
+            printf("%#010"PRIx64, *param64bit);
         }
         
         if(params[i+1])
