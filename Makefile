@@ -77,7 +77,7 @@ ${TARGET}: $(OBJECTS) $(ADDITIONAL_TASKS)
 compile: ${OBJECTS} ${ADDITIONAL_TASKS}
 
 link:
-	${LD} ${OBJECTS} -o ${TARGET}
+	${LD} ${LDFLAGS} ${OBJECTS} -o ${TARGET}
 	
 clean:
 	@rm ${OBJECTS}
