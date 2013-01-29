@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "util/config.h"
 #include "util/error.h"
 #include "util/debug.h"
 
