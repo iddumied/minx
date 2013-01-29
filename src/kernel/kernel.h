@@ -1,5 +1,5 @@
-#ifndef __MINX_VPU_H__
-#define __MINX_VPU_H__
+#ifndef __MINX_KERNEL_H__
+#define __MINX_KERNEL_H__
 
 /*
  * Standard includes, they are always required
@@ -14,7 +14,7 @@
 #if (defined DEBUG | defined VERBOSITY)
 #include <stdio.h>
 
-#include "print_prefixes.h"
+#include "util/print_prefixes.h"
 #endif //if (defined DEBUG | defined VERBOSITY)
 
 /*
@@ -23,36 +23,25 @@
 #ifdef DEBUG
 #include <inttypes.h>
 
-#include "debug.h"
+#include "util/debug.h"
 #endif
 
 /*
- * include headers for the VPU internals. They are outsourced because of
+ * include headers for the kernel internals. They are outsourced because of
  * readability, grouping of same stuff and modularity
  */
-#include "opcodes.h"
-#include "sizes.h"
-#include "statusbits.h"
-#include "heap.h"
+#include "kernel/opcodes.h"
+#include "kernel/heap.h"
 
-#include "binary_reader.h"
-#include "config.h"
-#include "error.h"
+#include "reader/binary_reader.h"
+
+#include "util/error.h"
+#include "util/config.h"
+
+#include "def/sizes.h"
+#include "def/statusbits.h"
+
 #include "stack/stack.h"
-
-/*
- * Register type
- */
-typedef struct {
-    uint64_t    value;
-} Register;
-
-/*
- * currently, registers are addressed with 1 byte addresses.
- * But the addresses are read from the binary as 2 byte, because if we want to
- * upgrade later, we do not have to change the compiler so much.
- */
-#define         MAX_REGISTERS       (0x00FF+1) /* 256 */
 
 #define         END_OF_PROGRAM      ((uint64_t)-1) /* last address is END_OF_PROGRAM */
 
@@ -68,12 +57,21 @@ typedef struct {
 } CommandParameters;
 
 /*
+ * Should be visible for all opcodes to read from it or write to it
+ */
+CommandParameters    *   opc_p           = NULL;
+Stack                *   stack           = NULL;
+
+/*
  * Function prototypes 
  */
 
-void    minx_vpu_init(void);
-int     minx_vpu_run(void);
-void    minx_vpu_shutdown(void);
-extern void stack_print_binary(Stack*);
+void    minx_kernel_init                        (void);
+int     minx_kernel_run                         (void);
+void    minx_kernel_shutdown                    (void);
 
-#endif //__MINX_VPU_H__
+void    minx_kernel_program_pointer_manipulate  (uint64_t new_pointer);
+
+extern void stack_print_binary                  (Stack*);
+
+#endif //__MINX_KERNEL_H__

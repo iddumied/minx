@@ -4,9 +4,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "config.h"
-#include "error.h"
-#include "debug.h"
+#include "util/config.h"
+#include "util/error.h"
+#include "util/debug.h"
 
 typedef enum {
     CONF_VERBOSITY,         /* only if compiled with DEBUG */

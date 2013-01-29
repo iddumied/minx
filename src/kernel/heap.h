@@ -1,5 +1,5 @@
-#ifndef __minx_vpu_VPU_HEAP_H__
-#define __minx_vpu_VPU_HEAP_H__
+#ifndef __MINX_KERNEL_HEAP_H__
+#define __MINX_KERNEL_HEAP_H__
 
 #include <stdlib.h>
 #include <stdint.h>
@@ -10,9 +10,7 @@
 #include <stdio.h>
 #endif //DEBUGGING
 
-#include "error.h"
-
-#include "error.h"
+#include "util/error.h"
 
 /*
  *
@@ -20,7 +18,7 @@
  *
  * used: if this heapnode is used, this value is UINT8_MAX
  * when it is unused it is less than UINT8_MAX, and gets decremented each
- * VPU_MEM_CLEANUP times. If it is zero, it is removed from memory (free()).
+ * kernel_MEM_CLEANUP times. If it is zero, it is removed from memory (free()).
  *
  * first_byte_addr: address of the first byte of this set of memory. Used for
  * the program.
@@ -41,7 +39,7 @@ typedef struct {
      *
      * TODO:
      * Because a simple counter is not very secure, it should be possible to 
-     * configure the VPU to use a randomized value here. The map were this
+     * configure the kernel to use a randomized value here. The map were this
      * HeapNodes are saved, has to be ordered! Remember that!
      */
     uint64_t    memoryID;
@@ -73,7 +71,7 @@ typedef struct {
  * All values != HEAPNODE_USED are HEAPNODE_NOT_USED. 
  *
  * Current implementation does not provide "Garbage Collection" at all. But
- * later, it should be possible to configure the VPU to remove not used memory
+ * later, it should be possible to configure the kernel to remove not used memory
  * automatically based on some statistics or so.
  */
 enum {
@@ -85,8 +83,8 @@ enum {
 /*
  * If the anything failed, 0x00 should be returned, else 1
  */
-#define MINX_VPU_HEAP_OK                    ((uint64_t)0x01)
-#define MINX_VPU_HEAP_ERROR                 ((uint64_t)0x00)
+#define MINX_KERNEL_HEAP_OK                    ((uint64_t)0x01)
+#define MINX_KERNEL_HEAP_ERROR                 ((uint64_t)0x00)
 
 /*
  * setup function for heap.
@@ -95,7 +93,7 @@ enum {
  * config is parsed.
  * So the heap can use config to configure itself.
  */
-void        minx_vpu_heap_setup     (void);
+void        minx_kernel_heap_init               (void);
 
 /*
  * shutdown function for heap.
@@ -103,28 +101,28 @@ void        minx_vpu_heap_setup     (void);
  * This function gets called if the binary was interpreted successfully and
  * completely or if SIGINT was send.
  */
-void        minx_vpu_heap_shutdown  (void);
+void        minx_kernel_heap_shutdown           (void);
 
-uint64_t    minx_vpu_heap_alloc     (uint64_t size );
-int         minx_vpu_heap_resize    (uint64_t heap, uint64_t new_size);
-uint64_t    minx_vpu_heap_get_size  (uint64_t heap);
+uint64_t    minx_kernel_heap_alloc              (uint64_t size );
+int         minx_kernel_heap_resize             (uint64_t heap, uint64_t new_size);
+uint64_t    minx_kernel_heap_get_size           (uint64_t heap);
 
-int         minx_vpu_heap_put       (   uint64_t heap, 
-                                        uint64_t offset, 
-                                        unsigned int bytes,
-                                        uint64_t val );
+int         minx_kernel_heap_put                (uint64_t heap, 
+                                                uint64_t offset, 
+                                                unsigned int bytes,
+                                                uint64_t val);
 
-int         minx_vpu_heap_read      (   uint64_t heap, 
-                                        uint64_t offset, 
-                                        unsigned int bytes, 
-                                        uint64_t *dest);
+int         minx_kernel_heap_read               (uint64_t heap, 
+                                                uint64_t offset, 
+                                                unsigned int bytes, 
+                                                uint64_t *dest);
 
-int         minx_vpu_heap_free      (uint64_t heap);
+int         minx_kernel_heap_free               (uint64_t heap);
 
 #ifdef DEBUGGING
-void        minx_vpu_heap_print_heapnode     (uint64_t heap);
-void        minx_vpu_heap_print_heap         ();
+void        minx_kernel_heap_print_heapnode     (uint64_t heap);
+void        minx_kernel_heap_print_heap         ();
 #endif // DEBUGGING
 
 
-#endif // __minx_vpu_VPU_HEAP_H__
+#endif // __MINX_KERNEL_HEAP_H__

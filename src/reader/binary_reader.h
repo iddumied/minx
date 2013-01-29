@@ -5,14 +5,14 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "error.h"
+#include "util/error.h"
 
 #if (defined DEBUGGING | defined DEBUG)
 #include <stdio.h>
 #endif 
 
 #ifdef DEBUG
-#include "debug.h"
+#include "util/debug.h"
 #endif
 
 void            minx_binary_init        ( FILE *f );
