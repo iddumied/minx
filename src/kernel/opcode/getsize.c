@@ -1,4 +1,4 @@
-#include "opcodes.h"
+#include "kernel/opcodes.h"
 
 /*
  * Command:                 GETSIZE
