@@ -10,10 +10,10 @@
  */
 static void opc_alloc_func(void) {
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("alloc", "%"PRIu64" Bytes", minx_registers_find_register(opc_p->p[0])->value);
+    EXPLAIN_OPCODE("%"PRIu64" Bytes", minx_registers_find_register(opc_p->p[0])->value);
 #endif
 
-    minx_registers_find_register(akku_register_number) = 
+    minx_registers_find_register(akku_register_number)->value = 
         minx_kernel_heap_alloc(minx_registers_find_register(opc_p->p[0])->value);
 
 }

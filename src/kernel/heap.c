@@ -105,7 +105,7 @@ uint64_t minx_kernel_heap_alloc(uint64_t size) {
 
     return node->memoryID;
 failed_to_alloc:
-    return MINX_kernel_HEAP_ERROR;
+    return MINX_KERNEL_HEAP_ERROR;
 }
 
 int minx_kernel_heap_resize(uint64_t heap, uint64_t new_size) {
@@ -181,9 +181,9 @@ int minx_kernel_heap_resize(uint64_t heap, uint64_t new_size) {
     }
 
 no_err:
-    return MINX_kernel_HEAP_OK;
+    return MINX_KERNEL_HEAP_OK;
 err:
-    return MINX_kernel_HEAP_ERROR;
+    return MINX_KERNEL_HEAP_ERROR;
 }
 
 uint64_t minx_kernel_heap_get_size(uint64_t heap) {
@@ -193,7 +193,7 @@ uint64_t minx_kernel_heap_get_size(uint64_t heap) {
     return h->size;
 
     /*
-     * On error, do not return MINX_kernel_HEAP_ERROR, because if this value
+     * On error, do not return MINX_KERNEL_HEAP_ERROR, because if this value
      * changes in future and no one cares about this function, it could cause
      * weird errors! 
      *
@@ -214,10 +214,10 @@ int minx_kernel_heap_put(uint64_t heap, uint64_t offset, unsigned int bytes, uin
 
     memcpy(&h->memory[offset], &val, bytes); 
 
-    return MINX_kernel_HEAP_OK;
+    return MINX_KERNEL_HEAP_OK;
 
 heap_not_found:
-    return MINX_kernel_HEAP_ERROR;
+    return MINX_KERNEL_HEAP_ERROR;
 }
 
 int minx_kernel_heap_read(uint64_t heap, uint64_t offset, unsigned int bytes, uint64_t *dest) {
@@ -230,10 +230,10 @@ int minx_kernel_heap_read(uint64_t heap, uint64_t offset, unsigned int bytes, ui
 
     memcpy(dest, &h->memory[offset], bytes);
 
-    return MINX_kernel_HEAP_OK;
+    return MINX_KERNEL_HEAP_OK;
 
 err:
-    return MINX_kernel_HEAP_ERROR;
+    return MINX_KERNEL_HEAP_ERROR;
 }
 
 /*
@@ -251,9 +251,9 @@ int minx_kernel_heap_free(uint64_t heap) {
     h->used_state   = HEAPNODE_NOT_USED;
     h->memory       = memset(h->memory, 0x00, h->real_size);
 
-    return MINX_kernel_HEAP_OK;
+    return MINX_KERNEL_HEAP_OK;
 err:
-    return MINX_kernel_HEAP_ERROR;
+    return MINX_KERNEL_HEAP_ERROR;
 }
 
 #ifdef DEBUGGING

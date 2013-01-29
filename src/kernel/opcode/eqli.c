@@ -9,7 +9,7 @@
  */
 void opc_eqli_func() {
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("eqli", "reg %"PRIu64" and %"PRIu64, opc_p->p[0], opc_p->p[1]);
+    EXPLAIN_OPCODE("reg %"PRIu64" and %"PRIu64, opc_p->p[0], opc_p->p[1]);
 #endif 
     
     minx_registers_find_register(akku_register_number)->value = 

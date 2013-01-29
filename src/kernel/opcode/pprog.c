@@ -7,7 +7,7 @@
  */
 void opc_pprog_func (void) {
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE("pprog");
+    /* nothing to explain here */
 
     if( minx_config_get(CONF_SRC_DEBUGGING)->b ) {
         minx_binary_print();

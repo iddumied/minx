@@ -13,7 +13,7 @@
  */
 void opc_cmpi_func() {
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("cmpi", "reg %"PRIu64" and %"PRIu64, opc_p->p[0], opc_p->p[1]);
+    EXPLAIN_OPCODE("reg %"PRIu64" and %"PRIu64, opc_p->p[0], opc_p->p[1]);
 #endif 
     
     Register * r1 = minx_registers_find_register(opc_p->p[0]);

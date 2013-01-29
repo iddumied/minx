@@ -9,7 +9,7 @@
  */
 void opc_notr_func() {
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("not", "reg: %"PRIu64, opc_p->p[0]);
+    EXPLAIN_OPCODE("reg: %"PRIu64, opc_p->p[0]);
 #endif 
 
     minx_registers_find_register(opc_p->p[0])->value = ! minx_registers_find_register(opc_p->p[0])->value;

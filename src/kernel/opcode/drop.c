@@ -10,7 +10,7 @@
  */
 void opc_drop_func() {
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE("drop");
+    /*no explaining here, nothing to explain*/
 #endif
     if( stack_is_empty( stack ) ) {
         FATAL_DESC_ERROR("Cannot drop from empty stack!");

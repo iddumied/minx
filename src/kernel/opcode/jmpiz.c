@@ -9,7 +9,7 @@
  */
 void opc_jmpiz_func() {
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH_HEXF_WITH("jmpiz",
+    EXPLAIN_OPCODE_WITH_HEXF(
             "to %#010"PRIx64" if reg %"PRIu64" == 0",
             "to %"PRIu64" if reg %"PRIu64" == 0", 
             opc_p->p[1], 

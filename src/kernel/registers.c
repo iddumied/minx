@@ -35,6 +35,10 @@ void minx_registers_shutdown(void) {
     free(registers);
 }
 
+uint16_t minx_registers_get_register_count(void) {
+    return register_count;
+}
+
 /*
  * find a register in the register_map by it's address. If the requested
  * register does not exist, fail.

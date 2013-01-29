@@ -9,11 +9,11 @@
  */
 void opc_ret_func() {
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE("ret");
+    /* nothing to explain here */
 #endif
     if (stack_is_empty(stack))
         FATAL_DESC_ERROR("Cannot RET, stack is empty!");
      
-    minx_kernel_program_pointer_manipulate( *((uint64_t*) stackpop(stack));
+    minx_kernel_program_pointer_manipulate( *((uint64_t*) stackpop(stack)));
 }
 

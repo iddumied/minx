@@ -66,11 +66,14 @@ Stack                *   stack           = NULL;
  * Function prototypes 
  */
 
-void    minx_kernel_init                        (void);
-int     minx_kernel_run                         (void);
-void    minx_kernel_shutdown                    (void);
+void        minx_kernel_init                        (void);
+int         minx_kernel_run                         (void);
+void        minx_kernel_shutdown                    (void);
 
-void    minx_kernel_program_pointer_manipulate  (uint64_t new_pointer);
+uint64_t    minx_kernel_program_pointer_get         (void);
+void        minx_kernel_program_pointer_manipulate  (uint64_t new_pointer);
+void        minx_kernel_unset_running_variable      (void);
+void        minx_kernel_set_exit_status             (int);
 
 extern void stack_print_binary                  (Stack*);
 

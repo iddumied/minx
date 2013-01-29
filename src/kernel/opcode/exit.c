@@ -7,9 +7,9 @@
  */
 void opc_exit_func() {
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("exit", "code: %i", minx_registers_find_register(opc_p->p[0])->value);
+    EXPLAIN_OPCODE("code: %"PRIu64, minx_registers_find_register(opc_p->p[0])->value);
 #endif
 
-    __running__     = 0;
-    __exit_code__   = minx_registers_find_register(opc_p->p[0])->value;
+    minx_kernel_unset_running_variable();
+    minx_kernel_set_exit_status(minx_registers_find_register(opc_p->p[0])->value);
 }

@@ -12,7 +12,7 @@ void opc_resize_func(void) {
     int result;
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("resize", "heap %"PRIu64" to %"PRIu64" Bytes", 
+    EXPLAIN_OPCODE("heap %"PRIu64" to %"PRIu64" Bytes", 
             minx_registers_find_register(opc_p->p[0])->value, minx_registers_find_register(opc_p->p[1])->value);
 #endif 
 
@@ -20,7 +20,7 @@ void opc_resize_func(void) {
                                     minx_registers_find_register(opc_p->p[1])->value);
 
     if( result ) 
-        setbit(statusregister, RESIZE_BIT);
+        setbit(minx_registers_find_register(statusregister)->value, RESIZE_BIT);
     else 
-        clrbit(statusregister, RESIZE_BIT);
+        clrbit(minx_registers_find_register(statusregister)->value, RESIZE_BIT);
 }

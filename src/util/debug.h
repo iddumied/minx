@@ -7,7 +7,7 @@
 
 #include "util/print_prefixes.h"
 
-#define minxvpudbgprintf(f,...)                                             \
+#define minxkerneldbgprintf(f,...)                                          \
     do {                                                                    \
         ConfigurationValue *cv = minx_config_get(CONF_MINX_DEBUGGING);      \
         if(cv != NULL && cv->b) {                                           \
@@ -15,7 +15,7 @@
         }                                                                   \
     }while(0)
 
-#define minxvpudbgprint(f)                                                  \
+#define minxkerneldbgprint(f)                                               \
     do {                                                                    \
         ConfigurationValue *cv = minx_config_get(CONF_MINX_DEBUGGING);      \
         if(cv != NULL && cv->b) {                                           \

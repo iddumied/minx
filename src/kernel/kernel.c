@@ -6,7 +6,7 @@
  * -----------------------------------------------------------------------------
  */
 
-static unsigned int read_command_parameters     (unsigned int *sizes[]);
+static unsigned int read_command_parameters(uint16_t *opcode);
 static void         run_opcode                  (uint16_t);
 
 /*
@@ -20,6 +20,8 @@ static int                      program_pointer_manipulated;
 
 static int                      __running__     = 1;
 static int                      __exit_code__   = 0;
+
+static int                      src_debugging;
 
 /*
  * -----------------------------------------------------------------------------
@@ -48,9 +50,10 @@ void minx_kernel_init(void) {
 
     __running__     = 1;
     __exit_code__   = 0;
+    src_debugging   = minx_config_get(CONF_SRC_DEBUGGING)->b;
 
     minx_registers_init();
-    program_pointer = minx_registers_get_at(program_pointer_register_number);
+    program_pointer = minx_registers_find_register(program_pointer_register_number);
 
     minx_kernel_heap_init();
 
@@ -85,12 +88,12 @@ int minx_kernel_run() {
 #endif // (defined DEBUGGING || defined DEBUG)
 
 
-        opcode = (uint16_t*) minx_binary_get_at(program_pointer, 
+        opcode = (uint16_t*) minx_binary_get_at(program_pointer->value, 
                                                 OPC_SIZE, 
                                                 opcode, 
                                                 sizeof(*opcode));
 
-        progp_inc = read_command_parameters( &opcodes[opcodes].params );
+        progp_inc = read_command_parameters( opcode );
         run_opcode(*opcode);
 
         if( !program_pointer_manipulated ) {
@@ -104,8 +107,9 @@ int minx_kernel_run() {
 #if (defined VERBOSITY)
     if( minx_config_get(CONF_PRINT_REGS_AT_EOP)->b ) {
         unsigned int i;
+        uint16_t register_count = minx_registers_get_register_count();
         for( i = 0; i < register_count ; i++ ) {
-            print_register(i);
+            minx_registers_print_register(i);
         }
     }
 #endif //if (defined VERBOSITY)
@@ -130,9 +134,21 @@ void minx_kernel_shutdown() {
     stackdelete(stack);
 }
 
-void  minx_kernel_program_pointer_manipulate(uint64_t new_pointer) {
+uint64_t minx_kernel_program_pointer_get(void) {
+    return program_pointer->value;
+}
+
+void minx_kernel_program_pointer_manipulate(uint64_t new_pointer) {
     program_pointer_manipulated = 1;
     program_pointer->value = new_pointer;
+}
+
+void minx_kernel_unset_running_variable(void) {
+    __running__ = 0;
+}
+
+void minx_kernel_set_exit_status(int status) {
+    __exit_code__ = status;
 }
 
 
@@ -148,24 +164,23 @@ void  minx_kernel_program_pointer_manipulate(uint64_t new_pointer) {
  * @param cmd the opcode to run.
  *
  */
-static void run_opcode(uint16_t cmd) {
+static void run_opcode(uint16_t opc) {
 
 #if (defined DEBUGGING | defined DEBUG)
-    static int src_debugging    = minx_config_get(CONF_SRC_DEBUGGING)->b;
 
-    minxkerneldbgprintf("Running opcode: %"PRIu16"\n", cmd);
+    minxkerneldbgprintf("Running opcode: %"PRIu16"\n", opc);
     fflush(stdout);
 #endif 
 
-    OpcodeInformation opci = opcodes[cmd];
-    if( opci == NULL ) {
-        FATAL_F_ERROR("Tried to execute unknown opcode %"PRIu16"!", cmd);
+    if(opcodes[opc].opc_func) {
+        FATAL_F_ERROR("Tried to execute unknown opcode %"PRIu16"!", opc);
     }
-    opci->opc_func()
+    opcodes[opc].opc_func();
+
 
 #if (defined DEBUGGING | defined DEBUG)
     if(src_debugging) {
-       printf(MINX_KERNEL_OP_PRINT_PREFIX" %s:", opci->strrep);
+       printf(MINX_KERNEL_OP_PRINT_PREFIX" %s:", opcodes[opc].strrep);
     }
 
     if ( program_pointer->value != END_OF_PROGRAM ) {
@@ -204,13 +219,16 @@ static void run_opcode(uint16_t cmd) {
  *      5) go to 3) or ready
  *
  */
-static unsigned int read_command_parameters(unsigned int *sizes[]) {
+static unsigned int read_command_parameters(uint16_t *opcode) {
     uint64_t        next_pos = program_pointer->value + OPC_SIZE;
     unsigned int    i;
 
-    for(i = 0 ; sizes[i] ; i++ ) {
-        opc_p->p[i] = *((uint64_t*) minx_binary_get_at(next_pos, sizes[i], &opc_p->p[i], sizeof(uint64_t)));
-        next_pos += sizes[i];
+    for(i = 0 ; opcodes[*opcode].params[i] ; i++ ) {
+        opc_p->p[i] = *((uint64_t*) minx_binary_get_at(next_pos, 
+                                                        opcodes[*opcode].params[i], 
+                                                        &opc_p->p[i], 
+                                                        sizeof(uint64_t)));
+        next_pos += opcodes[*opcode].params[i];
     }
 
     return next_pos;

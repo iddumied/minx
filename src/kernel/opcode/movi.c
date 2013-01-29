@@ -9,7 +9,7 @@
  */
 void opc_movi_func() {
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH_HEXF_WITH("movi",
+    EXPLAIN_OPCODE_WITH_HEXF(
             "R%"PRIu64" <- %#010"PRIx64, 
             "R%"PRIu64" <- %"PRIu64, 
             opc_p->p[0], opc_p->p[1]);

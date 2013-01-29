@@ -3,6 +3,10 @@
 
 #include "def/sizes.h"
 
+#ifdef DEBUGGING
+#include "util/debug.h"
+#endif //DEBUGGING
+
 #include "kernel/registers.h"
 #include "kernel/kernel.h"
 

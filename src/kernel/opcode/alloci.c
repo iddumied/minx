@@ -11,9 +11,10 @@
 void opc_alloci_func(void) {
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("alloci", "%"PRIu64" Bytes", opc_p->p[0]);
+    EXPLAIN_OPCODE("%"PRIu64" Bytes", opc_p->p[0]);
 #endif
 
-    minx_registers_find_register(akku_register_number) = minx_kernel_heap_alloc(opc_p->p[0]);
+    minx_registers_find_register(akku_register_number)->value = 
+        minx_kernel_heap_alloc(opc_p->p[0]);
     
 }

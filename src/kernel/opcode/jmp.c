@@ -9,7 +9,7 @@
  */
 void opc_jmp_func() {
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH_HEXF_WITH("jmp",
+    EXPLAIN_OPCODE_WITH_HEXF(
             "to %#010"PRIx64,
             "to %"PRIu64, 
             opc_p->p[0]);

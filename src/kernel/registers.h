@@ -22,9 +22,10 @@ typedef struct {
  */
 #define         MAX_REGISTERS       (0x00FF+1) /* 256 */
 
-void            minx_registers_init             (void);
-void            minx_registers_shutdown         (void);
-Register*       minx_registers_find_register    (uint64_t addr);
+void            minx_registers_init                 (void);
+void            minx_registers_shutdown             (void);
+uint16_t        minx_registers_get_register_count   (void);
+Register*       minx_registers_find_register        (uint64_t addr);
 
 /*
  * optional prototypes

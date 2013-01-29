@@ -11,12 +11,12 @@ void opc_put_func(void) {
     int result;
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH_HEXF_WITH("put",
+    EXPLAIN_OPCODE_WITH_HEXF(
                 "into heap %"PRIu64" at offset %"PRIu64" %u bytes from %#010"PRIx64,
                 "into heap %"PRIu64" at offset %"PRIu64" %u bytes from %"PRIu64,
                 minx_registers_find_register(opc_p->p[0])->value,
                 minx_registers_find_register(opc_p->p[1])->value,
-                (unsigned int)registers[opc_p->p[2]].value,
+                (unsigned int)minx_registers_find_register(opc_p->p[2])->value,
                 minx_registers_find_register(opc_p->p[3])->value
                 );
 #endif 
@@ -31,8 +31,8 @@ void opc_put_func(void) {
                                 minx_registers_find_register(opc_p->p[3])->value); /* the value */
 
     if(result)
-        setbit(statusregister, PUT_BIT);
+        setbit(minx_registers_find_register(statusregister)->value, PUT_BIT);
     else
-        clrbit(statusregister, PUT_BIT);
+        clrbit(minx_registers_find_register(statusregister)->value, PUT_BIT);
 
 }

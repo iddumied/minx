@@ -9,7 +9,6 @@
  */
 void opc_nop_func() {
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE("nop");
+    /* nothing to explain here */
 #endif
-    program_pointer += (OPC_SIZE);
 }

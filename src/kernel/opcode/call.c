@@ -10,7 +10,7 @@
  */
 void opc_call_func() {
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH("call", "%"PRIu64, opc_p->p[1]);
+    EXPLAIN_OPCODE("%"PRIu64, opc_p->p[1]);
 #endif
     /*
      * push to stack
@@ -19,7 +19,7 @@ void opc_call_func() {
      * the address has size (PROGRAM_ADDRESS_SIZE) (in this case this is 8 Byte)
      */
     stackpush(  stack,
-                (void*)(program_pointer + OPC_SIZE + PROGRAM_ADDRESS_SIZE), 
+                (void*)(minx_kernel_program_pointer_get() + OPC_SIZE + PROGRAM_ADDRESS_SIZE), 
                 (size_t)PROGRAM_ADDRESS_SIZE);
 
     minx_kernel_program_pointer_manipulate(opc_p->p[0]);

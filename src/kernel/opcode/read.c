@@ -15,7 +15,7 @@ void opc_read_func(void) {
     int result;
 
 #ifdef DEBUGGING 
-    EXPLAIN_OPCODE_WITH("read",
+    EXPLAIN_OPCODE(
             "from heap %"PRIu64" at offset %"PRIu64" %"PRIu64" Bytes into %"PRIu64,
             minx_registers_find_register(opc_p->p[0])->value,
             minx_registers_find_register(opc_p->p[1])->value,
@@ -34,8 +34,8 @@ void opc_read_func(void) {
                                 &(minx_registers_find_register(opc_p->p[3])->value)); /* the dest */
 
     if(result)
-        setbit(statusregister, READ_BIT);
+        setbit(minx_registers_find_register(statusregister)->value, READ_BIT);
     else
-        clrbit(statusregister, READ_BIT);
+        clrbit(minx_registers_find_register(statusregister)->value, READ_BIT);
 
 }
