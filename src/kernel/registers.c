@@ -16,7 +16,7 @@ void minx_registers_init() {
     minx_error_register_shutdown_function(minx_registers_shutdown);
 
 #if (defined DEBUGGING | defined DEBUG)
-    minxvpudbgprintf("init %i registers\n", MAX_REGISTERS);
+    minxkerneldbgprintf("init %i registers\n", MAX_REGISTERS);
 #endif
 
     registers = (Register*) malloc( sizeof(Register) * MAX_REGISTERS);
