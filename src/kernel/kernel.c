@@ -91,7 +91,6 @@ int minx_kernel_run() {
                                                 sizeof(*opcode));
 
         progp_inc = read_command_parameters( &opcodes[opcodes].params );
-
         run_opcode(*opcode);
 
         if( !program_pointer_manipulated ) {
@@ -152,17 +151,23 @@ void  minx_kernel_program_pointer_manipulate(uint64_t new_pointer) {
 static void run_opcode(uint16_t cmd) {
 
 #if (defined DEBUGGING | defined DEBUG)
+    static int src_debugging    = minx_config_get(CONF_SRC_DEBUGGING)->b;
+
     minxkerneldbgprintf("Running opcode: %"PRIu16"\n", cmd);
     fflush(stdout);
 #endif 
 
-    void (*opc_func)(void) = opcodes[cmd]->opc_func;
-    if( opc_func == NULL ) {
+    OpcodeInformation opci = opcodes[cmd];
+    if( opci == NULL ) {
         FATAL_F_ERROR("Tried to execute unknown opcode %"PRIu16"!", cmd);
     }
-    opc_func();
+    opci->opc_func()
 
 #if (defined DEBUGGING | defined DEBUG)
+    if(src_debugging) {
+       printf(MINX_KERNEL_OP_PRINT_PREFIX" %s:", opci->strrep);
+    }
+
     if ( program_pointer->value != END_OF_PROGRAM ) {
         minxkerneldbgprintf("PROG_POINTER: %"PRIu64"\n", program_pointer->value);
     }
