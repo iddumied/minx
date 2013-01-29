@@ -1,16 +1,4 @@
 #include "main.h"
-#include "error.h"
-#include "config.h"
-#include "binary_reader.h"
-#include "vpu.h"
-
-#ifdef DISASSEMBLE
-#include "disasm.h"
-#endif // DISASSEMBLE
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <mcheck.h>
 
 void handle_signal(int signal) {
     if( signal == SIGINT || signal == SIGKILL ) {
@@ -42,7 +30,7 @@ int main(int argc, char **args) {
     minx_config_init();
     minx_config_parse(argc, args);
 
-    if(minx_config_get(CONF_MVPU_DEBUGGING)->b) {
+    if(minx_config_get(CONF_MINX_DEBUGGING)->b) {
         mtrace();
     }
 
@@ -53,14 +41,14 @@ int main(int argc, char **args) {
         minx_disasm_run();
     }
     else {
-        minx_vpu_init();
-        exit_code = minx_vpu_run();
-        minx_vpu_shutdown();
+        minx_kernel_init();
+        exit_code = minx_kernel_run();
+        minx_kernel_shutdown();
     }
 #else /* for the readability */
-    minx_vpu_init();
-    exit_code = minx_vpu_run();
-    minx_vpu_shutdown();
+    minx_kernel_init();
+    exit_code = minx_kernel_run();
+    minx_kernel_shutdown();
 #endif //DISASSEMBLE
 
 

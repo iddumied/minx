@@ -3,7 +3,7 @@
 
 #include <inttypes.h>
 
-#include "util/sconfig.h"
+#include "util/config.h"
 #include "util/debug.h"
 
 #include "def/sizes.h"

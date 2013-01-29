@@ -1,9 +1,10 @@
-#ifndef __MINX_VPU_REGISTERS_H__
-#define __MINX_VPU_REGISTERS_H__
+#ifndef __MINX_KERNEL_REGISTERS_H__
+#define __MINX_KERNEL_REGISTERS_H__
 
 #include <stdlib.h>
 #include <inttypes.h>
 
+#include "util/config.h"
 #include "util/debug.h"
 #include "util/error.h"
 
@@ -36,5 +37,5 @@ void            minx_registers_print_register   (unsigned int i);
 #define akku_register_number            0x0002 
 #define statusregister                  0x0003
 
-#endif //__MINX_VPU_REGISTERS_H__
+#endif //__MINX_KERNEL_REGISTERS_H__
 

@@ -3,6 +3,8 @@
 static Register             *   registers       = NULL;
 static uint16_t                 register_count  = 0;
 
+#define register_exists(addr)   (register_count >= addr)
+
 /*
  * init registers 
  *
@@ -57,10 +59,12 @@ Register* minx_registers_find_register(uint64_t addr) {
 #if (defined VERBOSITY | defined DEBUGGING)
 void minx_registers_print_register(unsigned int i) {
     if( minx_config_get(CONF_HEX)->b ) {
-        printf( MINX_VPU_REGISTER_PREFIX"[%03i] = %#010"PRIx64"\n", i, find_register(i)->value );
+        printf( MINX_KERNEL_REGISTER_PREFIX"[%03i] = %#010"PRIx64"\n", 
+                i, minx_registers_find_register(i)->value );
     }
     else {
-        printf( MINX_VPU_REGISTER_PREFIX"[%03i] = %"PRIu64"\n", i, find_register(i)->value );
+        printf( MINX_KERNEL_REGISTER_PREFIX"[%03i] = %"PRIu64"\n", 
+                i, minx_registers_find_register(i)->value );
     }
 }
 #endif //(defined VERBOSITY | defined DEBUGGING)
