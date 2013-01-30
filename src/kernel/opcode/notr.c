@@ -7,10 +7,10 @@
  *
  * Result in same register
  */
-void opc_notr_func() {
+void opc_notr_func(uint64_t *params) {
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE("reg: %"PRIu64, opc_p->p[0]);
+    EXPLAIN_OPCODE("reg: %"PRIu64, params[0]);
 #endif 
 
-    minx_registers_find_register(opc_p->p[0])->value = ! minx_registers_find_register(opc_p->p[0])->value;
+    minx_registers_find_register(params[0])->value = ! minx_registers_find_register(params[0])->value;
 }

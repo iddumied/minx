@@ -7,11 +7,11 @@
  *
  * Result in minx_registers_find_register(akku_register_number)->value
  */
-void opc_not_func() {
+void opc_not_func(uint64_t *params) {
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE("reg: %"PRIu64, opc_p->p[1]);
+    EXPLAIN_OPCODE("reg: %"PRIu64, params[1]);
 #endif 
 
     minx_registers_find_register(akku_register_number)->value = 
-        ! minx_registers_find_register(opc_p->p[1])->value;
+        ! minx_registers_find_register(params[1])->value;
 }

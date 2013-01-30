@@ -8,7 +8,7 @@
  * Remove element from stack
  *
  */
-void opc_drop_func() {
+void opc_drop_func(uint64_t *params) {
 #ifdef DEBUGGING
     /*no explaining here, nothing to explain*/
 #endif

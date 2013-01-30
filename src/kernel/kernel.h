@@ -49,17 +49,8 @@
 #define         clrbit(byte,bitnum)     do { byte &= !(0x0001<<bitnum); } while(0)
 
 /*
- * command parameters parsing helper struct
+ * Stack must be visible for all opcodes
  */
-typedef struct {
-    unsigned int    len;
-    uint64_t        p[];
-} CommandParameters;
-
-/*
- * Should be visible for all opcodes to read from it or write to it
- */
-CommandParameters    *   opc_p           = NULL;
 Stack                *   stack           = NULL;
 
 /*

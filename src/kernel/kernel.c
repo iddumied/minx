@@ -17,6 +17,7 @@ static void         run_opcode                  (uint16_t);
 
 static Register*                program_pointer;
 static int                      program_pointer_manipulated;
+static uint64_t                 *params;
 
 static int                      __running__     = 1;
 static int                      __exit_code__   = 0;
@@ -59,8 +60,7 @@ void minx_kernel_init(void) {
 
     stack = empty_stack();
 
-    opc_p = (CommandParameters*) malloc( 
-            sizeof(CommandParameters) + (sizeof(uint64_t)*MAX_PARAMETER_COUNT) );
+    params = (uint64_t*) malloc(sizeof(uint64_t) * MAX_PARAMETER_COUNT);
 }
 
 /*
@@ -130,7 +130,7 @@ int minx_kernel_run() {
  * a fatal, after the shutdown() calls, exit() will be called.
  */
 void minx_kernel_shutdown() {
-    free(opc_p);
+    free(params);
     stackdelete(stack);
 }
 
@@ -175,7 +175,7 @@ static void run_opcode(uint16_t opc) {
     if(opcodes[opc].opc_func) {
         FATAL_F_ERROR("Tried to execute unknown opcode %"PRIu16"!", opc);
     }
-    opcodes[opc].opc_func();
+    opcodes[opc].opc_func(params);
 
 
 #if (defined DEBUGGING | defined DEBUG)
@@ -224,9 +224,9 @@ static unsigned int read_command_parameters(uint16_t *opcode) {
     unsigned int    i;
 
     for(i = 0 ; opcodes[*opcode].params[i] ; i++ ) {
-        opc_p->p[i] = *((uint64_t*) minx_binary_get_at(next_pos, 
+        params[i] = *((uint64_t*) minx_binary_get_at(   next_pos, 
                                                         opcodes[*opcode].params[i], 
-                                                        &opc_p->p[i], 
+                                                        &params[i], 
                                                         sizeof(uint64_t)));
         next_pos += opcodes[*opcode].params[i];
     }

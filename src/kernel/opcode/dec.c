@@ -7,15 +7,15 @@
  *
  *
  */
-void opc_dec_func() {
+void opc_dec_func(uint64_t *params) {
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE("reg: %"PRIu64, opc_p->p[0]);
+    EXPLAIN_OPCODE("reg: %"PRIu64, params[0]);
 #endif 
 
-    if( minx_registers_find_register(opc_p->p[0])->value == 0x0000 ) {
+    if( minx_registers_find_register(params[0])->value == 0x0000 ) {
         setbit(minx_registers_find_register(statusregister)->value, OVERFLOW_BIT);
     }
 
-    minx_registers_find_register(opc_p->p[0])->value--;
+    minx_registers_find_register(params[0])->value--;
     
 }

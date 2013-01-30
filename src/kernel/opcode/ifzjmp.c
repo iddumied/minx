@@ -7,23 +7,23 @@
  *
  * if akku is zero then jump else jump
  */
-void opc_ifzjmp_func() {
+void opc_ifzjmp_func(uint64_t *params) {
 #ifdef DEBUGGING
     EXPLAIN_OPCODE_WITH_HEXF(
             "to %#010"PRIx64" if akku == 0, else to %#010"PRIx64,
             "to %"PRIu64" if akku == 0, else to %"PRIu64, 
-            opc_p->p[0], 
-            opc_p->p[1]);
+            params[0], 
+            params[1]);
 #endif 
 
-    if( (minx_binary_exists_at(opc_p->p[0]) || opc_p->p[0] == END_OF_PROGRAM) && 
-        (minx_binary_exists_at(opc_p->p[1]) || opc_p->p[1] == END_OF_PROGRAM)) {
+    if( (minx_binary_exists_at(params[0]) || params[0] == END_OF_PROGRAM) && 
+        (minx_binary_exists_at(params[1]) || params[1] == END_OF_PROGRAM)) {
 
         if( minx_registers_find_register(akku_register_number)->value == 0x0000 ) {
-            minx_kernel_program_pointer_manipulate(opc_p->p[0]);
+            minx_kernel_program_pointer_manipulate(params[0]);
         }
         else {
-            minx_kernel_program_pointer_manipulate(opc_p->p[1]);
+            minx_kernel_program_pointer_manipulate(params[1]);
         }
     } 
     else {

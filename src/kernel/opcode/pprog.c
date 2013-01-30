@@ -5,7 +5,7 @@
  * Parameters:              0
  * Affects Program Pointer: NO 
  */
-void opc_pprog_func (void) {
+void opc_pprog_func(uint64_t *params) {
 #ifdef DEBUGGING
     /* nothing to explain here */
 

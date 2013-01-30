@@ -9,13 +9,13 @@
  * if later on memory is required, this one can be used.
  *
  */
-void opc_free_func(void) {
+void opc_free_func(uint64_t *params) {
     int result;
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE("heap %"PRIu64, minx_registers_find_register(opc_p->p[0])->value);
+    EXPLAIN_OPCODE("heap %"PRIu64, minx_registers_find_register(params[0])->value);
 #endif
 
-    result = minx_kernel_heap_free(minx_registers_find_register(opc_p->p[0])->value);
+    result = minx_kernel_heap_free(minx_registers_find_register(params[0])->value);
 
     if(result)
         setbit(minx_registers_find_register(statusregister)->value, FREE_BIT);

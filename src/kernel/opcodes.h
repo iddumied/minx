@@ -99,69 +99,69 @@
  *
  */
 
-void        minx_opc_nop_func            (void);
-void        minx_opc_call_func           (void);
-void        minx_opc_ret_func            (void);
+void        minx_opc_nop_func            (uint64_t* params);
+void        minx_opc_call_func           (uint64_t* params);
+void        minx_opc_ret_func            (uint64_t* params);
 
-void        minx_opc_mov_func            (void);
-void        minx_opc_movi_func           (void);
+void        minx_opc_mov_func            (uint64_t* params);
+void        minx_opc_movi_func           (uint64_t* params);
 
-void        minx_opc_not_func            (void);
-void        minx_opc_notr_func           (void);
+void        minx_opc_not_func            (uint64_t* params);
+void        minx_opc_notr_func           (uint64_t* params);
 
-void        minx_opc_and_func            (void);
-void        minx_opc_andi_func           (void);
-void        minx_opc_andr_func           (void);
-void        minx_opc_andir_func          (void);
+void        minx_opc_and_func            (uint64_t* params);
+void        minx_opc_andi_func           (uint64_t* params);
+void        minx_opc_andr_func           (uint64_t* params);
+void        minx_opc_andir_func          (uint64_t* params);
 
-void        minx_opc_or_func             (void);
-void        minx_opc_ori_func            (void);
-void        minx_opc_orr_func            (void);
-void        minx_opc_orir_func           (void);
+void        minx_opc_or_func             (uint64_t* params);
+void        minx_opc_ori_func            (uint64_t* params);
+void        minx_opc_orr_func            (uint64_t* params);
+void        minx_opc_orir_func           (uint64_t* params);
 
-void        minx_opc_dec_func            (void);
-void        minx_opc_inc_func            (void);
+void        minx_opc_dec_func            (uint64_t* params);
+void        minx_opc_inc_func            (uint64_t* params);
 
-void        minx_opc_lsh_func            (void);
-void        minx_opc_rsh_func            (void);
+void        minx_opc_lsh_func            (uint64_t* params);
+void        minx_opc_rsh_func            (uint64_t* params);
 
-void        minx_opc_cmp_func            (void);
-void        minx_opc_cmpi_func           (void);
-void        minx_opc_eql_func            (void);
-void        minx_opc_eqli_func           (void);
+void        minx_opc_cmp_func            (uint64_t* params);
+void        minx_opc_cmpi_func           (uint64_t* params);
+void        minx_opc_eql_func            (uint64_t* params);
+void        minx_opc_eqli_func           (uint64_t* params);
 
-void        minx_opc_push_func           (void);
-void        minx_opc_pop_func            (void);
-void        minx_opc_drop_func           (void);
+void        minx_opc_push_func           (uint64_t* params);
+void        minx_opc_pop_func            (uint64_t* params);
+void        minx_opc_drop_func           (uint64_t* params);
 
-void        minx_opc_add_func            (void);
-void        minx_opc_addi_func           (void);
-void        minx_opc_addr_func           (void);
-void        minx_opc_addir_func          (void);
+void        minx_opc_add_func            (uint64_t* params);
+void        minx_opc_addi_func           (uint64_t* params);
+void        minx_opc_addr_func           (uint64_t* params);
+void        minx_opc_addir_func          (uint64_t* params);
 
-void        minx_opc_jmp_func            (void);
-void        minx_opc_jmpiz_func          (void);
-void        minx_opc_jmpnz_func          (void);
-void        minx_opc_ifzjmp_func         (void);
-void        minx_opc_exit_func           (void);
+void        minx_opc_jmp_func            (uint64_t* params);
+void        minx_opc_jmpiz_func          (uint64_t* params);
+void        minx_opc_jmpnz_func          (uint64_t* params);
+void        minx_opc_ifzjmp_func         (uint64_t* params);
+void        minx_opc_exit_func           (uint64_t* params);
 
-void        minx_opc_pstack_func         (void);
-void        minx_opc_pregs_func          (void);
-void        minx_opc_pprog_func          (void);
-void        minx_opc_pmems_func          (void);
-void        minx_opc_pmem_func           (void);
+void        minx_opc_pstack_func         (uint64_t* params);
+void        minx_opc_pregs_func          (uint64_t* params);
+void        minx_opc_pprog_func          (uint64_t* params);
+void        minx_opc_pmems_func          (uint64_t* params);
+void        minx_opc_pmem_func           (uint64_t* params);
 
-void        minx_opc_alloc_func          (void);
-void        minx_opc_alloci_func         (void);
-void        minx_opc_resize_func         (void);
-void        minx_opc_resizei_func        (void);
-void        minx_opc_free_func           (void);
-void        minx_opc_put_func            (void);
-void        minx_opc_read_func           (void);
-void        minx_opc_getsize_func        (void);
+void        minx_opc_alloc_func          (uint64_t* params);
+void        minx_opc_alloci_func         (uint64_t* params);
+void        minx_opc_resize_func         (uint64_t* params);
+void        minx_opc_resizei_func        (uint64_t* params);
+void        minx_opc_free_func           (uint64_t* params);
+void        minx_opc_put_func            (uint64_t* params);
+void        minx_opc_read_func           (uint64_t* params);
+void        minx_opc_getsize_func        (uint64_t* params);
 
 typedef struct {
-    void (*opc_func)(void);
+    void (*opc_func)(uint64_t*);
     char *strrep;
     unsigned int params[MAX_PARAMETER_COUNT];
 } OpcodeInformation;

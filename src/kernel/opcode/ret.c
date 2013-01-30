@@ -7,7 +7,7 @@
  *
  *
  */
-void opc_ret_func() {
+void opc_ret_func(uint64_t *params) {
 #ifdef DEBUGGING
     /* nothing to explain here */
 #endif
