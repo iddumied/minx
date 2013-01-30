@@ -45,7 +45,7 @@ uint16_t minx_registers_get_register_count(void) {
  */
 Register* minx_registers_find_register(uint64_t addr) {
 #if (defined DEBUGGING | defined DEBUG)
-    minxvpudbgprintf("find register: %"PRIu64"\n", addr);
+    minxkerneldbgprintf("find register: %"PRIu64"\n", addr);
 #endif 
 
     if( !register_exists(addr) ) {
