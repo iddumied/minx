@@ -38,6 +38,7 @@
 #include "util/error.h"
 #include "util/config.h"
 
+#include "def/protocol.h"
 #include "def/sizes.h"
 #include "def/statusbits.h"
 

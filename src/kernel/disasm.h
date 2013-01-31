@@ -7,6 +7,7 @@
 #include "util/debug.h"
 
 #include "def/sizes.h"
+#include "def/protocol.h"
 
 #include "kernel/opcodes.h"
 

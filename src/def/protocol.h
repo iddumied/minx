@@ -1,6 +1,7 @@
 #ifndef __MINX_PROTOCOL_H__
 #define __MINX_PROTOCOL_H__
 
+#include "def/sizes.h" /* for MAX_PARAMETER_COUNT */ 
 #include "kernel/opcodes.h"
 
 typedef struct {
