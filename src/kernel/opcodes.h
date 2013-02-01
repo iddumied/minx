@@ -7,8 +7,7 @@
 #include "util/debug.h"
 #endif //DEBUGGING
 
-#include "kernel/registers.h"
-#include "kernel/kernel.h"
+#include <inttypes.h>
 
 #define         MINX_OPC_NOP			0x00
 #define         MINX_OPC_CALL           0x01

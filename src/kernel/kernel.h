@@ -26,6 +26,10 @@
 #include "util/debug.h"
 #endif
 
+#include "def/protocol.h"
+#include "def/sizes.h"
+#include "def/statusbits.h"
+
 /*
  * include headers for the kernel internals. They are outsourced because of
  * readability, grouping of same stuff and modularity
@@ -37,10 +41,6 @@
 
 #include "util/error.h"
 #include "util/config.h"
-
-#include "def/protocol.h"
-#include "def/sizes.h"
-#include "def/statusbits.h"
 
 #include "stack/stack.h"
 
