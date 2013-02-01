@@ -21,3 +21,12 @@ first Argument _has to be_ the binary you want to run, then:
 	--regs			printing registers at end of program (much output!)
 	--disasm		disassemble program and exit 
 	--hex			just with --regs or --disasm -> values in hex, not in decimal
+
+
+Branches 
+--------
+
+There is a branch called 'pre-stable', including all features tested by me via
+.asm files. It does not ensure, the features it includes work completely
+fail-save or even that they are tested. Currently, there is no testing except
+the .asm files running!
