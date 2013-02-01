@@ -1,13 +1,32 @@
 #ifndef __MINX_VPU_OPCODES_H__
 #define __MINX_VPU_OPCODES_H__
 
-#include "def/sizes.h"
+#include <inttypes.h>
 
 #ifdef DEBUGGING
 #include "util/debug.h"
 #endif //DEBUGGING
 
-#include <inttypes.h>
+#include "def/sizes.h"
+#include "def/statusbits.h"
+#include "util/macros.h"
+#include "util/config.h"
+#include "kernel/registers.h"
+#include "kernel/heap.h"
+#include "reader/binary_reader.h"
+
+#ifdef DEBUGGING
+#define STACK_PRINTABLE
+#include "stack/stack.h"
+#undef STACK_PRINTABLE
+#endif
+
+extern Stack* stack;
+
+extern void minx_kernel_program_pointer_manipulate(uint64_t);
+extern uint64_t minx_kernel_program_pointer_get(void);
+extern void minx_kernel_unset_running_variable(void);
+extern void minx_kernel_set_exit_status(int);
 
 #define         MINX_OPC_NOP			0x00
 #define         MINX_OPC_CALL           0x01
