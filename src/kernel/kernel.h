@@ -41,13 +41,9 @@
 
 #include "util/error.h"
 #include "util/config.h"
+#include "util/macros.h"
 
 #include "stack/stack.h"
-
-#define         END_OF_PROGRAM      ((uint64_t)-1) /* last address is END_OF_PROGRAM */
-
-#define         setbit(byte,bitnum)     do { byte |=  0x0001<<bitnum; } while(0)
-#define         clrbit(byte,bitnum)     do { byte &= !(0x0001<<bitnum); } while(0)
 
 /*
  * Stack must be visible for all opcodes
