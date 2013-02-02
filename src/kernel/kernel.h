@@ -48,7 +48,7 @@
 /*
  * Stack must be visible for all opcodes
  */
-Stack                *   stack           = NULL;
+Stack *stack;
 
 /*
  * Function prototypes 
@@ -63,6 +63,6 @@ void        minx_kernel_program_pointer_manipulate  (uint64_t new_pointer);
 void        minx_kernel_unset_running_variable      (void);
 void        minx_kernel_set_exit_status             (int);
 
-extern void stack_print_binary                  (Stack*);
+extern void stack_print_binary                      (Stack*);
 
 #endif //__MINX_KERNEL_H__
