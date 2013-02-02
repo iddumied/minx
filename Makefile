@@ -79,7 +79,7 @@ compile: ${OBJECTS} ${ADDITIONAL_TASKS}
 recompile: clean compile
 
 link:
-	${LD} ${LDFLAGS} ${OBJECTS} -o ${TARGET}
+	${LD} ${LDFLAGS} ${LINK_OBJECTS} -o ${TARGET}
 	
 clean:
 	@rm ${OBJECTS}
