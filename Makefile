@@ -76,6 +76,8 @@ ${TARGET}: $(OBJECTS) $(ADDITIONAL_TASKS)
 
 compile: ${OBJECTS} ${ADDITIONAL_TASKS}
 
+recompile: clean compile
+
 link:
 	${LD} ${LDFLAGS} ${OBJECTS} -o ${TARGET}
 	
