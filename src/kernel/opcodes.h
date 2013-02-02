@@ -17,9 +17,9 @@
 
 #ifdef DEBUGGING
 #define STACK_PRINTABLE
+#endif
 #include "stack/stack.h"
 #undef STACK_PRINTABLE
-#endif
 
 extern Stack* stack;
 
