@@ -23,10 +23,10 @@
 
 extern Stack* stack;
 
-extern void minx_kernel_program_pointer_manipulate(uint64_t);
-extern uint64_t minx_kernel_program_pointer_get(void);
-extern void minx_kernel_unset_running_variable(void);
-extern void minx_kernel_set_exit_status(int);
+extern void         minx_kernel_program_pointer_manipulate  (uint64_t);
+extern uint64_t     minx_kernel_program_pointer_get         (void);
+extern void         minx_kernel_unset_running_variable      (void);
+extern void         minx_kernel_set_exit_status             (int);
 
 #define         MINX_OPC_NOP			0x00
 #define         MINX_OPC_CALL           0x01
