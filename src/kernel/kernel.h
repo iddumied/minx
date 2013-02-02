@@ -43,7 +43,11 @@
 #include "util/config.h"
 #include "util/macros.h"
 
+#ifdef DEBUGGING
+#define STACK_PRINTABLE
+#endif
 #include "stack/stack.h"
+#undef STACK_PRINTABLE
 
 /*
  * Stack must be visible for all opcodes
