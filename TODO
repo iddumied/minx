@@ -23,26 +23,6 @@ TODO:
 9)	File reader should read the file as linked list, with automatically removing 
 	"old" parts of the file from memory to keep memuse smart.
 
-12) Implement heap:
-		- opcodes: 
-			ALLOC(size in byte) -> ptr/addr of first byte in akku or 0x00 on error
-			RESIZE(addr, size in byte)
-			FREE(addr)
-			PUT(addr, register-ptr, value-size in byte)
-			READ(addr, register-ptr, size in byte)
-
-		PUT and READ require a ptr to a register and a size parameter. If the
-		size is more than one register (8 byte), next register will be used to
-		put or read!
-
-		- statuses:
-			- statusflags for all opcodes for errors 
-			- counter for how much register were used to PUT from
-			- counter for how much register were used to READ into 
-
-	Manage the heaps in a linked list, each entry has its size, which is used to
-	calculate the address of the next entry.
-
 14) Create a plugin-system
 	opcodes:
 		LOADMODULE(memory) 
@@ -80,15 +60,9 @@ TODO:
 15) Clean up the opcodes-protocol and release it as v1.0.0 to guarantee no more
 	changes of its core functionality.
 
-16) Add Disassembler 
-
 17.1) (addition to already done TODO #17) Organize the memory map, for fast
 		memory lookup and so on. The map has to be ordered to do a fast lookup
 		of the memory!
-
-20) BUG: Remove this 'Invalid Pointer' errors (just with 'export MALLOC_CHECK_=1') 
-
-21) Include mtrace() when debugging minx for memory leaks and maybe more
 
 22) Interrupts? What about interrupts? We need a jump-to address for a
 	interrupt and a way to register this address for a particular interrupt type
