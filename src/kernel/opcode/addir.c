@@ -13,5 +13,4 @@ void minx_opc_addir_func(uint64_t *params) {
 #endif
 
     minx_registers_find_register(params[0])->value += params[1];
-
 }

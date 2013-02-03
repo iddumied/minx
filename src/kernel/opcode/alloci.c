@@ -14,7 +14,6 @@ void minx_opc_alloci_func(uint64_t *params) {
     EXPLAIN_OPCODE("%"PRIu64" Bytes", params[0]);
 #endif
 
-    minx_registers_find_register(akku_register_number)->value = 
-        minx_kernel_heap_alloc(params[0]);
-    
+    Register *r1 = minx_registers_find_register(akku_register_number);
+    r1->value = minx_kernel_heap_alloc(params[0]);
 }

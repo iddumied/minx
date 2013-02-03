@@ -11,13 +11,14 @@
 void minx_opc_resize_func(uint64_t *params) {
     int result;
 
+    Register *r1 = minx_registers_find_register(params[0]);
+    Register *r2 = minx_registers_find_register(params[1]);
+
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE("heap %"PRIu64" to %"PRIu64" Bytes", 
-            minx_registers_find_register(params[0])->value, minx_registers_find_register(params[1])->value);
+    EXPLAIN_OPCODE("heap %"PRIu64" to %"PRIu64" Bytes", r1->value, r2->value);
 #endif 
 
-    result = minx_kernel_heap_resize(  minx_registers_find_register(params[0])->value, 
-                                    minx_registers_find_register(params[1])->value);
+    result = minx_kernel_heap_resize(r1->value, r2->value);
 
     if( result ) 
         setbit(minx_registers_find_register(statusregister)->value, RESIZE_BIT);
