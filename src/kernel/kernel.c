@@ -6,7 +6,7 @@
  * -----------------------------------------------------------------------------
  */
 
-static unsigned int read_command_parameters(uint16_t *opcode);
+static uint64_t     read_command_parameters(uint16_t *opcode);
 static void         run_opcode                  (uint16_t);
 
 /*
@@ -79,7 +79,7 @@ int minx_kernel_run() {
 #endif
 
     uint16_t        *opcode = (uint16_t*) malloc(sizeof(uint16_t));
-    unsigned int    progp_inc;
+    uint64_t        next_pp_pos; 
 
     while( __running__ && !(program_pointer->value != END_OF_PROGRAM) ) {
 
@@ -93,11 +93,11 @@ int minx_kernel_run() {
                                                 opcode, 
                                                 sizeof(*opcode));
 
-        progp_inc = read_command_parameters( opcode );
+        next_pp_pos = read_command_parameters( opcode );
         run_opcode(*opcode);
 
         if( !program_pointer_manipulated ) {
-            program_pointer->value += progp_inc;
+            program_pointer->value = next_pp_pos;
         }
         else {
             program_pointer_manipulated = 0;
@@ -219,7 +219,7 @@ static void run_opcode(uint16_t opc) {
  *      5) go to 3) or ready
  *
  */
-static unsigned int read_command_parameters(uint16_t *opcode) {
+static uint64_t read_command_parameters(uint16_t *opcode) {
     uint64_t        next_pos = program_pointer->value + OPC_SIZE;
     unsigned int    i;
 
