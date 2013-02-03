@@ -93,3 +93,5 @@ TODO:
 22) Interrupts? What about interrupts? We need a jump-to address for a
 	interrupt and a way to register this address for a particular interrupt type
 	such as SIGINT.
+
+23) There is no zero-flag in status registers.
