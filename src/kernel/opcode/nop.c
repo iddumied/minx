@@ -7,7 +7,7 @@
  *
  *
  */
-void opc_nop_func(uint64_t *params) {
+void minx_opc_nop_func(uint64_t *params) {
 #ifdef DEBUGGING
     /* nothing to explain here */
 #endif

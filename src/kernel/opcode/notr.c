@@ -7,7 +7,7 @@
  *
  * Result in same register
  */
-void opc_notr_func(uint64_t *params) {
+void minx_opc_notr_func(uint64_t *params) {
 #ifdef DEBUGGING
     EXPLAIN_OPCODE("reg: %"PRIu64, params[0]);
 #endif 

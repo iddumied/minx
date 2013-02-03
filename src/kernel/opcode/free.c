@@ -9,7 +9,7 @@
  * if later on memory is required, this one can be used.
  *
  */
-void opc_free_func(uint64_t *params) {
+void minx_opc_free_func(uint64_t *params) {
     int result;
 #ifdef DEBUGGING
     EXPLAIN_OPCODE("heap %"PRIu64, minx_registers_find_register(params[0])->value);

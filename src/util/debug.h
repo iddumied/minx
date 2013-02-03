@@ -34,7 +34,7 @@
 
 #define EXPLAIN_OPCODE(format,...)                                          \
     do {                                                                    \
-        if(minx_config_get(CONF_SRC_DEBUGGING)) {                           \
+        if(minx_config_get(CONF_SRC_DEBUGGING)->b) {                        \
             printf("("format")\n", __VA_ARGS__);                            \
         }                                                                   \
     } while(0)

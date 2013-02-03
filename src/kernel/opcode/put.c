@@ -7,7 +7,7 @@
  *
  *
  */
-void opc_put_func(uint64_t *params) {
+void minx_opc_put_func(uint64_t *params) {
     int result;
 
 #ifdef DEBUGGING

@@ -7,7 +7,7 @@
  *
  *
  */
-void opc_orir_func(uint64_t *params) {
+void minx_opc_orir_func(uint64_t *params) {
 #ifdef DEBUGGING
     EXPLAIN_OPCODE("reg %"PRIu64" | %"PRIu64, params[0], params[1]);
 #endif 

@@ -11,7 +11,7 @@
  * 2 if second is bigger, 
  * zero if equal
  */
-void opc_cmpi_func(uint64_t *params) {
+void minx_opc_cmpi_func(uint64_t *params) {
 #ifdef DEBUGGING
     EXPLAIN_OPCODE("reg %"PRIu64" and %"PRIu64, params[0], params[1]);
 #endif 

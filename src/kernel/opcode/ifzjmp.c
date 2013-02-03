@@ -7,7 +7,7 @@
  *
  * if akku is zero then jump else jump
  */
-void opc_ifzjmp_func(uint64_t *params) {
+void minx_opc_ifzjmp_func(uint64_t *params) {
 #ifdef DEBUGGING
     EXPLAIN_OPCODE_WITH_HEXF(
             "to %#010"PRIx64" if akku == 0, else to %#010"PRIx64,

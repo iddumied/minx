@@ -7,7 +7,7 @@
  *
  *
  */
-void opc_getsize_func(uint64_t *params) {
+void minx_opc_getsize_func(uint64_t *params) {
 #ifdef DEBUGGING
     EXPLAIN_OPCODE("of heap %"PRIu64" into akku", 
                         minx_registers_find_register(params[0])->value);

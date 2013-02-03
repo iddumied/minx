@@ -7,7 +7,7 @@
  *
  *
  */
-void opc_pop_func(uint64_t *params) {
+void minx_opc_pop_func(uint64_t *params) {
     if( stack_is_empty( stack ) ) {
         FATAL_DESC_ERROR("Cannot pop from empty stack!");
     }

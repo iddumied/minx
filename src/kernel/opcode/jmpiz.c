@@ -7,7 +7,7 @@
  *
  *
  */
-void opc_jmpiz_func(uint64_t *params) {
+void minx_opc_jmpiz_func(uint64_t *params) {
 #ifdef DEBUGGING
     EXPLAIN_OPCODE_WITH_HEXF(
             "to %#010"PRIx64" if reg %"PRIu64" == 0",

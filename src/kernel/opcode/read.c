@@ -11,7 +11,7 @@
  *      into register (register hardcoded)
  *
  */
-void opc_read_func(uint64_t *params) {
+void minx_opc_read_func(uint64_t *params) {
     int result;
 
 #ifdef DEBUGGING 

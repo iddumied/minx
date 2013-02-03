@@ -5,10 +5,10 @@
  * Parameters:              1, heap-address, register-address 
  * Affects Program Pointer: NO
  *
- * Breaking DRY rule here, as opc_resizei_func() is almost the same
+ * Breaking DRY rule here, as minx_opc_resizei_func() is almost the same
  *
  */
-void opc_resize_func(uint64_t *params) {
+void minx_opc_resize_func(uint64_t *params) {
     int result;
 
 #ifdef DEBUGGING

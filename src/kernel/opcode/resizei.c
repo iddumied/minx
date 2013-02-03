@@ -5,10 +5,10 @@
  * Parameters:              1, heap-address, value 
  * Affects Program Pointer: NO
  *
- * Breaking DRY rule here, as opc_resize_func() is almost the same
+ * Breaking DRY rule here, as minx_opc_resize_func() is almost the same
  *
  */
-void opc_resizei_func(uint64_t *params) {
+void minx_opc_resizei_func(uint64_t *params) {
     int result;
 #ifdef DEBUGGING
     EXPLAIN_OPCODE("heap %"PRIu64" to %"PRIu64" Bytes", 

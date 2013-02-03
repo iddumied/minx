@@ -81,7 +81,7 @@ int minx_kernel_run() {
     uint16_t        *opcode = (uint16_t*) malloc(sizeof(uint16_t));
     uint64_t        next_pp_pos; 
 
-    while( __running__ && !(program_pointer->value != END_OF_PROGRAM) ) {
+    while( __running__ && program_pointer->value != END_OF_PROGRAM) {
 
 #if (defined DEBUGGING || defined DEBUG)
         fflush(stdout);
@@ -172,7 +172,7 @@ static void run_opcode(uint16_t opc) {
     fflush(stdout);
 #endif 
 
-    if(opcodes[opc].opc_func) {
+    if(!opcodes[opc].opc_func) {
         FATAL_F_ERROR("Tried to execute unknown opcode %"PRIu16"!", opc);
     }
     opcodes[opc].opc_func(params);

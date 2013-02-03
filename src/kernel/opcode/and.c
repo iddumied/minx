@@ -7,7 +7,7 @@
  *
  * result in akku_register_number
  */
-void opc_and_func(uint64_t *params) {
+void minx_opc_and_func(uint64_t *params) {
 #ifdef DEBUGGING
     EXPLAIN_OPCODE("reg %"PRIu64" & reg %"PRIu64, params[0], params[1]);
 #endif
