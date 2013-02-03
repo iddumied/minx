@@ -1,7 +1,7 @@
 UTILC_DIR = ./utilc
 UTILC_BIN_DIR = ${UTILC_DIR}/bin
 
-UTILC_STACK_OUT = stack.o
+UTILC_STACK_OUT = ${UTILC_BIN_DIR}/stack.o
 
 UTILC_HEADERS_LOCATIONS=${UTILC_DIR}/src/
 
@@ -10,35 +10,18 @@ UTILC_HEADERS_LOCATIONS=${UTILC_DIR}/src/
 # Variables 
 #
 #
+
+CC=/usr/bin/gcc
+LD=${CC}
+
 SRC=./src
 BIN=./bin
-CC=/usr/bin/gcc
-
-MAIN_SRC=${SRC}/main.c
-VPU_SRC=${SRC}/vpu.c
-HEAP_SRC=${SRC}/heap.c
-SIMPLE_READER_SRC=${SRC}/simple_reader.c
-BINARY_READER_SRC=${SRC}/binary_reader.c
-CONFIG_SRC=${SRC}/config.c
-DISASM_SRC=${SRC}/disasm.c
-ERROR_SRC=${SRC}/error.c
-
-MAIN_OUT=${BIN}/main.o
-VPU_OUT=${BIN}/vpu.o
-HEAP_OUT=${BIN}/heap.o
-SIMPLE_READER_OUT=${BIN}/simple_reader.o
-BINARY_READER_OUT=${BIN}/binary_reader.o
-CONFIG_OUT=${BIN}/config.o
-DISASM_OUT=${BIN}/disasm.o
-ERROR_OUT=${BIN}/error.o
-
-BINARY=${BIN}/minx
 
 HEADERS= -I${SRC} -I${UTILC_HEADERS_LOCATIONS}
 
 #
 #
-# modifying vpu 
+# modifying kernel.
 #
 #
 MINX_FLAGS = -D DEBUG -D DEBUGGING -D VERBOSITY -D DISASSEMBLE
@@ -51,77 +34,72 @@ MINX_FLAGS = -D DEBUG -D DEBUGGING -D VERBOSITY -D DISASSEMBLE
 CFLAGS += -Wall 
 CFLAGS += -std=c99
 CFLAGS += -g
-CFLAGS += -c
 
 #
+##
+#  Specific variables
+##
 #
-# Compiling the VPU
+TARGET=minx
+SOURCES= ${shell find ${SRC} -type f -name '*.c'}
+OBJECTS=${foreach x, $(basename $(SOURCES)), $(x).o}
+
 #
 # 
-minx: utilc compile_heap compile_disasm compile_error compile_config compile_main compile_vpu compile_simple_reader
-	echo "simple_vpu:"
-	echo "linking..."
-	${CC}\
-		${CONFIG_OUT}\
-		${DISASM_OUT}\
-		${ERROR_OUT}\
-		${MAIN_OUT}\
-		${VPU_OUT}\
-		${HEAP_OUT}\
-		${SIMPLE_READER_OUT}\
-		${BIN}/${UTILC_STACK_OUT} -o ${BINARY}
-	echo "ready!"
+# Lib compiling stuff
+# 
+#
 
-compile_main:
-	echo "compile_main:"
-	${CC} ${CFLAGS} ${MINX_FLAGS} ${HEADERS} ${MAIN_SRC} -o ${MAIN_OUT}
+LIB_SETUP_TASKS = setup_utilc
+LIB_COMPILE_TASKS = compile_utilc_stack
 
-compile_vpu:
-	echo "compile_vpu:"
-	${CC} ${CFLAGS} ${MINX_FLAGS} ${HEADERS} ${VPU_SRC} -o ${VPU_OUT}
+ADDITIONAL_TASKS = ${LIB_SETUP_TASKS} ${LIB_COMPILE_TASKS}
 
-compile_simple_reader:
-	echo "compile_simple_reader:"
-	${CC} ${CFLAGS} ${MINX_FLAGS} ${HEADERS} ${SIMPLE_READER_SRC} -o ${SIMPLE_READER_OUT}
+#
+#
+# Link all objects
+# 
+#
+LINK_OBJECTS = ${OBJECTS} ${UTILC_STACK_OUT}
 
-compile_config:
-	echo "compile_config:"
-	${CC} ${CFLAGS} ${MINX_FLAGS} ${HEADERS} ${CONFIG_SRC} -o ${CONFIG_OUT}
+#
+##
+# The tasks
+##
+#
 
-compile_disasm:
-	echo "compile_disasm:"
-	${CC} ${CFLAGS} ${MINX_FLAGS} ${HEADERS} ${DISASM_SRC} -o ${DISASM_OUT}
+${TARGET}: $(OBJECTS) $(ADDITIONAL_TASKS)
+	${LD} ${LINK_OBJECTS} -o ${TARGET}
 
-compile_error:
-	echo "compile_error:"
-	${CC} ${CFLAGS} ${MINX_FLAGS} ${HEADERS} ${ERROR_SRC} -o ${ERROR_OUT}
+%.o: %.c 
+	${CC} -c ${CFLAGS} ${HEADERS} ${MINX_FLAGS} $^ -o $@
 
-compile_binary_reader:
-	echo "compile_binary_reader:"
-	${CC} ${CFLAGS} ${MINX_FLAGS} ${HEADERS} ${BINARY_READER_SRC} -o ${BINARY_READER_OUT}
+compile: ${OBJECTS} ${ADDITIONAL_TASKS}
 
-compile_heap:
-	echo "compile_heap:"
-	${CC} ${CFLAGS} ${MINX_FLAGS} ${HEADERS} ${HEAP_SRC} -o ${HEAP_OUT}
+recompile: clean compile
 
+link:
+	${LD} ${LDFLAGS} ${LINK_OBJECTS} -o ${TARGET}
+
+move:
+	@mv ${TARGET} ${BIN}/${TARGET}
+	
 clean:
-	rm -v ${BIN}/*.o
+	@rm ${OBJECTS}
+
 #
 #
 # compiling utilc
 #
 #
 
-utilc: setup_utilc compile_utilc_stack get_utilc_stack clean_utilc
+utilc: setup_utilc compile_utilc_stack clean_utilc
 
 setup_utilc:
 	mkdir -p ${UTILC_DIR}/bin
 
 compile_utilc_stack:
 	make -C ${UTILC_DIR} stack 
-
-get_utilc_stack:
-	cp -v ${UTILC_BIN_DIR}/${UTILC_STACK_OUT} ${BIN}/${UTILC_STACK_OUT}
 
 clean_utilc:
 	rm -r ${UTILC_DIR}/bin

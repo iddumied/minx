@@ -4,13 +4,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "config.h"
-#include "error.h"
-#include "debug.h"
+#include "util/error.h"
+#include "util/debug.h"
 
 typedef enum {
     CONF_VERBOSITY,         /* only if compiled with DEBUG */
-    CONF_MVPU_DEBUGGING,    /* only if compiled with DEBUGGING */
+    CONF_MINX_DEBUGGING,    /* only if compiled with DEBUGGING */
     CONF_SRC_DEBUGGING,     /* only if compiled with DEBUGGING */
     CONF_PRINT_REGS_AT_EOP, /* print registers at end of program */
     CONF_DISASM,            /* only start diassembler */

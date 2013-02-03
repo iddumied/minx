@@ -11,4 +11,6 @@
 
 #define         MAX_PARAMETER_COUNT     5
 
+#define         END_OF_PROGRAM      ((uint64_t)-1) /* last address is END_OF_PROGRAM */
+
 #endif // __MINX_VPU_SIZES_H__

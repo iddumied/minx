@@ -25,7 +25,9 @@ static uint64_t     memory_id_counter;
  * -----------------------------------------------------------------------------
  */
 
-void minx_vpu_heap_setup(void) {
+void minx_kernel_heap_init(void) {
+    minx_error_register_shutdown_function(minx_kernel_heap_shutdown);
+
     heapnodes                   = (HeapNode**)  malloc( sizeof(HeapNode*) );
     heapnodes[0]                = (HeapNode*)   malloc( sizeof(HeapNode) );
 
@@ -39,7 +41,7 @@ void minx_vpu_heap_setup(void) {
     memory_id_counter           = 0;
 }
 
-void minx_vpu_heap_shutdown(void) {
+void minx_kernel_heap_shutdown(void) {
     uint64_t i;
     for(i = heapnodes_count; i; i--) {
         free(heapnodes[i-1]);
@@ -54,7 +56,7 @@ void minx_vpu_heap_shutdown(void) {
  * -----------------------------------------------------------------------------
  */
 
-uint64_t minx_vpu_heap_alloc(uint64_t size) {
+uint64_t minx_kernel_heap_alloc(uint64_t size) {
     uint64_t i;
     HeapNode *node = NULL;
     for(i = 0; i < heapnodes_count && node == NULL; i++) {
@@ -79,7 +81,7 @@ uint64_t minx_vpu_heap_alloc(uint64_t size) {
      * Resize it for fitting the required size if node was already used
      */
     if(node->used_state == HEAPNODE_NOT_USED && size != node->size) {
-        minx_vpu_heap_resize(node->memoryID, size);
+        minx_kernel_heap_resize(node->memoryID, size);
     }
 
     /*
@@ -103,10 +105,10 @@ uint64_t minx_vpu_heap_alloc(uint64_t size) {
 
     return node->memoryID;
 failed_to_alloc:
-    return MINX_VPU_HEAP_ERROR;
+    return MINX_KERNEL_HEAP_ERROR;
 }
 
-int minx_vpu_heap_resize(uint64_t heap, uint64_t new_size) {
+int minx_kernel_heap_resize(uint64_t heap, uint64_t new_size) {
     HeapNode *h = find_heap(heap);
 
     /*
@@ -115,7 +117,7 @@ int minx_vpu_heap_resize(uint64_t heap, uint64_t new_size) {
     char *backup_memory;
     
     /*
-     * return if heap is not found, the vpu has the problem now!
+     * return if heap is not found, the kernel has the problem now!
      */
     if(h == NULL)
         goto err;
@@ -179,19 +181,19 @@ int minx_vpu_heap_resize(uint64_t heap, uint64_t new_size) {
     }
 
 no_err:
-    return MINX_VPU_HEAP_OK;
+    return MINX_KERNEL_HEAP_OK;
 err:
-    return MINX_VPU_HEAP_ERROR;
+    return MINX_KERNEL_HEAP_ERROR;
 }
 
-uint64_t minx_vpu_heap_get_size(uint64_t heap) {
+uint64_t minx_kernel_heap_get_size(uint64_t heap) {
     HeapNode *h = find_heap(heap);
     if(h == NULL)
         goto err;
     return h->size;
 
     /*
-     * On error, do not return MINX_VPU_HEAP_ERROR, because if this value
+     * On error, do not return MINX_KERNEL_HEAP_ERROR, because if this value
      * changes in future and no one cares about this function, it could cause
      * weird errors! 
      *
@@ -202,7 +204,7 @@ err:
     return 0;
 }
 
-int minx_vpu_heap_put(uint64_t heap, uint64_t offset, unsigned int bytes, uint64_t val) {
+int minx_kernel_heap_put(uint64_t heap, uint64_t offset, unsigned int bytes, uint64_t val) {
     HeapNode *h = find_heap(heap);
 
     if(h == NULL)
@@ -212,13 +214,13 @@ int minx_vpu_heap_put(uint64_t heap, uint64_t offset, unsigned int bytes, uint64
 
     memcpy(&h->memory[offset], &val, bytes); 
 
-    return MINX_VPU_HEAP_OK;
+    return MINX_KERNEL_HEAP_OK;
 
 heap_not_found:
-    return MINX_VPU_HEAP_ERROR;
+    return MINX_KERNEL_HEAP_ERROR;
 }
 
-int minx_vpu_heap_read(uint64_t heap, uint64_t offset, unsigned int bytes, uint64_t *dest) {
+int minx_kernel_heap_read(uint64_t heap, uint64_t offset, unsigned int bytes, uint64_t *dest) {
     HeapNode *h = find_heap(heap);
 
     if(h == NULL)
@@ -228,20 +230,20 @@ int minx_vpu_heap_read(uint64_t heap, uint64_t offset, unsigned int bytes, uint6
 
     memcpy(dest, &h->memory[offset], bytes);
 
-    return MINX_VPU_HEAP_OK;
+    return MINX_KERNEL_HEAP_OK;
 
 err:
-    return MINX_VPU_HEAP_ERROR;
+    return MINX_KERNEL_HEAP_ERROR;
 }
 
 /*
- * The minx_vpu_heap_free() function does NOT remove the HeapNode from the
+ * The minx_kernel_heap_free() function does NOT remove the HeapNode from the
  * memory if it gets called. It just marks it as not used, so for later use,
  * this heapnode can be used again.
  *
  * But it sets the memory to 0x00!
  */
-int minx_vpu_heap_free(uint64_t heap) {
+int minx_kernel_heap_free(uint64_t heap) {
     HeapNode *h = find_heap(heap);
     if(h == NULL)
         goto err;
@@ -249,13 +251,13 @@ int minx_vpu_heap_free(uint64_t heap) {
     h->used_state   = HEAPNODE_NOT_USED;
     h->memory       = memset(h->memory, 0x00, h->real_size);
 
-    return MINX_VPU_HEAP_OK;
+    return MINX_KERNEL_HEAP_OK;
 err:
-    return MINX_VPU_HEAP_ERROR;
+    return MINX_KERNEL_HEAP_ERROR;
 }
 
 #ifdef DEBUGGING
-void minx_vpu_heap_print_heapnode(uint64_t heap) {
+void minx_kernel_heap_print_heapnode(uint64_t heap) {
     HeapNode *h = find_heap(heap);
 
     if(h == NULL)
@@ -285,7 +287,7 @@ ready:
 #endif //DEBUGGING
 
 #ifdef DEBUGGING
-void minx_vpu_heap_print_heap() {
+void minx_kernel_heap_print_heap() {
     uint64_t i;
     unsigned int line = 0, j = 0;
     for(i = 0 ; i < heapnodes_count; i++) {
