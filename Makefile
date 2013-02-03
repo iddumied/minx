@@ -80,6 +80,9 @@ recompile: clean compile
 
 link:
 	${LD} ${LDFLAGS} ${LINK_OBJECTS} -o ${TARGET}
+
+move:
+	@mv ${TARGET} ${BIN}/${TARGET}
 	
 clean:
 	@rm ${OBJECTS}
