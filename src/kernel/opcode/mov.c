@@ -7,7 +7,7 @@
  *
  *
  */
-static void opc_mov_func(uint64_t *params) {
+void opc_mov_func(uint64_t *params) {
 #ifdef DEBUGGING
     EXPLAIN_OPCODE_WITH_HEXF(
             "R%"PRIu64" <- R%"PRIu64" (%#010"PRIx64")",

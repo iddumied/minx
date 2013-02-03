@@ -8,7 +8,7 @@
  * Breaking DRY rule here, as opc_alloci_func() is almost the same
  *
  */
-static void opc_alloc_func(uint64_t *params) {
+void opc_alloc_func(uint64_t *params) {
 #ifdef DEBUGGING
     EXPLAIN_OPCODE("%"PRIu64" Bytes", minx_registers_find_register(params[0])->value);
 #endif
