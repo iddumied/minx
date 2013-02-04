@@ -69,27 +69,3 @@ TODO:
 	such as SIGINT.
 
 23) There is no zero-flag in status registers.
-
-24) Add more arithmetic opcodes:
-	- sub	(subtract)
-	- subi	(subtract with constant)
-	- mul	(multiplicate)
-	- muli	(multiplicate with constant)
-	- div	(divide)
-	- divi	(divide with constant)
-	- pow	(power)
-	- sqrt	(root)
-	- mod	(modulo)
-
-	Notes: 
-		- There have to be some more statuses for this mathematical operations
-
-	Do NOT provide: sin, cos, tan, log, e^, abs and everything else not listed
-	there above.
-
-25)	Add SETBIT and CLEARBIT opcodes:
-	- setb	(setbit)
-	- setbi (setbit, bit number as constant)
-	- clrb	(clear bit)
-	- clrbi	(clear bit, bit number as constant)
-
