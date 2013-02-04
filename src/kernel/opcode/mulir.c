@@ -26,7 +26,7 @@ void minx_opc_mulir_func(uint64_t *params) {
 
     r1->value = r1->value * params[1];
 
-    if(akku->value == 0) {
+    if(r1->value == 0) {
         setbit(status->value, ZERO_BIT);
     }
 

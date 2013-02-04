@@ -14,7 +14,7 @@ void minx_opc_subir_func(uint64_t *params) {
 #ifdef DEBUGGING
     EXPLAIN_OPCODE("R%"PRIu64" (%"PRIu64") -= %"PRIu64, 
             params[0], r1->value,
-            r2->value
+            params[1]
             );
 #endif
 

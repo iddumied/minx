@@ -3,6 +3,9 @@
 
 #include <inttypes.h>
 #include <math.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 #ifdef DEBUGGING
 #include "util/debug.h"
@@ -12,6 +15,7 @@
 #include "def/statusbits.h"
 #include "util/macros.h"
 #include "util/config.h"
+#include "util/overflowcheck.h"
 #include "kernel/registers.h"
 #include "kernel/heap.h"
 #include "reader/binary_reader.h"

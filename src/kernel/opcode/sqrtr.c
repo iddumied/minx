@@ -18,7 +18,7 @@ void minx_opc_sqrtr_func(uint64_t *params) {
     Register *status = minx_registers_find_register(statusregister);
 
     /* no status yet: no check for overflow */
-    r1->value = sqrtl(r1->value, r2->value);
+    r1->value = sqrtl(r1->value);
 
     if( r1->value == 0 ) {
         setbit(status->value, ZERO_BIT);

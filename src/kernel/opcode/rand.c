@@ -20,9 +20,8 @@ void minx_opc_rand_func(uint64_t *params) {
     Register *status = minx_registers_find_register(statusregister);
 
     int fd;
-    uint64_t num;
     if (( fd = open("/dev/random", O_RDONLY)) == -1 ) {
-        setbit(status->value, NORAND);
+        setbit(status->value, NO_RAND);
     }
     else {
         read(fd, &(akku->value), REGISTER_SIZE);
