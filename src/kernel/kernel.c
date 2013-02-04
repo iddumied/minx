@@ -184,6 +184,9 @@ static void run_opcode(uint16_t opc) {
 
 
 #if (defined DEBUGGING | defined DEBUG)
+    if(src_debugging) {
+        printf("\n");
+    }
     if ( program_pointer->value != END_OF_PROGRAM ) {
         minxkerneldbgprintf("PROG_POINTER: %"PRIu64"\n", program_pointer->value);
     }
