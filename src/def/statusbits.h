@@ -1,11 +1,14 @@
 #ifndef __MINX_VPU_STATUSBITS_H__
 #define __MINX_VPU_STATUSBITS_H__
 
-#define         OVERFLOW_BIT    0
-#define         ALLOC_BIT       1
-#define         FREE_BIT        2
-#define         RESIZE_BIT      3
-#define         PUT_BIT         4
-#define         READ_BIT        5
+typedef enum {
+    OVERFLOW_BIT = 0,
+    ZERO_BIT,
+    ALLOC_BIT,
+    FREE_BIT,
+    RESIZE_BIT,
+    PUT_BIT,
+    READ_BIT,
+} StatusBits;
 
 #endif // __MINX_VPU_STATUSBITS_H__
