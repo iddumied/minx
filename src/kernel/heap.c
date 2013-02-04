@@ -59,6 +59,10 @@ void minx_kernel_heap_shutdown(void) {
  */
 
 uint64_t minx_kernel_heap_alloc(uint64_t size) {
+    if( size == 0 ) {
+        FATAL_F_ERROR("cannot alloc heap with size 0 (zero)");
+    }
+
     uint64_t i;
     HeapNode *node = NULL;
     for(i = 0; i < heapnodes_count && node == NULL; i++) {
