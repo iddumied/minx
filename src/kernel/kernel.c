@@ -169,6 +169,11 @@ static void run_opcode(uint16_t opc) {
 #if (defined DEBUGGING | defined DEBUG)
 
     minxkerneldbgprintf("Running opcode: %"PRIu16"\n", opc);
+    
+    if(src_debugging) {
+       printf(MINX_KERNEL_OP_PRINT_PREFIX" %s: ", opcodes[opc].strrep);
+    }
+
     fflush(stdout);
 #endif 
 
@@ -179,10 +184,6 @@ static void run_opcode(uint16_t opc) {
 
 
 #if (defined DEBUGGING | defined DEBUG)
-    if(src_debugging) {
-       printf(MINX_KERNEL_OP_PRINT_PREFIX" %s:", opcodes[opc].strrep);
-    }
-
     if ( program_pointer->value != END_OF_PROGRAM ) {
         minxkerneldbgprintf("PROG_POINTER: %"PRIu64"\n", program_pointer->value);
     }
