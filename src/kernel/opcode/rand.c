@@ -10,11 +10,6 @@
 #ifndef DESTROY_MY_APPLICATION
 void minx_opc_rand_func(uint64_t *params) {
 
-/* // there is no explain for a random. It's just random!
-#ifdef DEBUGGING
-    EXPLAIN_OPCODE();
-#endif
-*/
 
     Register *akku = minx_registers_find_register(akku_register_number);
     Register *status = minx_registers_find_register(statusregister);
@@ -26,6 +21,11 @@ void minx_opc_rand_func(uint64_t *params) {
     else {
         read(fd, &(akku->value), REGISTER_SIZE);
         close(fd);
+
+#ifdef DEBUGGING
+    EXPLAIN_OPCODE("%"PRIu64, akku->value);
+#endif
+
     }
 }
 #else //DESTROY_MY_APPLICATION
