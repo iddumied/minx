@@ -7,5 +7,6 @@
 #define         RESIZE_BIT      3
 #define         PUT_BIT         4
 #define         READ_BIT        5
+#define         DIVZERO_BIT     6
 
 #endif // __MINX_VPU_STATUSBITS_H__

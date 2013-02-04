@@ -62,6 +62,8 @@ ADDITIONAL_TASKS = ${LIB_SETUP_TASKS} ${LIB_COMPILE_TASKS}
 #
 LINK_OBJECTS = ${OBJECTS} ${UTILC_STACK_OUT}
 
+LDFLAGS += -lm # link math.h 
+
 #
 ##
 # The tasks

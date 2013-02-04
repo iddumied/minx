@@ -140,22 +140,28 @@ const OpcodeInformation opcodes[] = {
         .params = { REGISTER_ADDRESS_SIZE, VALUE_SIZE },
     },
 
-    [MINX_OPC_PUSH]      = { 
-        .opc_func = minx_opc_push_func,
-        .strrep = "PUSH",
-        .params = { REGISTER_ADDRESS_SIZE },
+    [MINX_OPC_SETB]     = {
+        .opc_func = minx_opc_setb_func,
+        .strrep = "SETB",
+        .params = { REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE },
     },
 
-    [MINX_OPC_POP]       = { 
-        .opc_func = minx_opc_pop_func,
-        .strrep = "POP",
-        .params = { REGISTER_ADDRESS_SIZE },
+    [MINX_OPC_SETBI]        = {
+        .opc_func = minx_opc_setbi_func,
+        .strrep = "SETBI",
+        .params = { REGISTER_ADDRESS_SIZE, VALUE_SIZE },
     },
 
-    [MINX_OPC_DROP]      = { 
-        .opc_func = minx_opc_drop_func,
-        .strrep = "DROP",
-        .params = { },
+    [MINX_OPC_CLRB]     = {
+        .opc_func = minx_opc_clrb_func,
+        .strrep = "CLRB",
+        .params = { REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE },
+    },
+
+    [MINX_OPC_CLRBI]        = {
+        .opc_func = minx_opc_clrbi_func,
+        .strrep = "CLRBI",
+        .params = { REGISTER_ADDRESS_SIZE, VALUE_SIZE },
     },
 
     [MINX_OPC_ADD]       = { 
@@ -180,6 +186,168 @@ const OpcodeInformation opcodes[] = {
         .opc_func = minx_opc_addir_func,
         .strrep = "ADDIR",
         .params = { REGISTER_ADDRESS_SIZE, VALUE_SIZE },
+    },
+
+    [MINX_OPC_SUB]      = {
+        .opc_func = minx_opc_sub_func,
+        .strrep = "SUB",
+        .params = { REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE },
+    },
+    
+    [MINX_OPC_SUBI]     = {
+        .opc_func = minx_opc_subi_func,
+        .strrep = "SUBI",
+        .params = { REGISTER_ADDRESS_SIZE, VALUE_SIZE },
+    },
+    
+    [MINX_OPC_SUBR]     = {
+        .opc_func = minx_opc_subr_func,
+        .strrep = "SUBR",
+        .params = { REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE },
+    },
+    
+    [MINX_OPC_SUBIR]        = {
+        .opc_func = minx_opc_subir_func,
+        .strrep = "SUBIR",
+        .params = { REGISTER_ADDRESS_SIZE, VALUE_SIZE },
+    },
+
+    [MINX_OPC_MUL]      = {
+        .opc_func = minx_opc_mul_func,
+        .strrep = "MUL",
+        .params = { REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE },
+    },
+    
+    [MINX_OPC_MULI]     = {
+        .opc_func = minx_opc_muli_func,
+        .strrep = "MULI",
+        .params = { REGISTER_ADDRESS_SIZE, VALUE_SIZE },
+    },
+    
+    [MINX_OPC_MULR]     = {
+        .opc_func = minx_opc_mulr_func,
+        .strrep = "MULR",
+        .params = { REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE },
+    },
+    
+    [MINX_OPC_MULIR]        = {
+        .opc_func = minx_opc_mulir_func,
+        .strrep = "MULIR",
+        .params = { REGISTER_ADDRESS_SIZE, VALUE_SIZE },
+    },
+
+    [MINX_OPC_DIV]      = {
+        .opc_func = minx_opc_div_func,
+        .strrep = "DIV",
+        .params = { REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE },
+    },
+    
+    [MINX_OPC_DIVI]     = {
+        .opc_func = minx_opc_divi_func,
+        .strrep = "DIVI",
+        .params = { REGISTER_ADDRESS_SIZE, VALUE_SIZE },
+    },
+    
+    [MINX_OPC_DIVR]     = {
+        .opc_func = minx_opc_divr_func,
+        .strrep = "DIVR",
+        .params = { REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE },
+    },
+    
+    [MINX_OPC_DIVIR]        = {
+        .opc_func = minx_opc_divir_func,
+        .strrep = "DIVIR",
+        .params = { REGISTER_ADDRESS_SIZE, VALUE_SIZE },
+    },
+
+    [MINX_OPC_POW]      = {
+        .opc_func = minx_opc_pow_func,
+        .strrep = "POW",
+        .params = { REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE },
+    },
+    
+    [MINX_OPC_POWI]     = {
+        .opc_func = minx_opc_powi_func,
+        .strrep = "POWI",
+        .params = { REGISTER_ADDRESS_SIZE, VALUE_SIZE},
+    },
+    
+    [MINX_OPC_POWR]     = {
+        .opc_func = minx_opc_powr_func,
+        .strrep = "POWR",
+        .params = { REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE },
+    },
+    
+    [MINX_OPC_POWIR]        = {
+        .opc_func = minx_opc_powir_func,
+        .strrep = "POWIR",
+        .params = { REGISTER_ADDRESS_SIZE, VALUE_SIZE },
+    },
+
+    [MINX_OPC_SQRT]     = {
+        .opc_func = minx_opc_sqrt_func,
+        .strrep = "SQRT",
+        .params = { REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE },
+    },
+    
+    [MINX_OPC_SQRTR]        = {
+        .opc_func = minx_opc_sqrtr_func,
+        .strrep = "SQRTR",
+        .params = { REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE },
+    },
+    
+    [MINX_OPC_MOD]      = {
+        .opc_func = minx_opc_mod_func,
+        .strrep = "MOD",
+        .params = { REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE },
+    },
+    
+    [MINX_OPC_MODI]     = {
+        .opc_func = minx_opc_modi_func,
+        .strrep = "MODI",
+        .params = { REGISTER_ADDRESS_SIZE, VALUE_SIZE },
+    },
+    
+    [MINX_OPC_MODR]     = {
+        .opc_func = minx_opc_modr_func,
+        .strrep = "MODR",
+        .params = { REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE },
+    },
+
+    [MINX_OPC_MODIR]        = {
+        .opc_func = minx_opc_modir_func,
+        .strrep = "MODIR",
+        .params = { REGISTER_ADDRESS_SIZE, VALUE_SIZE },
+    },
+
+    [MINX_OPC_RAND]     = {
+        .opc_func = minx_opc_rand_func,
+        .strrep = "RAND",
+        .params = { /* none */},
+    },
+
+    [MINX_OPC_URAND]     = {
+        .opc_func = minx_opc_urand_func,
+        .strrep = "URAND",
+        .params = { /* none */},
+    },
+
+    [MINX_OPC_PUSH]      = { 
+        .opc_func = minx_opc_push_func,
+        .strrep = "PUSH",
+        .params = { REGISTER_ADDRESS_SIZE },
+    },
+
+    [MINX_OPC_POP]       = { 
+        .opc_func = minx_opc_pop_func,
+        .strrep = "POP",
+        .params = { REGISTER_ADDRESS_SIZE },
+    },
+
+    [MINX_OPC_DROP]      = { 
+        .opc_func = minx_opc_drop_func,
+        .strrep = "DROP",
+        .params = { },
     },
 
     [MINX_OPC_JMP]       = { 

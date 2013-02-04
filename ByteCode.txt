@@ -122,15 +122,14 @@ code | Short ex.| arguments				        | Expl.
 0x31 | POWI     | Register, Value               | result in akku
 0x32 | POWR     | Register, Register            | result in register 
 0x33 | POWIR    | Register, Value               | result in register
-0x34 | SQRT     | Register, Register            | result in akku
-0x35 | SQRTI    | Register, Value               | result in akku 
-0x36 | SQRTR    | Register, Register            | result in register
-0x37 | SQRTIR   | Register, Value               | result in register
-0x38 | MOD      | Register, Register            | result in akku 
-0x39 | MODI     | Register, Value               | result in akku 
-0x3A | MODR     | Register, Register            | result in register
-0x3B | MODIR    | Register, Value               | result in register
-0x3C | RAND     | none                          | result in akku
+0x34 | SQRT     | Register                      | result in akku
+0x35 | SQRTR    | Register                      | result in register
+0x36 | MOD      | Register, Register            | result in akku 
+0x37 | MODI     | Register, Value               | result in akku 
+0x38 | MODR     | Register, Register            | result in register
+0x39 | MODIR    | Register, Value               | result in register
+0x3A | RAND     | none                          | result in akku
+0x3B | URAND    | none                          | result in akku
 -----+----------+-------------------------------+---------------------------
 0x3D | PUSH		| Register				        | push register to stack
 0x3E | POP		| Register				        | pop from stack into register
