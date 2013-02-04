@@ -30,6 +30,17 @@ int main(int argc, char **args) {
     minx_config_init();
     minx_config_parse(argc, args);
 
+    if( minx_config_get(CONF_MINX_DEBUGGING)->b ) {
+        printf( 
+"            _            \n"
+"            (_)           \n"
+"_ __ ___  _ _ __ __  __\n"
+"| '_ ` _ \\| | '_ \\\\ \\/ /\n"
+"| | | | | | | | | |>  < \n"
+"|_| |_| |_|_|_| |_/_/\\_\\\n"
+             );
+    }
+
     if(minx_config_get(CONF_MINX_DEBUGGING)->b) {
         mtrace();
     }
