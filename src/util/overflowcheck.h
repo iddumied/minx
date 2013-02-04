@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include <inttypes.h>
 
+int minx_util_check_increment_overflow64(uint64_t);
+int minx_util_check_decrement_overflow64(uint64_t);
 int minx_util_check_addition_overflow64(uint64_t, uint64_t);
 int minx_util_check_subtraction_overflow64(uint64_t, uint64_t);
 int minx_util_check_multiplication_overflow64(uint64_t, uint64_t);

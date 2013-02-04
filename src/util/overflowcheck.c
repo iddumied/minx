@@ -1,5 +1,13 @@
 #include "util/overflowcheck.h"
 
+int minx_util_check_increment_overflow64(uint64_t a) {
+    return a == UINT64_MAX;
+}
+
+int minx_util_check_decrement_overflow64(uint64_t a) {
+    return a == 0x0000;
+}
+
 int minx_util_check_addition_overflow64(uint64_t a, uint64_t b) {
     return (UINT64_MAX - a < b );
 }
