@@ -30,3 +30,10 @@ There is a branch called 'pre-stable', including all features tested by me via
 .asm files. It does not ensure, the features it includes work completely
 fail-save or even that they are tested. Currently, there is no testing except
 the .asm files running!
+
+
+Additional notes
+----------------
+
+If you define the macro DESTROY_MY_APPLICATION when compiling, you use Sony-like 
+random number generation. (For more information have a look at the RAND opcode).
