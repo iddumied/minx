@@ -13,7 +13,9 @@ void minx_opc_setb_func(uint64_t *params) {
     Register *r2 = minx_registers_find_register(params[1]);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE("set bit %"PRIu64" in register %"PRIu64, r2->value, params[0]);
+    EXPLAIN_OPCODE("R%"PRIu64" (%"PRIu64") | R%"PRIu64" (0x01<<%"PRIu64")", 
+            params[0], r1->value,
+            params[1], r2->value);
 #endif
 
     if( !(r2->value > REGISTER_SIZE * 8) ) {
