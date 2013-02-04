@@ -48,13 +48,52 @@ class Op < Struct.new :opc, :args; end
   "CMPI" =>   Op.new(0x14, [REGISTER, VALUE]), 
   "EQL" =>    Op.new(0x15, [REGISTER, REGISTER]), 
   "EQLI" =>   Op.new(0x16, [REGISTER, VALUE]), 
-  "PUSH" =>   Op.new(0x20, [REGISTER] ), 
-  "POP" =>    Op.new(0x21, [REGISTER] ), 
-  "DROP" =>   Op.new(0x22, [] ), 
-  "ADD" =>    Op.new(0x30, [REGISTER, REGISTER] ), 
-  "ADDI" =>   Op.new(0x31, [REGISTER, VALUE] ), 
-  "ADDR" =>   Op.new(0x32, [REGISTER, REGISTER] ), 
-  "ADDIR" =>  Op.new(0x33, [REGISTER, VALUE] ), 
+
+  "SETB" =>   Op.new(0x17, [REGISTER, REGISTER]), 
+  "SETBI" =>  Op.new(0x18, [REGISTER, VALUE]), 
+  "CLRB"  =>  Op.new(0x19, [REGISTER, REGISTER]), 
+  "CLRBI" =>  Op.new(0x1A, [REGISTER, VALUE]), 
+
+  "ADD" =>    Op.new(0x20, [REGISTER, REGISTER] ), 
+  "ADDI" =>   Op.new(0x21, [REGISTER, VALUE] ), 
+  "ADDR" =>   Op.new(0x22, [REGISTER, REGISTER] ), 
+  "ADDIR" =>  Op.new(0x23, [REGISTER, VALUE] ), 
+
+  "SUB" =>    Op.new(0x24, [REGISTER, REGISTER] ), 
+  "SUBI" =>   Op.new(0x25, [REGISTER, VALUE] ), 
+  "SUBR" =>   Op.new(0x26, [REGISTER, REGISTER] ), 
+  "SUBIR" =>  Op.new(0x27, [REGISTER, VALUE] ), 
+
+  "MUL" =>    Op.new(0x28, [REGISTER, REGISTER] ), 
+  "MULI" =>   Op.new(0x29, [REGISTER, VALUE] ), 
+  "MULR" =>   Op.new(0x2A, [REGISTER, REGISTER] ), 
+  "MULIR" =>  Op.new(0x2B, [REGISTER, VALUE] ), 
+
+  "DIV" =>    Op.new(0x2C, [REGISTER, REGISTER] ), 
+  "DIVI" =>   Op.new(0x2D, [REGISTER, VALUE] ), 
+  "DIVR" =>   Op.new(0x2E, [REGISTER, REGISTER] ), 
+  "DIVIR" =>  Op.new(0x2F, [REGISTER, VALUE] ), 
+
+  "POW" =>    Op.new(0x30, [REGISTER, REGISTER] ), 
+  "POWI" =>   Op.new(0x31, [REGISTER, VALUE] ), 
+  "POWR" =>   Op.new(0x32, [REGISTER, REGISTER] ), 
+  "POWIR" =>  Op.new(0x33, [REGISTER, VALUE] ), 
+
+  "SQRT" =>   Op.new(0x34, [REGISTER] ), 
+  "SQRTR" =>  Op.new(0x35, [REGISTER] ), 
+  
+  "MOD" =>    Op.new(0x36, [REGISTER, REGISTER] ), 
+  "MODI" =>   Op.new(0x37, [REGISTER, VALUE] ), 
+  "MODR" =>   Op.new(0x38, [REGISTER, REGISTER] ), 
+  "MODIR" =>  Op.new(0x39, [REGISTER, VALUE] ), 
+
+  "RAND" =>   Op.new(0x3A, [] ), 
+  "URAND" =>  Op.new(0x3B, [] ), 
+
+  "PUSH" =>   Op.new(0x3D, [REGISTER] ), 
+  "POP" =>    Op.new(0x3E, [REGISTER] ), 
+  "DROP" =>   Op.new(0x3F, [] ), 
+
   "JMP" =>    Op.new(0x40, [ADDRESS] ), 
   "JMPIZ" =>  Op.new(0x41, [REGISTER, ADDRESS] ), 
   "JMPNZ" =>  Op.new(0x42, [REGISTER, ADDRESS] ), 

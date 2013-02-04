@@ -97,14 +97,43 @@ code | Short ex.| arguments				        | Expl.
 0x15 | EQL      | Register, Register            | 1 in akku if val equal
 0x16 | EQLI     | Register, Value               | 1 if akku if equal
 -----+----------+-------------------------------+---------------------------
-0x20 | PUSH		| Register				        | push register to stack
-0x21 | POP		| Register				        | pop from stack into register
-0x22 | DROP		| none					        | pop from stack and drop
+0x17 | SETB     | Register, Register            | result in register
+0x18 | SETBI    | Register, Value               | result in register
+0x19 | CLRB     | Register, Register            | result in register
+0x1A | CLRBI    | Register, Value               | result in register
 -----+----------+-------------------------------+---------------------------
-0x30 | ADD		| Register, Register		    | result in akku 
-0x31 | ADDI		| Register, Value			    | result in akku 
-0x32 | ADDR		| Register, Register		    | result in register 
-0x33 | ADDIR	| Register, Value			    | result in register
+0x20 | ADD		| Register, Register		    | result in akku 
+0x21 | ADDI		| Register, Value			    | result in akku 
+0x22 | ADDR		| Register, Register		    | result in register 
+0x23 | ADDIR	| Register, Value			    | result in register
+0x24 | SUB      | Register, Register            | result in akku 
+0x25 | SUBI     | Register, Value               | result in akku 
+0x26 | SUBR     | Register, Register            | result in register 
+0x27 | SUBIR    | Register, Value               | result in register 
+0x28 | MUL      | Register, Register            | result in akku 
+0x29 | MULI     | Register, Value               | result in akku 
+0x2A | MULR     | Register, Register            | result in register
+0x2B | MULIR    | Register, Value               | result in register
+0x2C | DIV      | Register, Register            | result in akku 
+0x2D | DIVI     | Register, Value               | result in akku
+0x2E | DIVR     | Register, Register            | result in register 
+0x2F | DIVIR    | Register, Value               | result in register 
+0x30 | POW      | Register, Register            | result in akku
+0x31 | POWI     | Register, Value               | result in akku
+0x32 | POWR     | Register, Register            | result in register 
+0x33 | POWIR    | Register, Value               | result in register
+0x34 | SQRT     | Register                      | result in akku
+0x35 | SQRTR    | Register                      | result in register
+0x36 | MOD      | Register, Register            | result in akku 
+0x37 | MODI     | Register, Value               | result in akku 
+0x38 | MODR     | Register, Register            | result in register
+0x39 | MODIR    | Register, Value               | result in register
+0x3A | RAND     | none                          | result in akku
+0x3B | URAND    | none                          | result in akku
+-----+----------+-------------------------------+---------------------------
+0x3D | PUSH		| Register				        | push register to stack
+0x3E | POP		| Register				        | pop from stack into register
+0x3F | DROP		| none					        | pop from stack and drop
 -----+----------+-------------------------------+---------------------------
 0x40 | JMP		| Adress					    | jump to address (number of byte)
 0x41 | JMPIZ	| Register, Adress		        | jump if register is zero

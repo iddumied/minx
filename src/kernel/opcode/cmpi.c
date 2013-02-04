@@ -17,15 +17,16 @@ void minx_opc_cmpi_func(uint64_t *params) {
 #endif 
     
     Register * r1 = minx_registers_find_register(params[0]);
+    Register *akku = minx_registers_find_register(akku_register_number);
 
     if(r1->value > params[1]) {
-        minx_registers_find_register(akku_register_number)->value = 1;
+        akku->value = 1;
     }
     else if(r1->value < params[1]) {
-        minx_registers_find_register(akku_register_number)->value = 2;
+        akku->value = 2;
     }
     else {//( r1->value == r2->value )
-        minx_registers_find_register(akku_register_number)->value = 0;
+        akku->value = 0;
     }
 
 }

@@ -2,6 +2,10 @@
 #define __MINX_VPU_OPCODES_H__
 
 #include <inttypes.h>
+#include <math.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 #ifdef DEBUGGING
 #include "util/debug.h"
@@ -11,6 +15,7 @@
 #include "def/statusbits.h"
 #include "util/macros.h"
 #include "util/config.h"
+#include "util/overflowcheck.h"
 #include "kernel/registers.h"
 #include "kernel/heap.h"
 #include "reader/binary_reader.h"
@@ -59,14 +64,50 @@ extern void         minx_kernel_set_exit_status             (int);
 #define         MINX_OPC_EQL            0x15
 #define         MINX_OPC_EQLI           0x16
 
-#define         MINX_OPC_PUSH		    0x20
-#define         MINX_OPC_POP			0x21
-#define         MINX_OPC_DROP		    0x22
+#define         MINX_OPC_SETB           0x17
+#define         MINX_OPC_SETBI          0x18
+#define         MINX_OPC_CLRB           0x19
+#define         MINX_OPC_CLRBI          0x1A
 
-#define         MINX_OPC_ADD			0x30
-#define         MINX_OPC_ADDI		    0x31
-#define         MINX_OPC_ADDR		    0x32
-#define         MINX_OPC_ADDIR		    0x33
+#define         MINX_OPC_ADD			0x20
+#define         MINX_OPC_ADDI		    0x21
+#define         MINX_OPC_ADDR		    0x22
+#define         MINX_OPC_ADDIR		    0x23
+
+#define         MINX_OPC_SUB            0x24
+#define         MINX_OPC_SUBI           0x25
+#define         MINX_OPC_SUBR           0x26
+#define         MINX_OPC_SUBIR          0x27
+
+#define         MINX_OPC_MUL            0x28
+#define         MINX_OPC_MULI           0x29
+#define         MINX_OPC_MULR           0x2A
+#define         MINX_OPC_MULIR          0x2B
+
+#define         MINX_OPC_DIV            0x2C
+#define         MINX_OPC_DIVI           0x2D
+#define         MINX_OPC_DIVR           0x2E
+#define         MINX_OPC_DIVIR          0x2F
+
+#define         MINX_OPC_POW            0x30
+#define         MINX_OPC_POWI           0x31
+#define         MINX_OPC_POWR           0x32
+#define         MINX_OPC_POWIR          0x33
+
+#define         MINX_OPC_SQRT           0x34
+#define         MINX_OPC_SQRTR          0x35
+
+#define         MINX_OPC_MOD            0x36
+#define         MINX_OPC_MODI           0x37
+#define         MINX_OPC_MODR           0x38
+#define         MINX_OPC_MODIR          0x39
+
+#define         MINX_OPC_RAND           0x3A
+#define         MINX_OPC_URAND          0x3B
+
+#define         MINX_OPC_PUSH		    0x3D
+#define         MINX_OPC_POP			0x3E
+#define         MINX_OPC_DROP		    0x3F
 
 #define         MINX_OPC_JMP			0x40
 #define         MINX_OPC_JMPIZ		    0x41
@@ -127,6 +168,11 @@ void        minx_opc_movi_func           (uint64_t* params);
 void        minx_opc_not_func            (uint64_t* params);
 void        minx_opc_notr_func           (uint64_t* params);
 
+void        minx_opc_setb_func           (uint64_t* params);
+void        minx_opc_setbi_func          (uint64_t* params);
+void        minx_opc_clrb_func           (uint64_t* params);
+void        minx_opc_clrbi_func          (uint64_t* params);
+
 void        minx_opc_and_func            (uint64_t* params);
 void        minx_opc_andi_func           (uint64_t* params);
 void        minx_opc_andr_func           (uint64_t* params);
@@ -148,14 +194,45 @@ void        minx_opc_cmpi_func           (uint64_t* params);
 void        minx_opc_eql_func            (uint64_t* params);
 void        minx_opc_eqli_func           (uint64_t* params);
 
-void        minx_opc_push_func           (uint64_t* params);
-void        minx_opc_pop_func            (uint64_t* params);
-void        minx_opc_drop_func           (uint64_t* params);
-
 void        minx_opc_add_func            (uint64_t* params);
 void        minx_opc_addi_func           (uint64_t* params);
 void        minx_opc_addr_func           (uint64_t* params);
 void        minx_opc_addir_func          (uint64_t* params);
+
+void        minx_opc_sub_func           (uint64_t* params);
+void        minx_opc_subi_func          (uint64_t* params);
+void        minx_opc_subr_func          (uint64_t* params);
+void        minx_opc_subir_func         (uint64_t* params);
+
+void        minx_opc_mul_func           (uint64_t* params);
+void        minx_opc_muli_func          (uint64_t* params);
+void        minx_opc_mulr_func          (uint64_t* params);
+void        minx_opc_mulir_func         (uint64_t* params);
+
+void        minx_opc_div_func           (uint64_t* params);
+void        minx_opc_divi_func          (uint64_t* params);
+void        minx_opc_divr_func          (uint64_t* params);
+void        minx_opc_divir_func         (uint64_t* params);
+
+void        minx_opc_pow_func           (uint64_t* params);
+void        minx_opc_powi_func          (uint64_t* params);
+void        minx_opc_powr_func          (uint64_t* params);
+void        minx_opc_powir_func         (uint64_t* params);
+
+void        minx_opc_sqrt_func          (uint64_t* params);
+void        minx_opc_sqrtr_func         (uint64_t* params);
+
+void        minx_opc_mod_func           (uint64_t* params);
+void        minx_opc_modi_func          (uint64_t* params);
+void        minx_opc_modr_func          (uint64_t* params);
+void        minx_opc_modir_func         (uint64_t* params);
+
+void        minx_opc_rand_func          (uint64_t* params);
+void        minx_opc_urand_func         (uint64_t* params);
+
+void        minx_opc_push_func           (uint64_t* params);
+void        minx_opc_pop_func            (uint64_t* params);
+void        minx_opc_drop_func           (uint64_t* params);
 
 void        minx_opc_jmp_func            (uint64_t* params);
 void        minx_opc_jmpiz_func          (uint64_t* params);
