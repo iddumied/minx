@@ -23,7 +23,7 @@ void minx_opc_add_func(uint64_t *params) {
      * if uint64_max - r2->value is less than r3->value, there will be a 
      * overflow
      */
-    if ( UINT64_MAX - r2->value < r3->value ) {
+    if (minx_util_check_addition_overflow64(r2->value, r3->value)) {
         setbit(status->value, OVERFLOW_BIT);
     }
 

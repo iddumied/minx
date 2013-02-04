@@ -12,10 +12,17 @@ void minx_opc_dec_func(uint64_t *params) {
     EXPLAIN_OPCODE("reg: %"PRIu64, params[0]);
 #endif 
 
-    if( minx_registers_find_register(params[0])->value == 0x0000 ) {
-        setbit(minx_registers_find_register(statusregister)->value, OVERFLOW_BIT);
+    Register *status = minx_registers_find_register(statusregister);
+    Register *r1 = minx_registers_find_register(params[0]);
+
+    if(minx_util_check_decrement_overflow64(r1->value)){
+        setbit(status->value, OVERFLOW_BIT);
     }
 
-    minx_registers_find_register(params[0])->value--;
+    r1->value--;
+
+    if(r1->value == 0) {
+        setbit(status->value, ZERO_BIT);
+    }
     
 }
