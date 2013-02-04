@@ -15,7 +15,7 @@ void minx_opc_add_func(uint64_t *params) {
     Register *r1 = minx_registers_find_register(akku_register_number);
     Register *r2 = minx_registers_find_register(params[0]);
     Register *r3 = minx_registers_find_register(params[1]);
-    Register *status    = minx_registers_find_register(statusregister)
+    Register *status    = minx_registers_find_register(statusregister);
 
     /*
      * Do some checks if there will be a overflow and set the overflow bit if.
@@ -24,13 +24,13 @@ void minx_opc_add_func(uint64_t *params) {
      * overflow
      */
     if ( UINT64_MAX - r2->value < r3->value ) {
-        setbit(statusregister->value, OVERFLOW_BIT);
+        setbit(status->value, OVERFLOW_BIT);
     }
 
     r1->value = r2->value + r3->value;
 
     /* test if result is zero, set zero bit if so */
     if( r1->value == 0 ) {
-        setbit(statusregister->value, ZERO_BIT);
+        setbit(status->value, ZERO_BIT);
     }
 }
