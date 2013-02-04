@@ -287,13 +287,13 @@ const OpcodeInformation opcodes[] = {
     [MINX_OPC_SQRT]     = {
         .opc_func = minx_opc_sqrt_func,
         .strrep = "SQRT",
-        .params = { REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE },
+        .params = { REGISTER_ADDRESS_SIZE },
     },
     
     [MINX_OPC_SQRTR]        = {
         .opc_func = minx_opc_sqrtr_func,
         .strrep = "SQRTR",
-        .params = { REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE },
+        .params = { REGISTER_ADDRESS_SIZE },
     },
     
     [MINX_OPC_MOD]      = {
