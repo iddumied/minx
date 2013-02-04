@@ -38,7 +38,9 @@ void minx_kernel_heap_init(void) {
     heapnodes[0]->memory        = NULL;
 
     heapnodes_count             = 0;
-    memory_id_counter           = 0;
+
+    /* set the memory_id_counter to 1, because zero is returned on error */
+    memory_id_counter           = MINX_KERNEL_HEAP_ERROR + 1;
 }
 
 void minx_kernel_heap_shutdown(void) {
