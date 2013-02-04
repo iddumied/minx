@@ -105,6 +105,7 @@ extern void         minx_kernel_set_exit_status             (int);
 #define         MINX_OPC_RAND           0x3A
 #define         MINX_OPC_URAND          0x3B
 
+#define         MINX_OPC_READSTACK      0x3C
 #define         MINX_OPC_PUSH		    0x3D
 #define         MINX_OPC_POP			0x3E
 #define         MINX_OPC_DROP		    0x3F
@@ -230,6 +231,7 @@ void        minx_opc_modir_func         (uint64_t* params);
 void        minx_opc_rand_func          (uint64_t* params);
 void        minx_opc_urand_func         (uint64_t* params);
 
+void        minx_opc_readstack_func     (uint64_t* params);
 void        minx_opc_push_func           (uint64_t* params);
 void        minx_opc_pop_func            (uint64_t* params);
 void        minx_opc_drop_func           (uint64_t* params);

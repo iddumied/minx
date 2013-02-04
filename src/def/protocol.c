@@ -332,6 +332,12 @@ const OpcodeInformation opcodes[] = {
         .params = { /* none */},
     },
 
+    [MINX_OPC_READSTACK] = {
+        .opc_func = minx_opc_readstack_func,
+        .strrep = "READSTACK",
+        .params = { /* none */ },
+    },
+
     [MINX_OPC_PUSH]      = { 
         .opc_func = minx_opc_push_func,
         .strrep = "PUSH",

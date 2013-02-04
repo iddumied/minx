@@ -90,6 +90,7 @@ class Op < Struct.new :opc, :args; end
   "RAND" =>   Op.new(0x3A, [] ), 
   "URAND" =>  Op.new(0x3B, [] ), 
 
+  "READSTACK"=>Op.new(0x3C, [] ), 
   "PUSH" =>   Op.new(0x3D, [REGISTER] ), 
   "POP" =>    Op.new(0x3E, [REGISTER] ), 
   "DROP" =>   Op.new(0x3F, [] ), 
