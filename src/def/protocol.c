@@ -386,6 +386,30 @@ const OpcodeInformation opcodes[] = {
         .params = { REGISTER_ADDRESS_SIZE },
     },
 
+    [MINX_OPC_XOR]      = {
+        .opc_func = minx_opc_xor_func,
+        .strrep = "XOR",
+        .params = { REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE },
+    },
+
+    [MINX_OPC_XORI]      = {
+        .opc_func = minx_opc_xori_func,
+        .strrep = "XORI",
+        .params = { REGISTER_ADDRESS_SIZE, VALUE_SIZE },
+    },
+
+    [MINX_OPC_XORR]      = {
+        .opc_func = minx_opc_xorr_func,
+        .strrep = "XORR",
+        .params = { REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE },
+    },
+
+    [MINX_OPC_XORIR]      = {
+        .opc_func = minx_opc_xorir_func,
+        .strrep = "XORIR",
+        .params = { REGISTER_ADDRESS_SIZE, VALUE_SIZE },
+    },
+
     [MINX_OPC_PSTACK]    = { 
         .opc_func = minx_opc_pstack_func,
         .strrep = "PSTACK",

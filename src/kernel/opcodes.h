@@ -116,6 +116,11 @@ extern void         minx_kernel_set_exit_status             (int);
 #define         MINX_OPC_IFZJMP		    0x43
 #define         MINX_OPC_EXIT           0x44
 
+#define         MINX_OPC_XOR            0x45
+#define         MINX_OPC_XORI           0x46
+#define         MINX_OPC_XORR           0x47
+#define         MINX_OPC_XORIR          0x48
+
 #define         MINX_OPC_PSTACK         0x50
 #define         MINX_OPC_PREGS          0x51
 #define         MINX_OPC_PPROG          0x52
@@ -241,6 +246,11 @@ void        minx_opc_jmpiz_func          (uint64_t* params);
 void        minx_opc_jmpnz_func          (uint64_t* params);
 void        minx_opc_ifzjmp_func         (uint64_t* params);
 void        minx_opc_exit_func           (uint64_t* params);
+
+void        minx_opc_xor_func           (uint64_t* params);
+void        minx_opc_xori_func          (uint64_t* params);
+void        minx_opc_xorr_func          (uint64_t* params);
+void        minx_opc_xorir_func         (uint64_t* params);
 
 void        minx_opc_pstack_func         (uint64_t* params);
 void        minx_opc_pregs_func          (uint64_t* params);
