@@ -140,6 +140,10 @@ code | Short ex.| arguments				        | Expl.
 0x42 | JMPNZ	| Register, Adress		        | jump if register is not zero
 0x43 | IFZJMP	| Adress, Adress			    | if akku is zero jump, else jump
 0x44 | EXIT     | Register                      | Exit with errorcode from register
+0x45 | XOR      | Register, Register            | result in akku 
+0x46 | XORI     | Register, Value               | result in akku 
+0x47 | XORR     | Register, Register            | result in register
+0x48 | XORIR    | Register, Value               | result in register 
 -----+----------+-------------------------------+--------------------------- 
 
 These are special debugging opcodes and are only print when compiled with 
