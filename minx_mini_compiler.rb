@@ -12,6 +12,7 @@
 #
 # Sizes of ...
 #
+OPCODE    = 2
 REGISTER  = 2
 VALUE     = 8
 ADDRESS   = 8
@@ -119,12 +120,32 @@ class Op < Struct.new :opc, :args; end
   "GETSIZE"=> Op.new(0x67, [MEMORY]), 
 }
 
+class JumpMark
+
+  attr_accessor :name, :byte 
+
+  def initialize(name, byte)
+    @name = name.gsub("\n", "").gsub(" ", "")
+    @byte = byte 
+
+    puts "New Jumpmark #{@name} at #{@byte}"
+  end
+
+end
+
+@code = ""
+@jumpmarks = Array.new
+
 #
 # decode arguments to binary
 #
 def create_args(opc, args)
   res = ""
   args.each_with_index do |arg, i| 
+    if @jumpmarks.map { |jm| jm.name }.include? arg 
+      arg = @jumpmarks.select { |jm| jm.name == arg }.first.byte.to_s
+    end
+
     if [REGISTER, MEMORY].include? @ops[opc].args[i]
       res << [arg.to_i(16)].pack("S") # pack for 16 bit if register address
     elsif [ADDRESS, VALUE].include? @ops[opc].args[i]
@@ -134,29 +155,56 @@ def create_args(opc, args)
   res
 end
 
-@code = ""
-
 #
 # compile a line
 # 
 def process_line(line)
-    nodes = line.split(" ")
-    code = nodes.shift
-    args = create_args(code, nodes)
+  return if line.match( /[a-z]+:/ ) 
 
-    fail "UNALLOWED OPCODE #{code}" unless @ops.keys.include? code
+  nodes = line.split(" ")
+  code = nodes.shift
+  args = create_args(code, nodes)
 
-    @code << [@ops[code].opc].pack("S")
-    @code << args
+  fail "UNALLOWED OPCODE #{code}" unless @ops.keys.include? code
+
+  @code << [@ops[code].opc].pack("S")
+  @code << args
+end
+
+def preprocess(lines)
+
+  offset = 0
+
+  lines.each do |line|
+    next if line.start_with? ";" or line.start_with? "#"
+    next if line.strip.empty? 
+
+    matched = line.match( /[a-z]+:/ )
+    if not matched.nil?
+      puts "Matched: \"#{line}\""
+      @jumpmarks << JumpMark.new(matched.string.gsub(":", ""), offset)
+    else
+      puts "preprocess: \"#{line}\""
+      nodes = line.split(" ")
+      code = nodes.shift 
+      args = create_args(code, nodes)
+      fail "UNALLOWED OPCODE \"#{code}\"" unless @ops.keys.include? code
+      offset += OPCODE + args.bytesize
+    end
+    puts "offset at #{offset}"
+  end
 end
 
 #
 # read stdin and compile just in time to binary
 #
 def read_stdin
+  lines = Array.new
   loop do 
-    process_line(gets)
+    lines << gets
   end
+  preprocess(lines)
+  lines.each { |line| process_line line }
 end
 
 #
@@ -164,6 +212,7 @@ end
 #
 def read_file f
   lines = File.readlines(f)
+  preprocess(lines)
   lines.each do |line| 
     next if line.start_with? ";" or line.start_with? "#"
     next if line.strip.empty? 
