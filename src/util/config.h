@@ -22,16 +22,6 @@ typedef union {
     char *str;
 } ConfigurationValue;
 
-typedef struct {
-    ConfigurationType       type;
-    ConfigurationValue      value;
-} Configuration;
-
-typedef struct {
-    ConfigurationType       type;
-    char                    *configkey;
-} ConfigurationKeyMap;
-
 void                    minx_config_init    (void);
 void                    minx_config_shutdown(void);
 void                    minx_config_parse   (unsigned int argc, char ** argv);
