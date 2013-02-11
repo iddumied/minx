@@ -109,6 +109,12 @@ uint64_t minx_kernel_heap_alloc(uint64_t size) {
 
     }
 
+    /*
+     * Mark heapnode as used when it is allocated.
+     * if it gets free'd, it's not used
+     */
+    node->used_state = HEAPNODE_USED;
+
     return node->memoryID;
 failed_to_alloc:
     return MINX_KERNEL_HEAP_ERROR;
