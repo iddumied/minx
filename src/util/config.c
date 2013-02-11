@@ -21,6 +21,7 @@ static Configuration    configuration[] = {
     {   .type = CONF_MINX_DEBUGGING,        .value.b = 0    },
     {   .type = CONF_SRC_DEBUGGING,         .value.b = 0    },
     {   .type = CONF_PRINT_REGS_AT_EOP,     .value.b = 0    },
+    {   .type = CONF_PRINT_REGS_AT_EOP_WITHOUT_ZEROVALREGS, .value.b = 0 },
     {   .type = CONF_DISASM,                .value.b = 0    },
     {   .type = CONF_HEX,                   .value.b = 0    },
 };
@@ -33,6 +34,7 @@ static ConfigurationKeyMap confkeys[] = {
     {   .type   = CONF_MINX_DEBUGGING,          .configkey = "--minx-debug" },
     {   .type   = CONF_SRC_DEBUGGING,           .configkey = "-d"           },
     {   .type   = CONF_PRINT_REGS_AT_EOP,       .configkey = "--regs"       },
+    {   .type   = CONF_PRINT_REGS_AT_EOP_WITHOUT_ZEROVALREGS,       .configkey = "--notzeroregs"       },
     {   .type   = CONF_DISASM,                  .configkey = "--disasm"     },
     {   .type   = CONF_HEX,                     .configkey = "--hex"        },
 };

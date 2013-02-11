@@ -62,14 +62,28 @@ Register* minx_registers_find_register(uint64_t addr) {
 
 #if (defined VERBOSITY | defined DEBUGGING)
 void minx_registers_print_register(unsigned int i) {
+
+#define r_val minx_registers_find_register(i)->value
+
+    /*
+     * if not print registers with value == 0, return.
+     */
+    if( minx_config_get(CONF_PRINT_REGS_AT_EOP_WITHOUT_ZEROVALREGS)->b && r_val == 0x00 ) {
+        return;
+    }
+
+    /*
+     * else 
+     */
     if( minx_config_get(CONF_HEX)->b ) {
-        printf( MINX_KERNEL_REGISTER_PREFIX"[%03i] = %#010"PRIx64"\n", 
-                i, minx_registers_find_register(i)->value );
+        printf( MINX_KERNEL_REGISTER_PREFIX"[0x%02x] = %#010"PRIx64"\n", 
+                i, r_val);
     }
     else {
-        printf( MINX_KERNEL_REGISTER_PREFIX"[%03i] = %"PRIu64"\n", 
-                i, minx_registers_find_register(i)->value );
+        printf( MINX_KERNEL_REGISTER_PREFIX"[%03i] = %"PRIu64"\n", i, r_val);
     }
+#undef r_val
+
 }
 #endif //(defined VERBOSITY | defined DEBUGGING)
 

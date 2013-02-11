@@ -12,6 +12,9 @@ typedef enum {
     CONF_MINX_DEBUGGING,    /* only if compiled with DEBUGGING */
     CONF_SRC_DEBUGGING,     /* only if compiled with DEBUGGING */
     CONF_PRINT_REGS_AT_EOP, /* print registers at end of program */
+    CONF_PRINT_REGS_AT_EOP_WITHOUT_ZEROVALREGS, /* print registers at end of 
+                                                   program, but not them with 
+                                                   value==0 */
     CONF_DISASM,            /* only start diassembler */
     CONF_HEX,               /* print always in hex */
 } ConfigurationType;

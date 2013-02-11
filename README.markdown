@@ -19,6 +19,7 @@ first Argument _has to be_ the binary you want to run, then:
 	-d				debugging the source it is running
 	--minx-debug	debugging the VPU internals
 	--regs			printing registers at end of program (much output!)
+	--notzeroregs	(just with --regs) do not print registers which have value 0
 	--disasm		disassemble program and exit 
 	--hex			just with --regs or --disasm -> values in hex, not in decimal
 
