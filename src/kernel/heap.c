@@ -337,6 +337,8 @@ void minx_kernel_heap_print_heap() {
 static HeapNode* create_new_heapnode() {
     HeapNode *node = (HeapNode*) malloc( sizeof(HeapNode) );
     heapnodes = (HeapNode**) realloc(heapnodes, sizeof(HeapNode*) * heapnodes_count+1);
+    heapnodes[heapnodes_count] = node;
+    heapnodes_count++;
 
     node->used_state    = HEAPNODE_NOT_ALLOCATED;
     node->memoryID      = get_next_memory_id();
@@ -344,24 +346,9 @@ static HeapNode* create_new_heapnode() {
     node->real_size     = 0;
     node->memory        = NULL;
 
-    uint64_t i;
-    for(i = 0; 
-            i < heapnodes_count && heapnodes[i]->memoryID < node->memoryID; i++);
-
-    /*
-     * mem does overlap, so use memmove()
-     */
-    memmove(heapnodes[i], heapnodes[i+1], sizeof(HeapNode*) * (heapnodes_count - i+1));
-
-    heapnodes[i] = node;
-    heapnodes_count++;
-
     return node;
 }
 
-/*
- * Should be randomized some time.
- */
 static uint64_t get_next_memory_id() {
     return memory_id_counter++;
 }
