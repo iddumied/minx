@@ -252,15 +252,17 @@ err:
  */
 int minx_kernel_heap_free(uint64_t heap) {
     HeapNode *h = find_heap(heap);
-    if(h == NULL)
-        goto err;
+    if(h == NULL) {
+        FATAL_F_ERROR("Heapnode not found: %"PRIu64, heap);
+    }
+    if(h->used_state < HEAPNODE_USED) {
+        FATAL_F_ERROR("Heapnode not in use here: %"PRIu64, heap);
+    }
 
     h->used_state   = HEAPNODE_NOT_USED;
     h->memory       = memset(h->memory, 0x00, h->real_size);
 
     return MINX_KERNEL_HEAP_OK;
-err:
-    return MINX_KERNEL_HEAP_ERROR;
 }
 
 #ifdef DEBUGGING
