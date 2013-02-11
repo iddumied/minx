@@ -219,6 +219,7 @@ int minx_kernel_heap_put(uint64_t heap, uint64_t offset, unsigned int bytes, uin
     check_if_memory_exists(h, offset, bytes);
 
     memcpy(&h->memory[offset], &val, bytes); 
+    h->used_state = HEAPNODE_USED;
 
     return MINX_KERNEL_HEAP_OK;
 
