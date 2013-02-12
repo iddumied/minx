@@ -1,6 +1,22 @@
 #ifndef __MINX_VPU_STATUSBITS_H__
 #define __MINX_VPU_STATUSBITS_H__
 
+
+/*
+ * -----------------------------------------------------------------------------
+ *
+ *                              ! Protocol-Stable !
+ *
+ * -----------------------------------------------------------------------------
+ *
+ *                              DON'T CHANGE THIS ENUM, 
+ *                              it is marked as stable in
+ *                              v0.0.3-protocol-stable
+ *
+ * New entries can be defined, but only at the end of this enum, so the chain is
+ * not changed!
+ */
+
 typedef enum {
     OVERFLOW_BIT = 0,
     ZERO_BIT,

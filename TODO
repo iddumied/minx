@@ -37,9 +37,6 @@ TODO:
 		- a function for force-shutdown of the VM
 		- a function for shutdown without unloading
 
-15) Clean up the opcodes-protocol and release it as v1.0.0 to guarantee no more
-	changes of its core functionality.
-
 17.1) (addition to already done TODO #17) Organize the memory map, for fast
 		memory lookup and so on. The map has to be ordered to do a fast lookup
 		of the memory!
