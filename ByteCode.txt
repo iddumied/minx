@@ -23,10 +23,15 @@ anyway accessible for the program.
 				Bit	|	use 
 				----+-------
 				0	|	overflow 
-                1   |   heapalloc status (1: worked, 0: failure)
-				1-7	|	not used yet
-- 0x0004	overflow value 
-- 0x0005-0x00AF (unused yet, will be used for more status registers and stuff)
+                1   |   zero-bit
+                2   |   div-zero
+                3   |   alloc bit (set if alloc didn't work)
+                4   |   free bit (set if free didn't work)
+                5   |   resize bit (set if resize didn't work)
+                6   |   put bit (set if put didn't work)
+                7   |   read bit (set if read didn't work)
+                8   |   no-random bit (set if rand didn't work)
+- 0x0004-0x00AF (unused yet, will be used for more status registers and stuff)
 
 So, 0x00B0 is the first register which should be used for program data. With
 current implementation, there are 2^8 registers, so 0x0000FFFF is the last
