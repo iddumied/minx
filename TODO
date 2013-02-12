@@ -1,23 +1,5 @@
 TODO:
 
-5) define a op code for defining op-codes.
-	Something like this:
-
-	DEF(opc, funcloc)
-
-	where opc is the opcode to define (or redefine). It will be automatically
-	masked for 16 bit.
-	The funcloc is a pointer to a function which is defined somewhere in the
-	binary. This function is read into the VPU and stored there. If the op code
-	which was defined is used, the VPU executes the stored procedure.
-
-	There should be some status registers reserved for statuses about the call.
-		-	was a override
-		-	worked/error
-
-5.1)define a op code ISDEV(reg, opc) for getting if a opcode is defined, result
-	in 'reg'
-
 9)	File reader should read the file as linked list, with automatically removing 
 	"old" parts of the file from memory to keep memuse smart.
 
