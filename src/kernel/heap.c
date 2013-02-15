@@ -93,7 +93,7 @@ uint64_t minx_kernel_heap_alloc(uint64_t size) {
     /*
      * Allocate memory for the node if it is new
      */
-    else if (node->used_state == HEAPNODE_NOT_ALLOCATED) {
+    else /*if (node->used_state == HEAPNODE_NOT_ALLOCATED)*/ {
         node->memory = (char*) malloc(size);
 
         /*
@@ -115,6 +115,10 @@ uint64_t minx_kernel_heap_alloc(uint64_t size) {
      */
     node->used_state = HEAPNODE_USED;
 
+    /*
+     * return the memoryID of the node. The real memory is never passed to the
+     * kernel!
+     */
     return node->memoryID;
 failed_to_alloc:
     return MINX_KERNEL_HEAP_ERROR;
