@@ -17,6 +17,7 @@ typedef enum {
                                                    value==0 */
     CONF_DISASM,            /* only start diassembler */
     CONF_HEX,               /* print always in hex */
+    CONF_FAST,              /* try to be faster, although there is more mem required */
 } ConfigurationType;
 
 typedef union {
@@ -24,16 +25,6 @@ typedef union {
     int i;
     char *str;
 } ConfigurationValue;
-
-typedef struct {
-    ConfigurationType       type;
-    ConfigurationValue      value;
-} Configuration;
-
-typedef struct {
-    ConfigurationType       type;
-    char                    *configkey;
-} ConfigurationKeyMap;
 
 void                    minx_config_init    (void);
 void                    minx_config_shutdown(void);
