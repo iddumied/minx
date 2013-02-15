@@ -14,6 +14,7 @@ typedef enum {
     CONF_PRINT_REGS_AT_EOP, /* print registers at end of program */
     CONF_DISASM,            /* only start diassembler */
     CONF_HEX,               /* print always in hex */
+    CONF_FAST,              /* try to be faster, although there is more mem required */
 } ConfigurationType;
 
 typedef union {

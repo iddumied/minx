@@ -3,8 +3,6 @@
 /*
  * static functions
  */
-static void         set_config          (ConfigurationType ct);
-
 #if (defined DEBUG | defined DEBUGGING)
 static void         print_config        (void);
 #endif
@@ -23,6 +21,7 @@ static ConfigurationValue configuration[] = {
     [CONF_PRINT_REGS_AT_EOP]    = { .b = 0 },
     [CONF_DISASM]               = { .b = 0 },
     [CONF_HEX]                  = { .b = 0 },
+    [CONF_FAST]                 = { .b = 0 },
 };
 
 /*
@@ -35,6 +34,7 @@ static char *confkeys[] = {
     [CONF_PRINT_REGS_AT_EOP]    = "--regs",
     [CONF_DISASM]               = "--disasm",
     [CONF_HEX]                  = "--hex",
+    [CONF_FAST]                 = "--fast",
 };
 
 /*

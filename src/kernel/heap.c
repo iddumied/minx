@@ -14,7 +14,8 @@ static void         check_if_memory_exists          (HeapNode *h,
  * static variables
  */
 static HeapNode     **heapnodes;
-static uint64_t     heapnodes_count;
+static uint64_t     last_heapnode_ptr;
+static uint64_t     heapnodes_ptr_count;
 static uint64_t     memory_id_counter;
 
 /*
@@ -37,7 +38,8 @@ void minx_kernel_heap_init(void) {
     heapnodes[0]->real_size     = 0;
     heapnodes[0]->memory        = NULL;
 
-    heapnodes_count             = 0;
+    last_heapnode_ptr           = 0;
+    heapnodes_ptr_count         = 0;
 
     /* set the memory_id_counter to 1, because zero is returned on error */
     memory_id_counter           = MINX_KERNEL_HEAP_ERROR + 1;
@@ -45,7 +47,7 @@ void minx_kernel_heap_init(void) {
 
 void minx_kernel_heap_shutdown(void) {
     uint64_t i;
-    for(i = heapnodes_count; i; i--) {
+    for(i = last_heapnode_ptr; i; i--) {
         free(heapnodes[i-1]);
     }
 }
@@ -63,9 +65,12 @@ uint64_t minx_kernel_heap_alloc(uint64_t size) {
         FATAL_DESC_ERROR("cannot alloc heap with size 0 (zero)");
     }
 
+    /*
+     * try to find unused heapnode
+     */
     uint64_t i;
     HeapNode *node = NULL;
-    for(i = 0; i < heapnodes_count && node == NULL; i++) {
+    for(i = 0; i < last_heapnode_ptr && node == NULL; i++) {
         if(heapnodes[i]->used_state <= HEAPNODE_NOT_USED) {
             node = heapnodes[i];
         }
@@ -204,9 +209,6 @@ err:
 
 uint64_t minx_kernel_heap_get_size(uint64_t heap) {
     HeapNode *h = find_heap(heap);
-    if(h == NULL)
-        goto err;
-    return h->size;
 
     /*
      * On error, do not return MINX_KERNEL_HEAP_ERROR, because if this value
@@ -216,8 +218,7 @@ uint64_t minx_kernel_heap_get_size(uint64_t heap) {
      * If the get_size failes because the heapnode does not exist, return zero.
      * This is true if the heapnode does not exist!
      */
-err:
-    return 0;
+    return h == NULL ? 0 : h->size;
 }
 
 int minx_kernel_heap_put(uint64_t heap, uint64_t offset, unsigned int bytes, uint64_t val) {
@@ -309,7 +310,7 @@ ready:
 void minx_kernel_heap_print_heap() {
     uint64_t i;
     unsigned int line = 0, j = 0;
-    for(i = 0 ; i < heapnodes_count; i++) {
+    for(i = 0 ; i < last_heapnode_ptr; i++) {
         printf("ID: %"PRIu64"\n", heapnodes[i]->memoryID);
         printf("0x00000000 : ");
         for(j = 0; j < heapnodes[i]->size; j++ ) {
@@ -336,21 +337,62 @@ void minx_kernel_heap_print_heap() {
 
 /*
  * Creates a new heapnode, inserts it in the **heapnodes array, increments
- * heapnodes_count and returns a ptr to the new heapnode
+ * last_heapnode_ptr and returns a ptr to the new heapnode
+ *
+ * realloc algorythm:
+ *
+ * The heap module does allocate more heapnodes than it requires. 
+ * Until HEAPNODES_DOUBLE_REALLOC_LIMIT heapnode-ptrs are allocated, it allocates
+ * double mem.
+ * Until HEAPNODES_FAST_REALLOC_LIMIT it allocates HEAPNODES_REALLOC_FAST_STEP.
+ * Else it allocs HEAPNODES_REALLOC_STEP
+ *
+ * Note: This is just pointer reallocating!
+ *
  */
 static HeapNode* create_new_heapnode() {
-    HeapNode *node = (HeapNode*) malloc( sizeof(HeapNode) );
-    heapnodes = (HeapNode**) realloc(heapnodes, sizeof(HeapNode*) * heapnodes_count+1);
-    heapnodes[heapnodes_count] = node;
-    heapnodes_count++;
 
-    node->used_state    = HEAPNODE_NOT_ALLOCATED;
-    node->memoryID      = get_next_memory_id();
-    node->size          = 0;
-    node->real_size     = 0;
-    node->memory        = NULL;
+    /*
+     * realloc logic
+     */
+    if( minx_config_get(CONF_FAST)->b && 
+        heapnodes_ptr_count < HEAPNODES_DOUBLE_REALLOC_LIMIT ) {
 
-    return node;
+        heapnodes_ptr_count = heapnodes_ptr_count * 2;
+    }
+    else if(minx_config_get(CONF_FAST)->b && 
+            heapnodes_ptr_count > HEAPNODES_DOUBLE_REALLOC_LIMIT &&
+            heapnodes_ptr_count < HEAPNODES_FAST_REALLOC_LIMIT) {
+        heapnodes_ptr_count += HEAPNODES_REALLOC_FAST_STEP;
+    }
+    else {
+        heapnodes_ptr_count += HEAPNODES_REALLOC_STEP;
+    }
+
+    /*
+     * realloc call
+     */
+    heapnodes = (HeapNode**) realloc(heapnodes, sizeof(HeapNode*) * heapnodes_ptr_count);
+
+    /*
+     * initialize heapnodes
+     */
+    uint64_t i;
+    for(i = last_heapnode_ptr; i < (heapnodes_ptr_count-last_heapnode_ptr); i++) {
+        heapnodes[i] = (HeapNode*) malloc(sizeof(HeapNode));
+
+        heapnodes[i]->used_state    = HEAPNODE_NOT_ALLOCATED;
+        heapnodes[i]->memoryID      = get_next_memory_id();
+        heapnodes[i]->size          = 0;
+        heapnodes[i]->real_size     = 0;
+        heapnodes[i]->memory        = NULL;
+    }
+
+    /* 
+     * return pointer to first new heapnode
+     */
+    last_heapnode_ptr++;
+    return heapnodes[last_heapnode_ptr-1];
 }
 
 static uint64_t get_next_memory_id() {
@@ -364,7 +406,7 @@ static uint64_t get_next_memory_id() {
 static HeapNode* find_heap(uint64_t heapID) {
     uint64_t i;
     HeapNode *found = NULL ;
-    for(i = 0; i < heapnodes_count && found == NULL; i++) {
+    for(i = 0; i < last_heapnode_ptr && found == NULL; i++) {
         if(heapnodes[i]->memoryID == heapID) {
             found = heapnodes[i];
         }

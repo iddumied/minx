@@ -11,6 +11,23 @@
 #endif //DEBUGGING
 
 #include "util/error.h"
+#include "util/config.h"
+
+/*
+ * if --fast is set:
+ *
+ * The heap module does allocate more heapnodes than it requires. 
+ * Until HEAPNODES_DOUBLE_REALLOC_LIMIT heapnode-ptrs are allocated, it allocates
+ * double mem.
+ * Until HEAPNODES_FAST_REALLOC_LIMIT it allocates HEAPNODES_REALLOC_FAST_STEP.
+ * Else it allocs HEAPNODES_REALLOC_STEP
+ *
+ */
+#define HEAPNODES_DOUBLE_REALLOC_LIMIT      500
+#define HEAPNODES_FAST_REALLOC_LIMIT        1000
+#define HEAPNODES_REALLOC_FAST_STEP         50
+#define HEAPNODES_REALLOC_STEP              5
+
 
 /*
  *
