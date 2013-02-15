@@ -63,7 +63,7 @@ void minx_config_parse(unsigned int argc, char ** argv) {
                     printf(MINX_CONFIG_PREFIX": conf set\n");
                 }
 
-                configuration[i].b = 1;
+                configuration[j].b = 1;
             }
         }
     }
