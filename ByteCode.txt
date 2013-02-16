@@ -177,3 +177,13 @@ Heap opcodes:
 0x66 | READ     | MemoryAddr, offset, size, reg | offset in mem, size (max 8 Byte), register to put into 
 0x67 | GETSIZE  | Memory                        | load size of the memory into akku
 -----+----------+-------------------------------+--------------------------- 
+
+Here the module-stuff goes.
+
+-----+----------+-------------------------------+--------------------------- 
+0x70 | MLOAD    | MemoryAddr                    | in the mem, there stands the path!, moduleID or zero in the akku
+0x71 | MUNLOAD  | ModuleID                      | reg with moduleID passed
+0x72 | MHASPRMS | ModuleID                      | reg with moduleID passed
+0x73 | MCALLP   | ModuleID, MemoryAddr          | reg with moduleID, memory passed
+0x74 | MCALL    | ModuleID                      | reg with moduleID passed
+0x75 | MGETSTAT | ModuleID                      | get status of module in akku, zero for "not loaded" or failure
