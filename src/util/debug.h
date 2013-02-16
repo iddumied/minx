@@ -23,6 +23,14 @@
         }                                                                   \
     }while(0)
 
+#define MINX_SRC_DEBUG(module,f,...)                                        \
+    do {                                                                    \
+        ConfigurationValue *cv = minx_config_get(CONF_SRC_DEBUGGING);       \
+        if(cv != NULL && cv->b) {                                           \
+            printf("%s: "f,module,__VA_ARGS__);                             \
+        }                                                                   \
+    } while(0)
+
 #define EXPLAIN_FUNCTION()                                                  \
     do{                                                                     \
         ConfigurationValue *cv = minx_config_get(CONF_SRC_DEBUGGING);       \
