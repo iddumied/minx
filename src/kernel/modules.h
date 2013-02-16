@@ -97,6 +97,8 @@ typedef struct {
 
 } Module;
 
+#define MEMORY_HELPER_INIT_SIZE 100 
+
 void        minx_kernel_module_init             (void);
 void        minx_kernel_module_shutdown         (void);
 
