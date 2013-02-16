@@ -17,11 +17,14 @@ first Argument _has to be_ the binary you want to run, then:
 
 	-v				verbosity (does nothing yet, requires VERBOSITY)
 	-d				debugging the source it is running
-	--minx-debug	debugging the VPU internals
+	--minx-debug	debugging the VPU internals (not convenient for normal
+					users)
 	--regs			printing registers at end of program (much output!)
-	--notzeroregs	(just with --regs) do not print registers which have value 0
+	--notzeroregs	(just with --regs) do not print registers which have value 0.
 	--disasm		disassemble program and exit 
 	--hex			just with --regs or --disasm -> values in hex, not in decimal
+	--fast			don't care about memuse, if you can be faster! This causes
+					the VPU to preallocate memory in any way.
 
 
 Branches 
