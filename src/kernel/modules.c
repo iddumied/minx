@@ -14,7 +14,15 @@ static unsigned int         modules_size;
  */
 static unsigned int         module_count;
 
+/*
+ * Memory helper for passing arguments to modules
+ */
+static char                 *memory_helper
+static unsigned int         memory_helper_size;
 
+/*
+ * init function for this part of the kernel
+ */
 void minx_kernel_module_init(void) {
 
     if(minx_config_get(CONF_FAST)->b) {
@@ -24,8 +32,13 @@ void minx_kernel_module_init(void) {
         modules_size = 1;
     }
 
-    module_count = 0;
-    modules         = malloc(sizeof(Module) * modules_size);
+    module_count        = 0;
+    modules             = malloc(sizeof(Module) * modules_size);
+
+    if(minx_config_get(CONF_SAVE)->b) {
+        memory_helper_size  = MEMORY_HELPER_INIT_SIZE;
+        memory_helper       = (char*) malloc(memory_helper_size);
+    }
 }
 
 /*
@@ -42,7 +55,8 @@ void minx_kernel_module_shutdown(void) {
         /*
          * call the force-unload function here, on both minx shutdown and abort.
          */ 
-        modules[i]->funload_func()
+        modules[i]->funload_func();
+        free(modules[i]);
     }
 
     free(modules);
@@ -130,22 +144,47 @@ static Module* find_module(uint64_t id) {
     return module;
 }
 
+/*
+ * create and return a new Module
+ *
+ * initialize all fields
+ */
 static Module* new_module(char *name) {
     Module *mod = malloc(sizeof(Module));
 
-    mod->module_id                  = get_next_module_id();
-    mod->module_name                = name;
-    mod->load_func                  = NULL;
-    mod->unload_func                = NULL;
-    mod->funload_func               = NULL;
-    mod->get_opcodes_func           = NULL;
-    mod->opcode_gets_params_func    = NULL;
-    mod->call_func                  = NULL;
-    mod->call_no_params_func        = NULL;
-    mod->set_configs_func           = NULL;
-    mod->get_status_func            = NULL;
-    mod->opcodes_count              = NULL;
-    mod->opcodes                    = NULL;
+    if(mod) {
+        mod->module_id                  = get_next_module_id();
+        mod->module_name                = name;
+        mod->load_func                  = NULL;
+        mod->unload_func                = NULL;
+        mod->funload_func               = NULL;
+        mod->get_opcodes_func           = NULL;
+        mod->opcode_gets_params_func    = NULL;
+        mod->call_func                  = NULL;
+        mod->call_no_params_func        = NULL;
+        mod->set_configs_func           = NULL;
+        mod->get_status_func            = NULL;
+        mod->opcodes_count              = NULL;
+        mod->opcodes                    = NULL;
+    }
 
     return mod;
+}
+
+/*
+ * write memory in node to the memoryhelper
+ * resize the memory_helper if required. Do only make it greater, not smaller!
+ */
+static void save_memory(HeapNode *node) {
+    if(node->size < memory_helper_size) {
+        memory_helper_size = node->size;
+        memory_helper = realloc(memory_helper, memory_helper_size);
+
+        if(memory_helper == NULL) {
+            FATAL_F_ERROR("Could not reallocate memory helper for passing memory to module");
+        }
+    }
+
+    memset(memory_helper, 0x00, node->size);
+    memcpy(memory_helper, node->memory, node->size);
 }
