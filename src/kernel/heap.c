@@ -39,7 +39,7 @@ void minx_kernel_heap_init(void) {
     heapnodes[0]->memory        = NULL;
 
     last_heapnode_ptr           = 0;
-    heapnodes_ptr_count         = 0;
+    heapnodes_ptr_count         = 1;
 
     /* set the memory_id_counter to 1, because zero is returned on error */
     memory_id_counter           = MINX_KERNEL_HEAP_ERROR + 1;
