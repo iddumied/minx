@@ -28,6 +28,14 @@ void minx_kernel_module_init(void) {
     modules         = malloc(sizeof(Module) * modules_size);
 }
 
+/*
+ * shutdown function for this part of the kernel
+ *
+ * - shutdown all modules (force)
+ * - free modules 
+ * - free modules-ptr-array
+ *
+ */
 void minx_kernel_module_shutdown(void) {
     uint64_t i;
     for(i = 0; i < modules_size; i++) {
@@ -41,37 +49,57 @@ void minx_kernel_module_shutdown(void) {
 }
 
 /*
- * 
- *
- *
+ * load function for loading a module
  */
 
 uint64_t minx_kernel_module_load(char *module_path) {
 }
 
+/*
+ * unload function for removing a module by ID
+ */
 void minx_kernel_module_unload(uint64_t moduleID) {
 }
 
+/*
+ * call a module opcode with parameters
+ */
 void minx_kernel_module_call(uint64_t moduleID, uint64_t opc, HeapNode *memory) {
 }
 
+/*
+ * call a module opcode without parameters
+ */
 void minx_kernel_module_call_noparam(uint64_t moduleID, uint64_t opc) {
 }
 
+/*
+ * read from module if an opcode gets parameters
+ */
 int minx_kernel_module_gets_params(uint64_t moduleID) {
 }
 
+/*
+ * pass the config to the module
+ */
 void minx_kernel_module_set_config(ConfigurationType type,
                                     ConfigurationValue *vals,
                                     unsigned int len) {
 }
 
+/*
+ * get the status of the module
+ */
 uint64_t minx_kernel_module_get_status(uint64_t moduleID) {
 }
 
 /*
- * static function implementations
- *
+ * -----------------------------------------------------------------------------
+ *                      static function implementations
+ * -----------------------------------------------------------------------------
+ */
+
+/*
  * currently, modules are not ordered. Later on, they will be and this function
  * will do binary search!
  */
