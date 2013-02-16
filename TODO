@@ -29,13 +29,22 @@ TODO:
 	A module has to implement several functions:
 		- a function for loading the module
 		- a function where the arguments of the minx call will be passed
-		- a function for calling the module, which gets a opcode and a HeapNode,
-		  this function should return the HeapNode!
+		- a function, which returns a bool, if the module gets parameters
+		- a function for calling the module, which gets a opcode and a HeapNode.
+		- a function for calling the module, which gets a opcode and no Heapnode.
 		- a function for getting data for the akku, which is called directly
-		  after the module-call function
+		  after the module-call function. This function returns the
+		  module-status. The heapnode which gets passed, can be used to pass
+		  values back to the program.
 		- a function for unloading
 		- a function for force-shutdown of the VM
-		- a function for shutdown without unloading
+
+		A call-function of the module returns a status which is written to akku.
+
+		later on, there will be more stuff. There should be a possibility to
+		cause interrupts. As interrupts are not implemented at all, this
+		possibility is not implemented in the first version of the
+		plugin-architecture.
 
 17.1) (addition to already done TODO #17) Organize the memory map, for fast
 		memory lookup and so on. The map has to be ordered to do a fast lookup
