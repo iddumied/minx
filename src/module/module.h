@@ -26,7 +26,15 @@
  *  - modify the passed memory (but not its size, just the value)
  *  - read program arguments (not implemented at all)
  *
+ *  A module can implement several opcodes. Each opcode can get params (A piece
+ *  of memory) or not. Nothing more, nothing less.
+ *
  */
+
+typedef struct {
+    unsigned int    len;
+    uint64_t        m_opcodes[];
+} MOpcodes;
 
 /*
  * gets called if the module should load itself.
@@ -47,9 +55,15 @@ void        minx_module_unload          (void);
 void        minx_module_force_unload    (void);
 
 /*
- * return a non-zero value if the module gets parameters, else zero
+ * returns the opcodes for the module 
  */
-int         minx_module_gets_params     (void);
+MOpcodes*    minx_module_get_opcodes     (void);
+
+/*
+ * return a non-zero value if the passed opcode inside the module gets param,
+ * else zero.
+ */
+int         minx_module_opcode_gets_params(uint64_t opcode);
 
 /*
  * call the module
