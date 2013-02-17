@@ -114,11 +114,11 @@ int minx_kernel_module_opcode_gets_params(uint64_t moduleID, uint64_t op) {
  * pass the config to the module
  */
 void minx_kernel_module_set_config( uint64_t moduleID,
-                                    ConfigurationType type,
+                                    ConfigurationType *types,
                                     ConfigurationValue *vals,
                                     unsigned int len) {
 
-    find_module(moduleID)->set_configs_func(type, vals, len);
+    find_module(moduleID)->set_configs_func(types, vals, len);
 }
 
 /*
