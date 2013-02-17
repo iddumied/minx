@@ -23,6 +23,17 @@ first Argument _has to be_ the binary you want to run, then:
 	--disasm		disassemble program and exit 
 	--hex			just with --regs or --disasm -> values in hex, not in decimal
 
+Plugins (modules)
+-----------------
+
+Plugins are called modules, because a plugins is a kernel-module. A plugin has
+to implement the module-header located in src/module/module.h, NOT the header
+from src/kernel/modules.h !
+
+A module can implement serveral opcodes. But be careful! Your module has to
+implement opcodes as stable, don't change them. Existing programs will crash if
+the opcode-identifiers change!
+
 
 Branches 
 --------
