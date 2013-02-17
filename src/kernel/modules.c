@@ -125,6 +125,7 @@ void minx_kernel_module_set_config( uint64_t moduleID,
  * get the status of the module
  */
 uint64_t minx_kernel_module_get_status(uint64_t moduleID) {
+    return find_module(moduleID)->get_status_func();
 }
 
 /*
