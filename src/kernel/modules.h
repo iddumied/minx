@@ -97,6 +97,24 @@ typedef struct {
 
 } Module;
 
+/*
+ * Prealloc constant for the kernel to preallocate Module (type). 
+ *
+ * This may change in future. It does not affect the behaviour of the VPU, just
+ * it's memory footprint. 
+ */
+#define KERNEL_MODULE_PREALLOC  25
+
+/*
+ * The kernel uses a memory helper to pass memory to the modules (parameters).
+ * This memory-helper grows to fit the memory to pass, but never shrinks. 
+ *
+ * Because of speed, it can be initialized with more or less memory. If the
+ * 'fast' flag is set, it starts with the size set in this constant.
+ *
+ * This value may change in future. I set it to this value, because I think it's
+ * a good start.
+ */
 #define MEMORY_HELPER_INIT_SIZE 100 
 
 void        minx_kernel_module_init                 (void);

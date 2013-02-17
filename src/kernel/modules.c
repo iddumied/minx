@@ -1,7 +1,25 @@
 #include "kernel/module.h"
 
+/*
+ * This file contains all the logic for the plugins (called "modules").
+ * Currently, modules are loaded into address space of the minx VPU, but later,
+ * the architecture can change to something more secure. The plugins should NOT
+ * be able to call functions from within the VPU!
+ *
+ * When a module gets loaded, there is a Module (type) allocated and all stuff,
+ * the kernel has to know is stored in it. After a module gets free'd, the
+ * Module (type) is not free'd, because for later usage.
+ *
+ */
+
+/*
+ * static function prototypes
+ */
 static Module*              find_module(uint64_t id);
 
+/*
+ * static variables
+ */
 static Module               **modules;
 
 /*
@@ -29,7 +47,21 @@ static uint64_t             memory_helper_size;
 static uint64_t             memory_data_size;
 
 /*
+ * -----------------------------------------------------------------------------
+ *
+ *                          Function implementations
+ *
+ * -----------------------------------------------------------------------------
+ */
+
+/*
  * init function for this part of the kernel
+ *
+ * If the 'fast' flag is set, the kernel preallocates some Module (type) space,
+ * for faster loading of modules. So the kernel does not need to call realloc()
+ * on each module-loading. It is a very simple strategy, but may be effective.
+ * The KERNEL_MODULE_PREALLOC constant is set and explained in the header file
+ * kernel/modules.h
  */
 void minx_kernel_module_init(void) {
 
