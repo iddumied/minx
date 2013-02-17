@@ -93,7 +93,7 @@ uint64_t    minx_module_call_no_params  (uint64_t opcode);
  * module has to know on its own. But that's easy, its constant!
  * @param length number of configs
  */
-void        minx_module_set_configs     (   ConfigurationType type, 
+void        minx_module_set_configs     (   ConfigurationType *types,
                                             ConfigurationValue *val,
                                             unsigned int length);
 
