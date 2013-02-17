@@ -110,7 +110,8 @@ void        minx_kernel_module_call_opcode          (uint64_t moduleID,
 void        minx_kernel_module_call_opcode_noparam  (uint64_t moduleID, 
                                                     uint64_t opc);
 int         minx_kernel_module_opcode_gets_params   (uint64_t moduleID, uint64_t op);
-void        minx_kernel_module_set_config           (ConfigurationType type,
+void        minx_kernel_module_set_config           (uint64_t moduleID,
+                                                    ConfigurationType *types,
                                                     ConfigurationValue *vals,
                                                     unsigned int len);
 uint64_t    minx_kernel_module_get_status           (uint64_t moduleID);
