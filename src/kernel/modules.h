@@ -59,7 +59,7 @@ typedef struct {
     /*
      * opcode-gets-params function for the module
      */
-    int         (*opcode_gets_params_func)  (void);
+    int         (*opcode_gets_params_func)  (uint64_t opcode);
 
     /*
      * call function for the module (with params)
@@ -99,20 +99,20 @@ typedef struct {
 
 #define MEMORY_HELPER_INIT_SIZE 100 
 
-void        minx_kernel_module_init             (void);
-void        minx_kernel_module_shutdown         (void);
+void        minx_kernel_module_init                 (void);
+void        minx_kernel_module_shutdown             (void);
 
-uint64_t    minx_kernel_module_load             (char *module_path);
-void        minx_kernel_module_unload           (uint64_t moduleID);
-void        minx_kernel_module_call             (uint64_t moduleID, 
-                                                uint64_t opc, 
-                                                HeapNode *memory);
-void        minx_kernel_module_call_noparam     (uint64_t moduleID, 
-                                                uint64_t opc);
-int         minx_kernel_module_gets_params      (uint64_t moduleID);
-void        minx_kernel_module_set_config       (ConfigurationType type,
-                                                ConfigurationValue *vals,
-                                                unsigned int len);
-uint64_t    minx_kernel_module_get_status       (uint64_t moduleID);
+uint64_t    minx_kernel_module_load                 (char *module_path);
+void        minx_kernel_module_unload               (uint64_t moduleID);
+void        minx_kernel_module_call_opcode          (uint64_t moduleID, 
+                                                    uint64_t opc, 
+                                                    HeapNode *memory);
+void        minx_kernel_module_call_opcode_noparam  (uint64_t moduleID, 
+                                                    uint64_t opc);
+int         minx_kernel_module_opcode_gets_params   (uint64_t moduleID, uint64_t op);
+void        minx_kernel_module_set_config           (ConfigurationType type,
+                                                    ConfigurationValue *vals,
+                                                    unsigned int len);
+uint64_t    minx_kernel_module_get_status           (uint64_t moduleID);
 
 #endif //__MINX_KERNEL_MODULES_H__
