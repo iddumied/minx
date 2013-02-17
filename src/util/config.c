@@ -23,6 +23,8 @@ static ConfigurationValue configuration[] = {
     [CONF_DISASM]                                   = { .b = 0 },
     [CONF_HEX]                                      = { .b = 0 },
     [CONF_FAST]                                     = { .b = 0 },
+    [CONF_HELP]                                     = { .b = 0 },
+    [CONF_HELP_SHORT]                               = { .b = 0 },
 };
 
 /*
@@ -37,6 +39,8 @@ static char *confkeys[] = {
     [CONF_DISASM]                                   = "--disasm",
     [CONF_HEX]                                      = "--hex",
     [CONF_FAST]                                     = "--fast",
+    [CONF_HELP]                                     = "--help",
+    [CONF_HELP_SHORT]                               = "-h"
 };
 
 /*

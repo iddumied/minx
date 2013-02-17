@@ -1,6 +1,7 @@
 #ifndef __MINX_MAIN_H__
 #define __MINX_MAIN_H__
 
+#include "help.h"
 #include "util/error.h"
 #include "util/config.h"
 #include "reader/binary_reader.h"

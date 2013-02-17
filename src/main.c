@@ -17,18 +17,20 @@ int main(int argc, char **args) {
     signal(SIGINT, handle_signal);
     signal(SIGQUIT, handle_signal);
 
-    FILE *f = fopen(args[1], "r");
-
-    /*
-    char * file = "./out.out";
-    FILE *f = fopen(file, "r");
-    */
-
+    FILE *f;
     int exit_code;
 
     minx_error_init();
     minx_config_init();
     minx_config_parse(argc, args);
+
+    if(minx_config_get(CONF_HELP)->b || minx_config_get(CONF_HELP_SHORT)->b) {
+        exit_code = 0;
+        minx_print_help();
+        goto end;
+    }
+    
+    f = fopen(args[1], "r");
 
     if( minx_config_get(CONF_MINX_DEBUGGING)->b ) {
         printf( 
@@ -68,5 +70,7 @@ int main(int argc, char **args) {
     minx_error_shutdown();
 
     fclose(f);
+
+end:
     return exit_code;
 }
