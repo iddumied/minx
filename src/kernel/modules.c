@@ -47,6 +47,11 @@ static uint64_t             memory_helper_size;
 static uint64_t             memory_data_size;
 
 /*
+ *
+ */
+static uint64_t             module_id_counter;
+
+/*
  * -----------------------------------------------------------------------------
  *
  *                          Function implementations
@@ -79,6 +84,8 @@ void minx_kernel_module_init(void) {
         memory_helper_size  = MEMORY_HELPER_INIT_SIZE;
         memory_helper       = (char*) malloc(memory_helper_size);
     }
+
+    module_id_counter = 0;
 }
 
 /*
@@ -106,6 +113,7 @@ void minx_kernel_module_shutdown(void) {
  * load function for loading a module
  */
 uint64_t minx_kernel_module_load(char *module_path) {
+    Module *mod = new_module(module_path);
 }
 
 /*
@@ -198,9 +206,17 @@ static Module* find_module(uint64_t id) {
 }
 
 /*
+ * get next module ID. currently just returns and increments a value, later it
+ * could be randomized
+ */
+static uint64_t get_next_module_id(void) {
+    return ++module_id_counter;
+}
+
+/*
  * create and return a new Module
  *
- * initialize all fields
+ * initialize all fields with NULL.
  */
 static Module* new_module(char *name) {
     Module *mod = malloc(sizeof(Module));
