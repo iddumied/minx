@@ -18,7 +18,15 @@ static unsigned int         module_count;
  * Memory helper for passing arguments to modules
  */
 static char                 *memory_helper
-static unsigned int         memory_helper_size;
+static uint64_t             memory_helper_size;
+
+/* 
+ * Size of the data in the memory passed to a module.
+ * The real size is more, but should be reinitialized to 0x00. Each module gets
+ * more memory passed as program tells, but the overhead is reinitialized to
+ * 0x00, so it does not care. Tell the module the size it needs to know.
+ */
+static uint64_t             memory_data_size;
 
 /*
  * init function for this part of the kernel
@@ -78,12 +86,15 @@ void minx_kernel_module_unload(uint64_t moduleID) {
  * call a module opcode with parameters
  */
 void minx_kernel_module_call_opcode(uint64_t moduleID, uint64_t opc, HeapNode *memory) {
+    save_memory(memory);
+    find_module(moduleID)->call_func(opc, memory_helper, memory_helper_size, memory_data_size);
 }
 
 /*
  * call a module opcode without parameters
  */
 void minx_kernel_module_call_opcode_noparam(uint64_t moduleID, uint64_t opc) {
+    find_module(moduleID)->call_no_params_func(opc);
 }
 
 /*
@@ -193,4 +204,5 @@ static void save_memory(HeapNode *node) {
 
     memset(memory_helper, 0x00, node->size);
     memcpy(memory_helper, node->memory, node->size);
+    memory_data_size = node->size;
 }
