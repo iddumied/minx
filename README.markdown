@@ -25,6 +25,7 @@ first Argument _has to be_ the binary you want to run, then:
 	--hex			just with --regs or --disasm -> values in hex, not in decimal
 	--fast			don't care about memuse, if you can be faster! This causes
 					the VPU to preallocate memory in any way.
+	--help | -h		print help message and exit
 
 
 Branches 
