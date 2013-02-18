@@ -511,27 +511,27 @@ const OpcodeInformation opcodes[] = {
         .params = { REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE },
     },
 
-    [MINX_OPC_IFZJMPRR_FUNC]    = {
+    [MINX_OPC_IFZJMPRR]    = {
         .opc_func = minx_opc_ifzjmprr_func,
         .strrep = "IFZJMPRR",
         .params = {REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE },
     },
 
-    [MINX_OPC_IFZJMPRA_FUNC]    = {
+    [MINX_OPC_IFZJMPRA]    = {
         .opc_func = minx_opc_ifzjmpra_func,
         .strrep = "IFZJMPRA",
-        .params = { REGISTER_ADDRESS_SIZE, ADDRESS },
+        .params = { REGISTER_ADDRESS_SIZE, PROGRAM_ADDRESS_SIZE },
     },
 
-    [MINX_OPC_LDADDR_FUNC]      = {
+    [MINX_OPC_LDADDR]      = {
         .opc_func = minx_opc_ldaddr_func,
         .strrep = "LDADDR",
         .params = { /* none */ },
     },
 
-    [MINX_OPC_EXITI_FUNC]       = {
+    [MINX_OPC_EXITI]       = {
         .opc_func = minx_opc_exiti_func,
-        .strreo = "EXITI",
+        .strrep = "EXITI",
         .params = { VALUE_SIZE },
     },
 
