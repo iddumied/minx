@@ -156,7 +156,7 @@ code | Short ex.| arguments				        | Expl.
 0x4B | JMPNZR	| Register, Register            | jump to address in register if register is not zero
 0x4C | IFZJMPRR	| Register, Register            | if akku is zero jump, else jump (to addr in register|register)
 0x4D | IFZJMPRA	| Register, Address             | if akku is zero jump, else jump (to addr in register|address)
-0x4E | IFZJMPAR	| Address , Register            | if akku is zero jump, else jump (to addr in address|register)
+0x4E | LDADDR   | <none>                        | Load address of next opcode into akku
 0x4F | EXITI    | Value                         | exit with value
 -----+----------+-------------------------------+--------------------------- 
 
