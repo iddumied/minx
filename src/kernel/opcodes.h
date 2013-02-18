@@ -136,6 +136,14 @@ extern void         minx_kernel_set_exit_status             (int);
 #define         MINX_OPC_XORR           0x47    /* <v0.0.3-protocol-stable> */
 #define         MINX_OPC_XORIR          0x48    /* <v0.0.3-protocol-stable> */
 
+#define         MINX_OPC_JMPR           0x49 
+#define         MINX_OPC_JMPIZR         0x4A
+#define         MINX_OPC_JMPNZR         0x4B
+#define         MINX_OPC_IFZJMPRR       0x4C
+#define         MINX_OPC_IFZJMPRA       0x4D
+#define         MINX_OPC_LDADDR         0x4E 
+#define         MINX_OPC_EXITI          0x4F
+
 #define         MINX_OPC_PSTACK         0x50    /* <v0.0.3-protocol-stable> */
 #define         MINX_OPC_PREGS          0x51    /* <v0.0.3-protocol-stable> */
 #define         MINX_OPC_PPROG          0x52    /* <v0.0.3-protocol-stable> */
@@ -266,6 +274,14 @@ void        minx_opc_xor_func           (uint64_t* params);
 void        minx_opc_xori_func          (uint64_t* params);
 void        minx_opc_xorr_func          (uint64_t* params);
 void        minx_opc_xorir_func         (uint64_t* params);
+
+void        minx_opc_jmpr_func          (uint64_t* params);
+void        minx_opc_jmpizr_func        (uint64_t* params);
+void        minx_opc_jmpnzr_func        (uint64_t* params);
+void        minx_opc_ifzjmprr_func      (uint64_t* params);
+void        minx_opc_ifzjmpra_func      (uint64_t* params);
+void        minx_opc_ldaddr_func        (uint64_t* params);
+void        minx_opc_exiti_func         (uint64_t* params);
 
 void        minx_opc_pstack_func         (uint64_t* params);
 void        minx_opc_pregs_func          (uint64_t* params);
