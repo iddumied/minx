@@ -30,6 +30,13 @@
  *  A module can implement several opcodes. Each opcode can get params (A piece
  *  of memory) or not. Nothing more, nothing less.
  *
+ *
+ * DEVELOPER NOTES:
+ * ----------------
+ *
+ *  The function names should not change. Else, have a look at kernel/modules.h,
+ *  where the function names are defined as string for loading! 
+ *  I don't know how to do it better, if _you_ can fix this, please do!
  */
 
 /*
