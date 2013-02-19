@@ -10,6 +10,11 @@ void    minx_error_global_shutdown              (void);
 void    minx_error_register_shutdown_function   (void(*func)(void));
 
 
+#define F_RUNTIME_ERROR(pref,f,...)                                         \
+    do {                                                                    \
+        fprintf(stderr,"%s"f,pref,__VA_ARGS__);                             \
+    } while (0)
+
 #define FATAL_ERROR         do {                                            \
                                 printf( "minx: FATAL ERROR.\n"              \
                                         "func %s\nline %i\n"                \
