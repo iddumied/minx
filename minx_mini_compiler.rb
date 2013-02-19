@@ -106,6 +106,14 @@ class Op < Struct.new :opc, :args; end
   "XORR" =>   Op.new(0x47, [REGISTER, REGISTER] ), 
   "XORIR" =>  Op.new(0x48, [REGISTER, VALUE] ), 
 
+  "JMPR" =>   Op.new(0x49, [REGISTER] ), 
+  "JMPIZR" => Op.new(0x4A, [REGISTER, REGISTER] ), 
+  "JMPNZR" => Op.new(0x4B, [REGISTER, REGISTER] ), 
+  "IFZJMPRR"=>Op.new(0x4C, [REGISTER, REGISTER] ), 
+  "IFZJMPRA"=>Op.new(0x4D, [REGISTER, ADDRESS] ), 
+  "LDADDR" => Op.new(0x4E, [] ), 
+  "EXITI" =>  Op.new(0x4F, [VALUE] ), 
+
   "PSTACK" => Op.new(0x50, []), 
   "PREGS" =>  Op.new(0x51, []), 
   "PPROG" =>  Op.new(0x52, []), 
