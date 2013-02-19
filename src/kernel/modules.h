@@ -1,6 +1,8 @@
 #ifndef __MINX_KERNEL_MODULES_H__
 #define __MINX_KERNEL_MODULES_H__
 
+#include "module/module_opcodes.h"
+
 /*
  * Modules header for the minx kernel
  */
@@ -30,6 +32,11 @@ typedef struct {
      * Module name, just internal, read from the load()-call!
      */
     char        *module_name;
+
+    /*
+     * void* from the load() call
+     */
+    void        *handle;
 
     /*
      * load function for the module
@@ -93,7 +100,7 @@ typedef struct {
     /*
      * opcodes
      */
-    ModuleOpcode opcodes[];
+    ModuleOpcode *opcodes;
 
 } Module;
 
@@ -133,5 +140,18 @@ void        minx_kernel_module_set_config           (uint64_t moduleID,
                                                     ConfigurationValue *vals,
                                                     unsigned int len);
 uint64_t    minx_kernel_module_get_status           (uint64_t moduleID);
+
+/*
+ * extern function names
+ */
+#define MINX_MODULE_FUNCTION_LOAD               "minx_module_load"
+#define MINX_MODULE_FUNCTION_UNLOAD             "minx_module_unload"
+#define MINX_MODULE_FUNCTION_FUNLOAD            "minx_module_force_unload"
+#define MINX_MODULE_FUNCTION_GET_OPCODES        "minx_module_get_opcodes"
+#define MINX_MODULE_FUNCTION_OPC_GETS_PARAMS    "minx_module_opcode_gets_params"
+#define MINX_MODULE_FUNCTION_CALL               "minx_module_call"
+#define MINX_MODULE_FUNCTION_CALL_NO_PARAMS     "minx_module_call_no_params"
+#define MINX_MODULE_FUNCTION_SET_CONFIGS        "minx_module_set_configs"
+#define MINX_MODULE_FUNCTION_GET_STATUS         "minx_module_get_status"
 
 #endif //__MINX_KERNEL_MODULES_H__

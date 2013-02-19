@@ -114,12 +114,47 @@ void minx_kernel_module_shutdown(void) {
  */
 uint64_t minx_kernel_module_load(char *module_path) {
     Module *mod = new_module(module_path);
+    uint64_t ret = 1;
+
+    mod->handle = dlopen(module_path, RTLD_LAZY);
+
+    if(!mod->handle) {
+        F_RUNTIME_ERROR(MINX_KERNEL_MODULE_PREFIX, 
+                        "%s: %s", "cannot load library", module_path);
+        free(mod);
+        ret = 0;
+    }
+
+    add_module_to_list(mod);
+
+    /*
+     * lookup all module functions and set in Module* type!
+     */
+
+#define SET_MOD_FUNC(field,funcname) mod->field = dlsym(mod->handle, funcname);
+    SET_MOD_FUNC(load_func, MINX_MODULE_FUNCTION_LOAD);
+    SET_MOD_FUNC(unload_func, MINX_MODULE_FUNCTION_UNLOAD);
+    SET_MOD_FUNC(funload_func, MINX_MODULE_FUNCTION_FUNLOAD);
+    SET_MOD_FUNC(get_opcodes_func, MINX_MODULE_FUNCTION_GET_OPCODES);
+    SET_MOD_FUNC(opcode_gets_params_func, MINX_MODULE_FUNCTION_OPC_GETS_PARAMS);
+    SET_MOD_FUNC(call_func, MINX_MODULE_FUNCTION_CALL);
+    SET_MOD_FUNC(call_no_params_func, MINX_MODULE_FUNCTION_CALL_NO_PARAMS);
+    SET_MOD_FUNC(set_configs_func, MINX_MODULE_FUNCTION_SET_CONFIGS);
+    SET_MOD_FUNC(get_status_func, MINX_MODULE_FUNCTION_GET_STATUS);
+#undef SET_MOD_FUNC
+
+    mod->opcodes = mod->get_opcodes_func();
+
+    return ret;
 }
 
 /*
  * unload function for removing a module by ID
  */
 void minx_kernel_module_unload(uint64_t moduleID) {
+    Module *mod = find_module(moduleID);
+    dlclose(mod->handle);
+    remove_module_from_list(mod);
 }
 
 /*
