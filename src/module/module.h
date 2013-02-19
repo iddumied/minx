@@ -2,6 +2,7 @@
 #define __MINX_MODULE_H__
 
 #include "util/config_types.h"
+#include "module/module_opcodes.h"
 
 /*
  * -----------------------------------------------------------------------------
@@ -30,11 +31,6 @@
  *  of memory) or not. Nothing more, nothing less.
  *
  */
-
-typedef struct {
-    unsigned int    len;
-    uint64_t        m_opcodes[];
-} MOpcodes;
 
 /*
  * gets called if the module should load itself.
