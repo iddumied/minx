@@ -16,6 +16,7 @@
  * static function prototypes
  */
 static Module*              find_module(uint64_t id);
+static ModuleOpcode*        find_module_opcode(Module *m, uint64_t opc);
 static uint64_t             get_next_module_id(void);
 static Module*              new_module(char *name);
 static void                 save_memory(HeapNode *node);
@@ -244,6 +245,18 @@ static Module* find_module(uint64_t id) {
 #endif 
 
     return module;
+}
+
+static ModuleOpcode* find_module_opcode(Module *m, uint64_t opc) {
+    unsigned int i;
+    ModuleOpcode *res = NULL;
+
+    for(i = 0; i < mod->opcodes_count && res == NULL; i++) {
+        if( mod->opcodes[i].opcode == opc )
+            res = &(mod->opcodes[i]);
+    }
+
+    return res;
 }
 
 /*
