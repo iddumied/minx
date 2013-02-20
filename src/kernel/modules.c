@@ -1,4 +1,4 @@
-#include "kernel/module.h"
+#include "kernel/modules.h"
 
 /*
  * This file contains all the logic for the plugins (called "modules").
@@ -35,7 +35,7 @@ static unsigned int         module_count;
 /*
  * Memory helper for passing arguments to modules
  */
-static char                 *memory_helper
+static char                 *memory_helper;
 static uint64_t             memory_helper_size;
 
 /* 
