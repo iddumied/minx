@@ -27,6 +27,8 @@ typedef enum {
     PUT_BIT, /* set if put didn't work */
     READ_BIT, /* set if read didn't work */
     NO_RAND, /* set if there is no random fetched */
+    MODULE_ERROR,                   /* set if any module error occurs */
+    MODULE_ERROR_LOAD,              /* error on loading module */
 } StatusBits;
 
 #endif // __MINX_VPU_STATUSBITS_H__
