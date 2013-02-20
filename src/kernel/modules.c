@@ -149,7 +149,15 @@ uint64_t minx_kernel_module_load(char *module_path) {
         SET_MOD_FUNC(get_status_func, MINX_MODULE_FUNCTION_GET_STATUS);
 #undef SET_MOD_FUNC
 
-        mod->opcodes = mod->get_opcodes_func();
+        MOpcodes *mopc = mod->get_opcodes_func();
+        mod->opcodes = (ModuleOpcode*) malloc(sizeof(ModuleOpcode) * mopc->len);
+
+        unsigned int i;
+        for(i = 0 ; i < mopc->len; i++ ) {
+            mod->opcodes[i].opcode = mopc->m_opcodes[i];
+            mod->opcodes[i].gets_params = 
+                mod->opcode_gets_params_func(mod->opcodes[i].opcode);
+        }
     }
 
     return ret;
