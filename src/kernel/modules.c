@@ -16,6 +16,11 @@
  * static function prototypes
  */
 static Module*              find_module(uint64_t id);
+static uint64_t             get_next_module_id(void);
+static Module*              new_module(char *name);
+static void                 save_memory(HeapNode *node);
+static int                  add_module_to_list(Module *mod);
+static void                 remove_module_from_list(Module *mod);
 
 /*
  * static variables
@@ -293,4 +298,49 @@ static void save_memory(HeapNode *node) {
     memset(memory_helper, 0x00, node->size);
     memcpy(memory_helper, node->memory, node->size);
     memory_data_size = node->size;
+}
+
+static int add_module_to_list(Module *mod) {
+
+    int ret = 0; 
+
+    /*
+     * Try to find NULL in 'modules'
+     */
+    uint64_t i;
+    for(i = 0; i < modules_size && modules[i] != NULL; i++);
+    if(i != modules_size) {
+        modules[i] = mod;
+    }
+    else { /* none found, reallocate! */
+        Modules **save = modules;
+        modules = realloc(modules, sizeof(Module*), modules_size+1);
+        
+        if( modules == NULL ) {
+            modules = save;
+            ret = 1;
+        }
+        else {
+            modules[module_size] = mod;
+            modules_size++;
+        }
+    }
+
+    return ret;
+}
+
+static void remove_module_from_list(Module *mod) {
+    free(mod->opcodes);
+    free(mod);
+
+    /*
+     * set the pointer in the 'modules' pointer array to NULL for later reuse
+     */
+    uint64_t i;
+    for(i = 0; i < modules_size; i++) {
+        if(modules[i] == mod) {
+            modules[i] = NULL;
+            i = modules_size;
+        }
+    }
 }
