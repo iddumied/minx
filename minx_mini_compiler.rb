@@ -117,6 +117,9 @@ class Op < Struct.new :opc, :args; end
   "PUT" =>    Op.new(0x65, [MEMORY, REGISTER, REGISTER, REGISTER]), 
   "READ" =>   Op.new(0x66, [MEMORY, REGISTER, REGISTER, REGISTER]), 
   "GETSIZE"=> Op.new(0x67, [MEMORY]), 
+
+  "LBSH" =>   Op.new(0x80, [REGISTER]), 
+  "RBSH" =>   Op.new(0x81, [REGISTER]), 
 }
 
 #
