@@ -584,4 +584,16 @@ const OpcodeInformation opcodes[] = {
         .params = { HEAP_ADDRESS_SIZE },
     },
 
+    [MINX_OPC_LBSH]     = {
+        .opc_func = minx_opc_lbsh_func,
+        .strrep = "LBSH",
+        .params = { REGISTER_ADDRESS_SIZE },
+    },
+
+    [MINX_OPC_RBSH]     = {
+        .opc_func = minx_opc_rbsh_func,
+        .strrep = "RBSH",
+        .params = { REGISTER_ADDRESS_SIZE },
+    },
+
 };
