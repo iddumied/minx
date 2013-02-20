@@ -2,6 +2,14 @@
 #define __MINX_KERNEL_MODULES_H__
 
 #include "module/module_opcodes.h"
+#include "util/config.h"
+#include "kernel/heap.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <inttypes.h>
+#include <dlfcn.h>
 
 /*
  * Modules header for the minx kernel
