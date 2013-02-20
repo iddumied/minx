@@ -169,7 +169,8 @@ void minx_kernel_module_unload(uint64_t moduleID) {
  */
 void minx_kernel_module_call_opcode(uint64_t moduleID, uint64_t opc, HeapNode *memory) {
     save_memory(memory);
-    find_module(moduleID)->call_func(opc, memory_helper, memory_helper_size, memory_data_size);
+    Module *mod = find_module(moduleID);
+    mod->call_func(opc, memory_helper, memory_helper_size, memory_data_size);
 }
 
 /*
