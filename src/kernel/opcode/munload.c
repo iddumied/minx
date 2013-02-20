@@ -7,4 +7,5 @@
  *
  */
 void minx_opc_munload_func(uint64_t *params) {
+    minx_kernel_module_unload(params[0]);
 }
