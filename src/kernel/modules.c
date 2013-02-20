@@ -125,25 +125,26 @@ uint64_t minx_kernel_module_load(char *module_path) {
         ret = 0;
     }
 
-    add_module_to_list(mod);
+    ret = add_module_to_list(mod);
 
     /*
-     * lookup all module functions and set in Module* type!
+     * if no error occoured lookup all module functions and set in Module* type!
      */
-
+    if (ret == 0) { 
 #define SET_MOD_FUNC(field,funcname) mod->field = dlsym(mod->handle, funcname);
-    SET_MOD_FUNC(load_func, MINX_MODULE_FUNCTION_LOAD);
-    SET_MOD_FUNC(unload_func, MINX_MODULE_FUNCTION_UNLOAD);
-    SET_MOD_FUNC(funload_func, MINX_MODULE_FUNCTION_FUNLOAD);
-    SET_MOD_FUNC(get_opcodes_func, MINX_MODULE_FUNCTION_GET_OPCODES);
-    SET_MOD_FUNC(opcode_gets_params_func, MINX_MODULE_FUNCTION_OPC_GETS_PARAMS);
-    SET_MOD_FUNC(call_func, MINX_MODULE_FUNCTION_CALL);
-    SET_MOD_FUNC(call_no_params_func, MINX_MODULE_FUNCTION_CALL_NO_PARAMS);
-    SET_MOD_FUNC(set_configs_func, MINX_MODULE_FUNCTION_SET_CONFIGS);
-    SET_MOD_FUNC(get_status_func, MINX_MODULE_FUNCTION_GET_STATUS);
+        SET_MOD_FUNC(load_func, MINX_MODULE_FUNCTION_LOAD);
+        SET_MOD_FUNC(unload_func, MINX_MODULE_FUNCTION_UNLOAD);
+        SET_MOD_FUNC(funload_func, MINX_MODULE_FUNCTION_FUNLOAD);
+        SET_MOD_FUNC(get_opcodes_func, MINX_MODULE_FUNCTION_GET_OPCODES);
+        SET_MOD_FUNC(opcode_gets_params_func, MINX_MODULE_FUNCTION_OPC_GETS_PARAMS);
+        SET_MOD_FUNC(call_func, MINX_MODULE_FUNCTION_CALL);
+        SET_MOD_FUNC(call_no_params_func, MINX_MODULE_FUNCTION_CALL_NO_PARAMS);
+        SET_MOD_FUNC(set_configs_func, MINX_MODULE_FUNCTION_SET_CONFIGS);
+        SET_MOD_FUNC(get_status_func, MINX_MODULE_FUNCTION_GET_STATUS);
 #undef SET_MOD_FUNC
 
-    mod->opcodes = mod->get_opcodes_func();
+        mod->opcodes = mod->get_opcodes_func();
+    }
 
     return ret;
 }
