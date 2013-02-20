@@ -136,6 +136,14 @@ extern void         minx_kernel_set_exit_status             (int);
 #define         MINX_OPC_XORR           0x47    /* <v0.0.3-protocol-stable> */
 #define         MINX_OPC_XORIR          0x48    /* <v0.0.3-protocol-stable> */
 
+#define         MINX_OPC_JMPR           0x49 
+#define         MINX_OPC_JMPIZR         0x4A
+#define         MINX_OPC_JMPNZR         0x4B
+#define         MINX_OPC_IFZJMPRR       0x4C
+#define         MINX_OPC_IFZJMPRA       0x4D
+#define         MINX_OPC_LDADDR         0x4E 
+#define         MINX_OPC_EXITI          0x4F
+
 #define         MINX_OPC_PSTACK         0x50    /* <v0.0.3-protocol-stable> */
 #define         MINX_OPC_PREGS          0x51    /* <v0.0.3-protocol-stable> */
 #define         MINX_OPC_PPROG          0x52    /* <v0.0.3-protocol-stable> */
@@ -150,6 +158,9 @@ extern void         minx_kernel_set_exit_status             (int);
 #define         MINX_OPC_PUT            0x65    /* <v0.0.3-protocol-stable> */
 #define         MINX_OPC_READ           0x66    /* <v0.0.3-protocol-stable> */
 #define         MINX_OPC_GETSIZE        0x67    /* <v0.0.3-protocol-stable> */
+
+#define         MINX_OPC_LBSH           0x80
+#define         MINX_OPC_RBSH           0x81
 
 /*
  * -----------------------------------------------------------------------------
@@ -267,6 +278,14 @@ void        minx_opc_xori_func          (uint64_t* params);
 void        minx_opc_xorr_func          (uint64_t* params);
 void        minx_opc_xorir_func         (uint64_t* params);
 
+void        minx_opc_jmpr_func          (uint64_t* params);
+void        minx_opc_jmpizr_func        (uint64_t* params);
+void        minx_opc_jmpnzr_func        (uint64_t* params);
+void        minx_opc_ifzjmprr_func      (uint64_t* params);
+void        minx_opc_ifzjmpra_func      (uint64_t* params);
+void        minx_opc_ldaddr_func        (uint64_t* params);
+void        minx_opc_exiti_func         (uint64_t* params);
+
 void        minx_opc_pstack_func         (uint64_t* params);
 void        minx_opc_pregs_func          (uint64_t* params);
 void        minx_opc_pprog_func          (uint64_t* params);
@@ -281,6 +300,10 @@ void        minx_opc_free_func           (uint64_t* params);
 void        minx_opc_put_func            (uint64_t* params);
 void        minx_opc_read_func           (uint64_t* params);
 void        minx_opc_getsize_func        (uint64_t* params);
+
+void        minx_opc_lbsh_func          (uint64_t* params);
+void        minx_opc_rbsh_func          (uint64_t* params);
+
 
 #endif // __MINX_VPU_OPCODES_H__
 

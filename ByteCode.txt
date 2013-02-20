@@ -145,10 +145,19 @@ code | Short ex.| arguments				        | Expl.
 0x42 | JMPNZ	| Register, Adress		        | jump if register is not zero
 0x43 | IFZJMP	| Adress, Adress			    | if akku is zero jump, else jump
 0x44 | EXIT     | Register                      | Exit with errorcode from register
+     |          |                               |
 0x45 | XOR      | Register, Register            | result in akku 
 0x46 | XORI     | Register, Value               | result in akku 
 0x47 | XORR     | Register, Register            | result in register
 0x48 | XORIR    | Register, Value               | result in register 
+     |          |                               |
+0x49 | JMPR     | Register                      | jump to address in register 
+0x4A | JMPIZR   | Register, Register            | if reg is zero, jump to address in register 
+0x4B | JMPNZR	| Register, Register            | jump to address in register if register is not zero
+0x4C | IFZJMPRR	| Register, Register            | if akku is zero jump, else jump (to addr in register|register)
+0x4D | IFZJMPRA	| Register, Address             | if akku is zero jump, else jump (to addr in register|address)
+0x4E | LDADDR   | <none>                        | Load address of next opcode into akku
+0x4F | EXITI    | Value                         | exit with value
 -----+----------+-------------------------------+--------------------------- 
 
 These are special debugging opcodes and are only print when compiled with 
@@ -176,4 +185,9 @@ Heap opcodes:
 0x65 | PUT      | MemoryAddr, offset, size, reg | offset in mem, size (max 8 Byte), register to read from
 0x66 | READ     | MemoryAddr, offset, size, reg | offset in mem, size (max 8 Byte), register to put into 
 0x67 | GETSIZE  | Memory                        | load size of the memory into akku
+-----+----------+-------------------------------+--------------------------- 
+
+-----+----------+-------------------------------+--------------------------- 
+0x80 | LBSH     | Register                      | Left shift one byte
+0x81 | RBSH     | Register                      | Right shift one byte
 -----+----------+-------------------------------+--------------------------- 

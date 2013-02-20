@@ -493,6 +493,48 @@ const OpcodeInformation opcodes[] = {
         .params = { REGISTER_ADDRESS_SIZE, VALUE_SIZE },
     },
 
+    [MINX_OPC_JMPR]         = {
+        .opc_func = minx_opc_jmpr_func,
+        .strrep = "JMPR",
+        .params = { REGISTER_ADDRESS_SIZE },
+    },
+
+    [MINX_OPC_JMPIZR]           = {
+        .opc_func = minx_opc_jmpizr_func,
+        .strrep = "JMPIZR",
+        .params = { REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE },
+    },
+
+    [MINX_OPC_JMPNZR]           = {
+        .opc_func = minx_opc_jmpnzr_func,
+        .strrep = "JMPNZR",
+        .params = { REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE },
+    },
+
+    [MINX_OPC_IFZJMPRR]    = {
+        .opc_func = minx_opc_ifzjmprr_func,
+        .strrep = "IFZJMPRR",
+        .params = {REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE },
+    },
+
+    [MINX_OPC_IFZJMPRA]    = {
+        .opc_func = minx_opc_ifzjmpra_func,
+        .strrep = "IFZJMPRA",
+        .params = { REGISTER_ADDRESS_SIZE, PROGRAM_ADDRESS_SIZE },
+    },
+
+    [MINX_OPC_LDADDR]      = {
+        .opc_func = minx_opc_ldaddr_func,
+        .strrep = "LDADDR",
+        .params = { /* none */ },
+    },
+
+    [MINX_OPC_EXITI]       = {
+        .opc_func = minx_opc_exiti_func,
+        .strrep = "EXITI",
+        .params = { VALUE_SIZE },
+    },
+
     /* <v0.0.3-protocol-stable> */
     [MINX_OPC_PSTACK]    = { 
         .opc_func = minx_opc_pstack_func,
@@ -582,6 +624,18 @@ const OpcodeInformation opcodes[] = {
         .opc_func = minx_opc_getsize_func,
         .strrep = "GETSIZE",
         .params = { HEAP_ADDRESS_SIZE },
+    },
+
+    [MINX_OPC_LBSH]     = {
+        .opc_func = minx_opc_lbsh_func,
+        .strrep = "LBSH",
+        .params = { REGISTER_ADDRESS_SIZE },
+    },
+
+    [MINX_OPC_RBSH]     = {
+        .opc_func = minx_opc_rbsh_func,
+        .strrep = "RBSH",
+        .params = { REGISTER_ADDRESS_SIZE },
     },
 
 };
