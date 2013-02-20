@@ -17,6 +17,7 @@ typedef enum {
     CONF_DISASM,            /* only start diassembler */
     CONF_HEX,               /* print always in hex */
     CONF_FAST,              /* try to be faster, although there is more mem required */
+    CONF_SAVE,              /* memcpy when passing memory to modules (etc) */
 } ConfigurationType;
 
 typedef union {
