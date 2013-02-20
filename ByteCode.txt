@@ -177,3 +177,8 @@ Heap opcodes:
 0x66 | READ     | MemoryAddr, offset, size, reg | offset in mem, size (max 8 Byte), register to put into 
 0x67 | GETSIZE  | Memory                        | load size of the memory into akku
 -----+----------+-------------------------------+--------------------------- 
+
+-----+----------+-------------------------------+--------------------------- 
+0x80 | LBSH     | Register                      | Left shift one byte
+0x81 | RBSH     | Register                      | Right shift one byte
+-----+----------+-------------------------------+--------------------------- 
