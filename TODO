@@ -46,3 +46,6 @@ TODO:
 	such as SIGINT.
 
 26) Add jump opcodes to jump with address from register!
+
+27) Add opcodes to push complete registers on a register-stack and pop complete
+	registers from this stack.
