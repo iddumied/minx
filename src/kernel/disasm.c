@@ -6,6 +6,9 @@ static void print_parameters(unsigned int *params);
 
 static uint64_t program_pointer;
 
+/**
+ * @brief Runs the disassembler
+ */
 void minx_disasm_run() {
     program_pointer = 0x00;
     uint16_t *opcode = (uint16_t*) malloc(sizeof(uint16_t));
@@ -23,6 +26,14 @@ void minx_disasm_run() {
     }
 }
 
+/**
+ * @brief Print passed parameters
+ *
+ * Prints the passed parameters based on configuration. Prints hex values if hex
+ * is configured, else decimal.
+ *
+ * @param params Parameters to print
+ */
 static void print_parameters(unsigned int *params) {
     unsigned int i;
     uint16_t *param16bit = malloc( sizeof(uint16_t) );

@@ -1,11 +1,15 @@
 #include "kernel/opcodes.h"
 
-/*
+/**
+ * @brief Opcode IFZJMP
+ *
  * Command:                 IFZJMP
  * Parameters:              2: address, address 
  * Affects Program Pointer: YES
  *
  * if akku is zero then jump else jump
+ *
+ * @param params Pointer to parameters for this opcode
  */
 void minx_opc_ifzjmp_func(uint64_t *params) {
 #ifdef DEBUGGING

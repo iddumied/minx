@@ -1,11 +1,15 @@
 #include "kernel/opcodes.h"
 
-/*
+/**
+ * @brief Opcode MULIR
+ *
  * Command:                 MULIR
  * Parameters:              2: register-address, value
  * Affects Program Pointer: NO
  *
  *
+ *
+ * @param params Pointer to parameters for this opcode
  */
 void minx_opc_mulir_func(uint64_t *params) {
 

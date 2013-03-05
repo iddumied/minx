@@ -1,12 +1,16 @@
 #include "kernel/opcodes.h"
 
-/*
+/**
+ * @brief Opcode FREE 
+ *
  * Command:                 FREE 
  * Parameters:              1, heap-address
  * Affects Program Pointer: NO
  *
  * This opcode does not really remove the memory, it just marks it as unused. So
  * if later on memory is required, this one can be used.
+ *
+ * @param params Pointer to parameters for this opcode
  *
  */
 void minx_opc_free_func(uint64_t *params) {

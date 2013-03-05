@@ -3,8 +3,8 @@
 static ShutdownFunctionPtr  *shutdown_functions;
 static unsigned int         shutdown_functions_cnt;
 
-/*
- * init function for the error module
+/**
+ * @brief Init the error module
  */
 void minx_error_init() {
     shutdown_functions      = (ShutdownFunctionPtr*) malloc(sizeof(ShutdownFunctionPtr));
@@ -13,15 +13,15 @@ void minx_error_init() {
     minx_error_register_shutdown_function(minx_error_shutdown);
 }
 
-/*
- * shutdown function for the error module
+/**
+ * @brief shutdown function for the error module
  */
 void minx_error_shutdown() {
     free(shutdown_functions);
 }
 
-/*
- * shutdown all modules.
+/**
+ * @brief Shutdown all modules (global shutdown function)
  *
  * counts down, so last registered shutdown function is called first.
  * That's good because the shutdown function for the error-module is registered
@@ -33,8 +33,10 @@ void minx_error_global_shutdown(void) {
     }
 }
 
-/*
- * register shutdown function
+/**
+ * @brief Register a function as shutdown function
+ *
+ * @param func The function to register
  */
 void minx_error_register_shutdown_function(void (*func)(void)) {
     shutdown_functions = (ShutdownFunctionPtr*) realloc(shutdown_functions, 

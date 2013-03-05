@@ -1,11 +1,15 @@
 #include "kernel/opcodes.h"
 
-/*
+/**
+ * @brief Opcode AND
+ *
  * Command:                 AND
  * Parameters:              2: register-address register-address
  * Affects Program Pointer: NO
  *
  * result in akku_register_number
+ *
+ * @param params Pointer to parameters for this opcode
  */
 void minx_opc_and_func(uint64_t *params) {
     

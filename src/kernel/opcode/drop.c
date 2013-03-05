@@ -1,11 +1,15 @@
 #include "kernel/opcodes.h"
 
-/*
+/**
+ * @brief Opcode DROP
+ *
  * Command:                 DROP
  * Parameters:              0
  * Affects Program Pointer: NO
  *
  * Remove element from stack
+ *
+ * @param params Pointer to parameters for this opcode
  *
  */
 void minx_opc_drop_func(uint64_t *params) {

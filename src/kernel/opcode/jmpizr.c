@@ -1,10 +1,14 @@
 #include "kernel/opcodes.h"
 
-/*
+/**
+ * @brief Opcode JMPIZR
+ *
  * Command:                 JMPIZR
  * Parameters:              2: register-address, register-address
  * Affects Program Pointer: NO
  *
+ *
+ * @param params Pointer to parameters for this opcode
  */
 void minx_opc_jmpizr_func(uint64_t *params) {
 
