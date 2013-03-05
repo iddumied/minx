@@ -1,5 +1,13 @@
 #include "main.h"
 
+/**
+ * @brief handle the signal passed by argument
+ *
+ * Currently, this function handles only SIGINT or SIGKILL and raises a global
+ * shutdown after printing the signal message.
+ *
+ * @param signal The shutdown signal
+ */
 void handle_signal(int signal) {
     if( signal == SIGINT || signal == SIGKILL ) {
         printf("[%i]: Shutdown ...", signal);
@@ -8,6 +16,14 @@ void handle_signal(int signal) {
     }
 }
 
+/**
+ * @brief Main function
+ *
+ * @param argc Argument count
+ * @param args Arguments. First must be binary
+ *
+ * @return Exit status of the binary
+ */
 int main(int argc, char **args) {
     if( argc < 2 ) {
         printf("No Binary given!\n");

@@ -1,11 +1,15 @@
 #include "kernel/opcodes.h"
 
-/*
+/**
+ * @brief Opcode RBSH
+ *
  * Command:                 RBSH
  * Parameters:              1: register-address
  * Affects Program Pointer: NO
  *
  *
+ *
+ * @param params Pointer to parameters for this opcode
  */
 void minx_opc_rbsh_func(uint64_t *params) {
 

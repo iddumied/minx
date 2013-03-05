@@ -1,6 +1,8 @@
 #include "kernel/opcodes.h"
 
-/*
+/**
+ * @brief Opcode READ
+ *
  * Command:                 READ
  * Parameters:              3, heap-address, register-address, register-address, register-address
  * Affects Program Pointer: NO
@@ -10,6 +12,7 @@
  *      n bytes   (num from reg)
  *      into register (register hardcoded)
  *
+ * @param params Pointer to parameters for this opcode
  */
 void minx_opc_read_func(uint64_t *params) {
     int result;

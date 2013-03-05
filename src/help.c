@@ -1,5 +1,8 @@
 #include "help.h"
 
+/**
+ * @brief Prints the help message
+ */
 void minx_print_help(void) {
     printf(
             "usage: minx [program-binary | help] <flags...>\n"

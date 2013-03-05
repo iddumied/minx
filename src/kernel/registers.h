@@ -8,8 +8,7 @@
 #include "util/debug.h"
 #include "util/error.h"
 
-/*
- * Register type
+/* @typedef Register Register Type
  */
 typedef struct {
     uint64_t    value;

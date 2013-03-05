@@ -36,7 +36,9 @@ static int                      src_debugging;
  * -----------------------------------------------------------------------------
  */
 
-/*
+/**
+ * @brief Initialize the kernel
+ *
  * Public init function 
  *
  * starts the kernel:
@@ -44,7 +46,7 @@ static int                      src_debugging;
  *  - init stuff
  *      - init the registers
  *      - init the stack 
- *      - init the command parameters storage 
+ *      - init the command parameters storage
  */
 void minx_kernel_init(void) {
     minx_error_register_shutdown_function(minx_kernel_shutdown);
@@ -63,7 +65,9 @@ void minx_kernel_init(void) {
     params = (uint64_t*) malloc(sizeof(uint64_t) * MAX_PARAMETER_COUNT);
 }
 
-/*
+/**
+ * @brief Run the Kernel
+ *
  * Public run function
  *
  * - allocates memory for storing the actual opcode
@@ -71,7 +75,8 @@ void minx_kernel_init(void) {
  * - run while current program pointer doesn't point to END_OF_PROGRAM
  * - at END_OF_PROGRAM, if compiled with VERBOSITY and config set, print registers
  * - cleanup the memory, allocated by this function.
- * 
+ *
+ * @return Exit status of the binary
  */
 int minx_kernel_run() {
 #if (defined DEBUGGING | defined DEBUG)
@@ -117,7 +122,9 @@ int minx_kernel_run() {
     return __exit_code__;
 }
 
-/*
+/**
+ * @brief Shutdown the kernel
+ *
  * public shutdown function 
  * used to force-shutdown the kernel.
  *
@@ -134,19 +141,39 @@ void minx_kernel_shutdown() {
     stackdelete(stack);
 }
 
+/**
+ * @brief Get the current program pointer
+ *
+ * @return The current program pointer
+ */
 uint64_t minx_kernel_program_pointer_get(void) {
     return program_pointer->value;
 }
 
+/**
+ * @brief Manipulate the program pointer
+ *
+ * @param new_pointer Set the program pointer to this value
+ */
 void minx_kernel_program_pointer_manipulate(uint64_t new_pointer) {
     program_pointer_manipulated = 1;
     program_pointer->value = new_pointer;
 }
 
+/**
+ * @brief unset the running variables
+ *
+ * @deprecated
+ */
 void minx_kernel_unset_running_variable(void) {
     __running__ = 0;
 }
 
+/**
+ * @brief Set the exit status of the kernel
+ *
+ * @param status Exit status to set
+ */
 void minx_kernel_set_exit_status(int status) {
     __exit_code__ = status;
 }
@@ -158,11 +185,12 @@ void minx_kernel_set_exit_status(int status) {
  * -----------------------------------------------------------------------------
  */
 
-/*
+/**
+ * @brief Run a opcide
+ * 
  * runs the opcode, passed to the function by finding it in the opc_funcs array.
  *
- * @param cmd the opcode to run.
- *
+ * @param opc The opcode to run
  */
 static void run_opcode(uint16_t opc) {
 
@@ -205,7 +233,9 @@ static void run_opcode(uint16_t opc) {
  * -----------------------------------------------------------------------------
  */
 
-/*
+/**
+ * @brief Read command parameters for a opcode
+ *
  * Helper function for parsing command parameters
  * args:
  *
@@ -222,6 +252,10 @@ static void run_opcode(uint16_t opc) {
  *      4) read the value there
  *      5) go to 3) or ready
  *
+ *
+ * @param opcode Read parameters of this opcode
+ *
+ * @return Next program pointer position
  */
 static uint64_t read_command_parameters(uint16_t *opcode) {
     uint64_t        next_pos = program_pointer->value + OPC_SIZE;

@@ -1,11 +1,15 @@
 #include "kernel/opcodes.h"
 
-/*
+/**
+ * @brief Opcode RESIZEI
+ *
  * Command:                 RESIZEI
  * Parameters:              1, heap-address, value 
  * Affects Program Pointer: NO
  *
  * Breaking DRY rule here, as minx_opc_resize_func() is almost the same
+ *
+ * @param params Pointer to parameters for this opcode
  *
  */
 void minx_opc_resizei_func(uint64_t *params) {

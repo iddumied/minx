@@ -1,11 +1,16 @@
 #include "kernel/opcodes.h"
 
-/*
+/**
+ * @brief Opcode PREGS
+ *
  * Command:                 PREGS
  * Parameters:              0
  * Affects Program Pointer: NO 
+ *
+ * @param params Pointer to parameters for this opcode
  */
 void minx_opc_pregs_func(uint64_t *params) {
+
 #ifdef DEBUGGING
     /* nothing to explain here */
 

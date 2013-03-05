@@ -1,11 +1,15 @@
 #include "kernel/opcodes.h"
 
-/*
+/**
+ * @brief Opcode XORR
+ *
  * Command:                 XORR
  * Parameters:              2: register-address, register-address 
  * Affects Program Pointer: NO
  *
  * Result in akku
+ *
+ * @param params Pointer to parameters for this opcode
  */
 void minx_opc_xorr_func(uint64_t *params) {
 #ifdef DEBUGGING

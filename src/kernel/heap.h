@@ -29,9 +29,9 @@
 #define HEAPNODES_REALLOC_STEP              5
 
 
-/*
+/** @typedef HeapNode
  *
- * Heap 
+ * @brief A HeapNode type with all information about one Heap
  *
  * used: if this heapnode is used, this value is UINT8_MAX
  * when it is unused it is less than UINT8_MAX, and gets decremented each
@@ -42,15 +42,21 @@
  *
  * size: size of the memory. Used for both internals and the program.
  * *memory: pointer to the memory.
+ *
+ * I named it HeapNode, don't know why. 
  */
 typedef struct {
-    /*
+    /**
+     * @brief State of this HeapNode
+     *
      * For notes about the 'used_state' variable, have a look at the notes right
      * below the HEAPNODE_USED macro!
      */
     uint8_t     used_state;
 
-    /*
+    /**
+     * @brief ID of this HeapNode (uniq)
+     *
      * The uniq ID, the binary gets for dealing around with it.
      * This ID is a simple counter in the first implementation.
      *
@@ -61,7 +67,9 @@ typedef struct {
      */
     uint64_t    memoryID;
 
-    /*
+    /**
+     * @brief The size (for the running program) of the HeapNode
+     *
      * This is the size, the memory has for the binary (in bytes). If the memory 
      * gets resized, the does some optimisation here.
      * If the size gets decremented, just set this variable to the new value. If
@@ -69,22 +77,21 @@ typedef struct {
      */
     uint64_t    size;
 
-    /*
-     * The real size of the memory in bytes
+    /**
+     * @brief The real size of the memory in bytes
      */
     uint64_t    real_size;
 
-    /*
-     * The memory, in bytes.
+    /**
+     * @brief The memory. In Bytes.
      */
     char        *memory;
 
-    /*
-     * I named it HeapNode, don't know why. 
-     */
 } HeapNode;
 
-/*
+/**
+ * @brief Status enumerator for HeapNode type
+ *
  * All values != HEAPNODE_USED are HEAPNODE_NOT_USED. 
  *
  * Current implementation does not provide "Garbage Collection" at all. But
