@@ -1,9 +1,24 @@
 #include "registers.h"
 
+/*
+ * static functions
+ */
+
+static RegisterStackPage* new_reg_stack_page(void);
+
+/*
+ * static variables
+ */
+
 static Register             *   registers       = NULL;
 static uint16_t                 register_count  = 0;
 
 #define register_exists(addr)   (register_count >= addr)
+
+/**
+ * @brief Register stack for pushing all registers at once
+ */
+static Stack                *   register_stack;
 
 /**
  * @brief Initialize the registers of the kernel
@@ -30,8 +45,10 @@ void minx_registers_init() {
 
         registers[register_count].value = 0x00;
     }
-}
 
+    /* initialize the register_stack */
+    register_stack = empty_stack();
+}
 
 /**
  * @brief Shutdown the registers of the kernel
@@ -68,6 +85,50 @@ Register* minx_registers_find_register(uint64_t addr) {
         FATAL_F_ERROR("Register %"PRIu64" does not exist!", addr);
     }
     return &registers[ addr ]; 
+}
+
+/**
+ * @brief Push all registers except 0x00 to the register stack
+ *
+ * Sets all registers except 0x00 (program pointer) to 0x00 after storing the
+ * current data on the register stack.
+ *
+ * @return 0 if failed, else 1
+ */
+int minx_registers_push(void) {
+    RegisterStackPage *rsp = new_reg_stack_page();
+
+    uint16_t i;
+    for(i = 1; i < register_count; i++) {
+        rsp->values[i-1] = registers[i]->value;
+        registers[i]->value = 0x00;
+    }
+
+    stackpush(register_stack, rsp->values, (sizeof(uint64_t)*(register_count-1)));
+    free(rsp);
+
+    return 1;
+}
+
+/**
+ * @brief Pop all registers except 0x00 from the register stack
+ *
+ * Overrides all registers except the program pointer
+ *
+ * @return 0 if failed, else 1
+ */
+int minx_registers_pop(void) {
+    RegisterStackPage *rsp = new_reg_stack_page();
+    rsp->values = (uint64_t*)stackpop(register_stack);
+
+    uint16_t i;
+    for( i = 1; i < register_count; i++) {
+        registers[i]->value = rsp->values[i-1];
+    }
+
+    free(rsp);
+
+    return 1;
 }
 
 /*
@@ -108,3 +169,18 @@ void minx_registers_print_register(unsigned int i) {
 }
 #endif //(defined VERBOSITY | defined DEBUGGING)
 
+
+/**
+ * @brief allocate a new RegisterStackPage or fail
+ *
+ * @return RegisterStackPage* to new RegisterStackPage
+ */
+static RegisterStackPage* new_reg_stack_page(void) {
+    size_t size = sizeof(RegisterStackPage) + (sizeof(uint64_t) * (register_count-1));
+    RegisterStackPage* rsp = (RegisterStackPage*) malloc(size);
+
+    if(rsp == NULL) 
+        FATAL_F_ERROR("Could not allocate %zu Bytes for RegisterStackPage", size);
+
+    return rsp;
+}
