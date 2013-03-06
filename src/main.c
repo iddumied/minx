@@ -26,12 +26,14 @@ void handle_signal(int signal) {
  */
 int main(int argc, char **args) {
     if( argc < 2 ) {
-        printf("No Binary given!\n");
+        printf("No Arguments, invoking --help!\n\n");
+        minx_print_help();
         exit(1);
     }
 
     signal(SIGINT, handle_signal);
     signal(SIGQUIT, handle_signal);
+    signal(SIGKILL, handle_signal);
 
     FILE *f;
     int exit_code;
