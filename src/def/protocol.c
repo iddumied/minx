@@ -638,4 +638,16 @@ const OpcodeInformation opcodes[] = {
         .params = { REGISTER_ADDRESS_SIZE },
     },
 
+    [MINX_OPC_EXPORT]   = {
+        .opc_func = minx_opc_export_func,
+        .strrep = "EXPORT",
+        .params = {},
+    },
+
+    [MINX_OPC_IMPORT]   = {
+        .opc_func = minx_opc_import_func,
+        .strrep = "IMPORT",
+        .params = {},
+    },
+
 };
