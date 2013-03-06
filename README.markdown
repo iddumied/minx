@@ -1,5 +1,10 @@
+minx 
+====
+
 This is the first implementation of the minx virtual machine.
-For more information, have a look at the ByteCode.txt file.
+
+The bytecode it understands/interprets is documented in ByteCode.txt! Have a
+look at the tags, there are tags for protocol-stable commits.
 
 This first implementation comes with the simple reader, which reads the complete
 binary into ram. Later on there will be another reader, which will check the
