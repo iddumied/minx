@@ -11,7 +11,6 @@
  */
 void minx_opc_import_func(uint64_t *params) {
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE("all registers");
 #endif //DEBUGGING
 
     minx_registers_pop();
