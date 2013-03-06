@@ -89,3 +89,8 @@ the .asm files running!
 
 If you define the macro DESTROY_MY_APPLICATION when compiling, you use Sony-like 
 random number generation. (For more information have a look at the RAND opcode).
+
+If you want to talk about minx, send me an email. I'm on IRC (freenode), too,
+but minx has no own channel yet. Just no need for it. 
+
+And yeah, I know that my english sucks. 
