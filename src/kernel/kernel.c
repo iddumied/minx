@@ -162,8 +162,6 @@ void minx_kernel_program_pointer_manipulate(uint64_t new_pointer) {
 
 /**
  * @brief unset the running variables
- *
- * @deprecated
  */
 void minx_kernel_unset_running_variable(void) {
     __running__ = 0;
