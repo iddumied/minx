@@ -8,6 +8,45 @@ This first implementation comes with the simple reader, which reads the complete
 binary into ram. Later on there will be another reader, which will check the
 binary for size and just read the actual required parts into ram (and so on).
 
+## Important notes
+
+Important notes for compiling, submitting patches or issues go here.
+
+### Compiling minx
+
+The source is written to compile on Linux. I use a Archlinux 64 Bit machine, 
+gcc 4.7.2 to compile. If you want to compile on another platform and it does not
+work, I cannot help you! But patches are really welcome!
+
+### Submitting patches
+
+I would love you to submit patches. If you do so, please do a `git rebase`, so I
+don't have to click through all commits. Just squash the unimportant ones!
+
+What I do _NOT_ merge: 
+
+- uncommented code (just if it is self-explanatory)
+- stupid opcodes (say, INC2 for incrementing by 2 or similar stuff)
+- unreadable code (variable names should be explanatory)
+
+### Submitting issues
+
+Please list:
+
+- OS
+- architecture (32/64 Bit)
+- compiler
+- linker (if required) 
+
+and all other stuff I may need. Backtrace naturally.
+
+If you ran a binary on the machine and it crashed, please submit:
+
+- the related `.asm` file 
+- the backtrace of the program (running minx with all required arguments)
+
+When I'm not able to reproduce a bug, I would love you to send pull requests!
+
 ## Arguments
 
 Arguments, the VPU takes:
