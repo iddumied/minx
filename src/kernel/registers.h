@@ -16,13 +16,6 @@ typedef struct {
     uint64_t    value;
 } Register;
 
-/**
- * @brief A register stack page to store all registers on the register stack
- */
-typedef struct {
-    uint64_t    values[];
-} RegisterStackPage;
-
 /*
  * currently, registers are addressed with 1 byte addresses.
  * But the addresses are read from the binary as 2 byte, because if we want to

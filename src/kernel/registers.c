@@ -1,12 +1,6 @@
 #include "registers.h"
 
 /*
- * static functions
- */
-
-static RegisterStackPage* new_reg_stack_page(void);
-
-/*
  * static variables
  */
 
@@ -96,18 +90,22 @@ Register* minx_registers_find_register(uint64_t addr) {
  * @return 0 if failed, else 1
  */
 int minx_registers_push(void) {
-    RegisterStackPage *rsp = new_reg_stack_page();
+    uint64_t *regs = (uint64_t*) malloc(sizeof(uint64_t) * (register_count-1));
+    if( regs == NULL )
+        goto err;
 
     uint16_t i;
     for(i = 1; i < register_count; i++) {
-        rsp->values[i-1] = registers[i]->value;
-        registers[i]->value = 0x00;
+        regs[i-1] = registers[i].value;
+        registers[i].value = 0x00;
     }
 
-    stackpush(register_stack, rsp->values, (sizeof(uint64_t)*(register_count-1)));
-    free(rsp);
+    stackpush(register_stack, regs, (sizeof(uint64_t) * (register_count-1)));
+    free(regs);
 
     return 1;
+err:
+    return 0;
 }
 
 /**
@@ -118,17 +116,22 @@ int minx_registers_push(void) {
  * @return 0 if failed, else 1
  */
 int minx_registers_pop(void) {
-    RegisterStackPage *rsp = new_reg_stack_page();
-    rsp->values = (uint64_t*)stackpop(register_stack);
+    uint64_t *regs = (uint64_t*) malloc(sizeof(uint64_t) * (register_count-1));
+    if( regs == NULL )
+        goto err;
+
+    regs = (uint64_t*)stackpop(register_stack);
 
     uint16_t i;
     for( i = 1; i < register_count; i++) {
-        registers[i]->value = rsp->values[i-1];
+        registers[i].value = regs[i-1];
     }
 
-    free(rsp);
+    free(regs);
 
     return 1;
+err:
+    return 0;
 }
 
 /*
@@ -168,19 +171,3 @@ void minx_registers_print_register(unsigned int i) {
 
 }
 #endif //(defined VERBOSITY | defined DEBUGGING)
-
-
-/**
- * @brief allocate a new RegisterStackPage or fail
- *
- * @return RegisterStackPage* to new RegisterStackPage
- */
-static RegisterStackPage* new_reg_stack_page(void) {
-    size_t size = sizeof(RegisterStackPage) + (sizeof(uint64_t) * (register_count-1));
-    RegisterStackPage* rsp = (RegisterStackPage*) malloc(size);
-
-    if(rsp == NULL) 
-        FATAL_F_ERROR("Could not allocate %zu Bytes for RegisterStackPage", size);
-
-    return rsp;
-}
