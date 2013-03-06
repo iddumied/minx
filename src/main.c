@@ -1,5 +1,18 @@
 #include "main.h"
 
+/*
+ * static function prototypes
+ */
+
+static void handle_file_open_error(void);
+
+/**
+ * @brief Handle the error when the binary file could not be opened
+ */
+static void handle_file_open_error() {
+    perror("Error opening file");
+}
+
 /**
  * @brief handle the signal passed by argument
  *
@@ -47,8 +60,14 @@ int main(int argc, char **args) {
         minx_print_help();
         goto end;
     }
-    
+
     f = fopen(args[1], "r");
+
+    if(f == NULL) {
+        handle_file_open_error();
+        exit_code = 1;
+        goto end;
+    }
 
     if( minx_config_get(CONF_MINX_DEBUGGING)->b ) {
         printf( 

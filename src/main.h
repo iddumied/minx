@@ -15,6 +15,8 @@
 #include <stdio.h>
 #include <mcheck.h>
 #include <signal.h>
+#include <fcntl.h>
+#include <errno.h>
 
 void handle_signal(int sig);
 
