@@ -1,9 +1,9 @@
 #ifndef __MINX_KERNEL_MODULES_H__
 #define __MINX_KERNEL_MODULES_H__
 
+#include "kernel/heap.h"
 #include "module/module_opcodes.h"
 #include "util/config.h"
-#include "kernel/heap.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -91,7 +91,7 @@ typedef struct {
     /*
      * set config function for the module
      */
-    void        (*set_configs_func)         (ConfigurationType type,
+    void        (*set_configs_func)         (ConfigurationType *type,
                                             ConfigurationValue *val,
                                             unsigned int len);
 

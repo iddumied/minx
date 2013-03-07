@@ -198,7 +198,7 @@ void minx_kernel_module_call_opcode_noparam(uint64_t moduleID, uint64_t opc) {
  */
 int minx_kernel_module_opcode_gets_params(uint64_t moduleID, uint64_t op) {
     Module *mod         = find_module(moduleID);
-    ModuleOpcode mop    = find_module_opcode(mod, op);
+    ModuleOpcode *mop   = find_module_opcode(mod, op);
 
     if(!mop)
         mop->gets_params = mod->opcode_gets_params_func(op);
@@ -265,9 +265,9 @@ static ModuleOpcode* find_module_opcode(Module *m, uint64_t opc) {
     unsigned int i;
     ModuleOpcode *res = NULL;
 
-    for(i = 0; i < mod->opcodes_count && res == NULL; i++) {
-        if( mod->opcodes[i].opcode == opc )
-            res = &(mod->opcodes[i]);
+    for(i = 0; i < m->opcodes_count && res == NULL; i++) {
+        if( m->opcodes[i].opcode == opc )
+            res = &(m->opcodes[i]);
     }
 
     return res;
@@ -301,7 +301,7 @@ static Module* new_module(char *name) {
         mod->call_no_params_func        = NULL;
         mod->set_configs_func           = NULL;
         mod->get_status_func            = NULL;
-        mod->opcodes_count              = NULL;
+        mod->opcodes_count              = 0;
         mod->opcodes                    = NULL;
     }
 
@@ -318,7 +318,8 @@ static void save_memory(HeapNode *node) {
         memory_helper = realloc(memory_helper, memory_helper_size);
 
         if(memory_helper == NULL) {
-            FATAL_F_ERROR("Could not reallocate memory helper for passing memory to module");
+            FATAL_F_ERROR("Could not reallocate memory (%"PRIu64" Bytes) helper for passing memory to module",
+                    memory_helper_size);
         }
     }
 
@@ -340,15 +341,15 @@ static int add_module_to_list(Module *mod) {
         modules[i] = mod;
     }
     else { /* none found, reallocate! */
-        Modules **save = modules;
-        modules = realloc(modules, sizeof(Module*), modules_size+1);
+        Module **save = modules;
+        modules = realloc(modules, sizeof(Module*) * (modules_size+1));
         
         if( modules == NULL ) {
             modules = save;
             ret = 1;
         }
         else {
-            modules[module_size] = mod;
+            modules[modules_size] = mod;
             modules_size++;
         }
     }
