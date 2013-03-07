@@ -49,6 +49,11 @@ static uint64_t             memory_helper_size;
  * The real size is more, but should be reinitialized to 0x00. Each module gets
  * more memory passed as program tells, but the overhead is reinitialized to
  * 0x00, so it does not care. Tell the module the size it needs to know.
+ *
+ * Anyway, the bytecode has only read-access to the known size, so still if the
+ * module writes to the other part of the memory, the bytecode is not able to
+ * read and it will be overridden, soon. So it is dead memory for this module
+ * and thereon useless.
  */
 static uint64_t             memory_data_size;
 
@@ -178,7 +183,7 @@ void minx_kernel_module_unload(uint64_t moduleID) {
 void minx_kernel_module_call_opcode(uint64_t moduleID, uint64_t opc, HeapNode *memory) {
     save_memory(memory);
     Module *mod = find_module(moduleID);
-    mod->call_func(opc, memory_helper, memory_helper_size, memory_data_size);
+    mod->call_func(opc, memory_helper, memory_data_size);
 }
 
 /*
