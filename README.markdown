@@ -34,6 +34,8 @@ A module can implement serveral opcodes. But be careful! Your module has to
 implement opcodes as stable, don't change them. Existing programs will crash if
 the opcode-identifiers change!
 
+A module needs the headers from ./module_headers/!
+
 
 Branches 
 --------
