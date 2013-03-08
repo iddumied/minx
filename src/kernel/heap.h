@@ -134,6 +134,8 @@ int         minx_kernel_heap_read               (uint64_t heap,
                                                 unsigned int bytes, 
                                                 uint64_t *dest);
 
+HeapNode*   minx_kernel_heap_get                (uint64_t heap);
+
 int         minx_kernel_heap_free               (uint64_t heap);
 
 #ifdef DEBUGGING
