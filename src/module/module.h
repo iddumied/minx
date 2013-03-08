@@ -1,9 +1,6 @@
 #ifndef __MINX_MODULE_H__
 #define __MINX_MODULE_H__
 
-#include "util/config_types.h"
-#include "module/module_opcodes.h"
-
 /*
  * -----------------------------------------------------------------------------
  *
