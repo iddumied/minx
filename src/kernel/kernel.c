@@ -22,13 +22,13 @@ static uint64_t                 *params;
 static int                      __running__     = 1;
 static int                      __exit_code__   = 0;
 
-static int                      src_debugging;
-
 /*
  * -----------------------------------------------------------------------------
  *          "static" macros
  * -----------------------------------------------------------------------------
  */
+
+#define src_debugging minx_config_get(CONF_SRC_DEBUGGING)->b
 
 /*
  * -----------------------------------------------------------------------------
@@ -53,7 +53,6 @@ void minx_kernel_init(void) {
 
     __running__     = 1;
     __exit_code__   = 0;
-    src_debugging   = minx_config_get(CONF_SRC_DEBUGGING)->b;
 
     minx_registers_init();
     program_pointer = minx_registers_find_register(program_pointer_register_number);
@@ -269,3 +268,11 @@ static uint64_t read_command_parameters(uint16_t *opcode) {
 
     return next_pos;
 }
+
+
+/*
+ *
+ * undef static macros
+ *
+ */
+#undef src_debugging
