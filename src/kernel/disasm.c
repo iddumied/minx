@@ -8,6 +8,11 @@ static uint64_t program_pointer;
 
 /**
  * @brief Runs the disassembler
+ *
+ * The function creates a own program pointer and runs through all opcodes, but
+ * doesn't execute them. It just prints the string representation of the opcode
+ * and it's parameters by calling the print_parameters() function.
+ *
  */
 void minx_disasm_run() {
     program_pointer = 0x00;
@@ -31,6 +36,8 @@ void minx_disasm_run() {
  *
  * Prints the passed parameters based on configuration. Prints hex values if hex
  * is configured, else decimal.
+ *
+ * Maximal number of parameters is defined in def/sizes.h by macro.
  *
  * @param params Parameters to print
  */
