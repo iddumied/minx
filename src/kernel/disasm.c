@@ -17,6 +17,7 @@ static uint64_t program_pointer;
 void minx_disasm_run() {
     program_pointer = 0x00;
     uint16_t *opcode = (uint16_t*) malloc(sizeof(uint16_t));
+    int in_hex = minx_config_get(CONF_HEX)->b;
 
     OpcodeInformation opci;
 
@@ -25,7 +26,12 @@ void minx_disasm_run() {
 
         opci = opcodes[*opcode];
 
-        printf("%s", opci.strrep);
+        if(in_hex)
+            printf("[%#010"PRIx64"]", program_pointer);
+        else 
+            printf("[%"PRIu64"]", program_pointer);
+
+        printf(" %s", opci.strrep);
         program_pointer += OPC_SIZE;
         print_parameters(opci.params);
     }
