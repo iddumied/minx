@@ -19,6 +19,17 @@ void minx_disasm_run() {
     uint16_t *opcode = (uint16_t*) malloc(sizeof(uint16_t));
     int in_hex = minx_config_get(CONF_HEX)->b;
 
+    /*
+     * This is not a "magic" constant. It is just... I cannot calculate the
+     * length of the longest string representation of a opcode, as the type
+     * OpcodeInformation is incomplete, as I use a array.
+     *
+     * So I try it with 10. If it does not fit, it only disturbes the output a
+     * bit. Not so bad.
+     */
+    unsigned int longest_strrep_len = 10;
+    unsigned int curr_strrep_len;
+
     OpcodeInformation opci;
 
     while(minx_binary_exists_at(program_pointer)) {
@@ -31,7 +42,13 @@ void minx_disasm_run() {
         else 
             printf("[%"PRIu64"]", program_pointer);
 
+        curr_strrep_len = strlen(opci.strrep);
         printf(" %s", opci.strrep);
+        while(curr_strrep_len < longest_strrep_len) {
+            printf(" ");
+            curr_strrep_len++;
+        }
+
         program_pointer += OPC_SIZE;
         print_parameters(opci.params);
     }
@@ -64,7 +81,10 @@ static void print_parameters(unsigned int *params) {
                                                         params[i]);
 
             if(in_hex) {
-                printf("%#010"PRIx16, *param16bit);
+                if (*param16bit == 0x00)
+                    printf("0x0000000000000000");
+                else 
+                    printf("%#018"PRIx16, *param16bit);
             }
             else {
                 printf("%"PRIu16, *param16bit);
@@ -77,15 +97,15 @@ static void print_parameters(unsigned int *params) {
                                                         params[i]);
 
             if(in_hex) {
-                printf("%#010"PRIx64, *param64bit);
+                if (*param64bit == 0x00)
+                    printf("0x0000000000000000");
+                else 
+                    printf("%#018"PRIx64, *param64bit);
             }
             else {
-                printf("%"PRIu16, *param16bit);
+                printf("%"PRIu64, *param64bit);
             }
         }
-        
-        if(params[i+1])
-            printf(",");
 
         program_pointer += params[i];
     }
