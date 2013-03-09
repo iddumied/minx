@@ -259,7 +259,7 @@ static uint64_t read_command_parameters(uint16_t *opcode) {
     uint64_t        next_pos = program_pointer->value + OPC_SIZE;
     unsigned int    i;
 
-    for(i = 0 ; opcodes[*opcode].params[i] ; i++ ) {
+    for(i = 0 ; opcodes[*opcode].params[i] || i < MAX_PARAMETER_COUNT; i++ ) {
         params[i] = *((uint64_t*) minx_binary_get_at(   next_pos, 
                                                         opcodes[*opcode].params[i], 
                                                         &params[i], 

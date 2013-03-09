@@ -41,7 +41,7 @@ static void print_parameters(unsigned int *params) {
 
     int in_hex = minx_config_get(CONF_HEX)->b;
 
-    for(i = 0; params[i]; i++) {
+    for(i = 0; params[i] || i < MAX_PARAMETER_COUNT; i++) {
         printf(" %u: ", i);
 
         if( params[i] == REGISTER_ADDRESS_SIZE || params[i] == HEAP_ADDRESS_SIZE ) {
