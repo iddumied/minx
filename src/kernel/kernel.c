@@ -47,6 +47,9 @@ static int                      __exit_code__   = 0;
  *      - init the registers
  *      - init the stack 
  *      - init the command parameters storage
+ *
+ * The kernel does this init stuff because it is required for the kernel only.
+ * There is no reason why another part of minx should initialize these parts!
  */
 void minx_kernel_init(void) {
     minx_error_register_shutdown_function(minx_kernel_shutdown);

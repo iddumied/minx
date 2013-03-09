@@ -72,6 +72,11 @@ int main(int argc, char **args) {
         minx_disasm_run();
     }
     else {
+        /*
+         * 
+         * The kernel initializes its heap and registers on its own.
+         *
+         */
         minx_kernel_init();
         exit_code = minx_kernel_run();
         minx_kernel_shutdown();
