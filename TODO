@@ -46,8 +46,6 @@ TODO:
 	interrupt and a way to register this address for a particular interrupt type
 	such as SIGINT.
 
-26) Add jump opcodes to jump with address from register!
-
 28) Thread save VPU ? Would be so damn great!
 
 29) Rework complete documentation. (Adapt documentation/comments to a
