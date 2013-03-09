@@ -49,14 +49,22 @@ int minx_util_check_subtraction_overflow64(uint64_t a, uint64_t b) {
 /**
  * @brief Check if the result of a multiplication of the passed values will overflow
  *
+ *  u = UINT64_MAX
+ *  b = b
+ *  a = a
+ *
+ *  u / b < a    |*b
+ *  u < a*b
+ *
+ *  if this is true, overflow will occour
+ *
  * @param a Multiplier
  * @param b Multiplicand
  *
  * @return true on overflow, else false
  */
 int minx_util_check_multiplication_overflow64(uint64_t a, uint64_t b) {
-    /* not implemented yet */
-    return 1;
+    return (UINT64_MAX / b) < a;
 }
 
 /**
