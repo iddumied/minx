@@ -70,12 +70,31 @@ int minx_util_check_multiplication_overflow64(uint64_t a, uint64_t b) {
 /**
  * @brief Check if raising a to the power of b will overflow
  *
+ * Condition:
+ *
+ *  a^b > UINT64_MAX
+ *
+ * Mathematical calculation:
+ *
+ *  u = UINT64_MAX
+ *  u > a
+ *  u > b
+ *
+ *  u < a^b ?
+ *
+ *  2u > a + b
+ *  u > (a + b) / 2
+ *
+ *  (a + b) / 2 < u < a^b
+ *
+ *
+ * Don't know if this is true. But I think. Corrections welcome!
+ *
  * @param a Basis
  * @param b Exponent
  *
  * @return true on overflow, else false
  */
 int minx_util_check_power_overflow64(uint64_t a, uint64_t b) {
-    /* not implemented yet */
-    return 1;
+    return minx_util_check_addition_overflow64(a, b) || (a + b) / 2 < UINT64_MAX;
 }
