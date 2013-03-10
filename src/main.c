@@ -61,6 +61,32 @@ int main(int argc, char **args) {
         goto end;
     }
 
+    /*
+     * check if given path is a file
+     */
+    struct stat s;
+    if(stat(args[1], &s) == 0) {
+        if(s.st_mode & S_IFDIR) {
+            printf("Passed argument is a directory!\n");
+            exit_code = 1;
+            goto end;
+        }
+        else if(s.st_mode & S_IFREG) {
+            /* everything ok */
+        }
+        else {
+            printf("Passed argument is no file!\n");
+            exit_code = 1;
+            goto end;
+        }
+    }
+    else {
+        /* error */
+        printf("Error reading stats from passed path!\n");
+        exit_code = 1;
+        goto end;
+    }
+
     f = fopen(args[1], "r");
 
     if(f == NULL) {

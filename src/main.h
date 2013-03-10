@@ -17,6 +17,9 @@
 #include <signal.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 void handle_signal(int sig);
 
