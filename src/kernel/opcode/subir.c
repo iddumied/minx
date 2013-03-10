@@ -24,7 +24,7 @@ void minx_opc_subir_func(uint64_t *params) {
 
     Register *status = minx_registers_find_register(statusregister);
 
-    if(params[1] > r1->value) {
+    if(minx_util_check_subtraction_overflow64(params[1], r1->value)) {
         setbit(status->value, OVERFLOW_BIT);
     }
 

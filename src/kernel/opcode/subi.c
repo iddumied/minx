@@ -25,7 +25,7 @@ void minx_opc_subi_func(uint64_t *params) {
     Register *akku = minx_registers_find_register(akku_register_number);
     Register *status = minx_registers_find_register(statusregister);
 
-    if(params[1] > r1->value) {
+    if(minx_util_check_subtraction_overflow64(params[1], r1->value)) {
         setbit(status->value, OVERFLOW_BIT);
     }
 

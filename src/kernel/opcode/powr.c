@@ -25,6 +25,10 @@ void minx_opc_powr_func(uint64_t *params) {
 
     Register *status = minx_registers_find_register(statusregister);
 
+    if(minx_util_check_power_overflow64(r1->value, r2->value)) {
+        setbit(status->value, OVERFLOW_BIT);
+    }
+
     /* no statuses yet: no overflow-check! */
     r1->value = powl(r1->value, r2->value);
 
