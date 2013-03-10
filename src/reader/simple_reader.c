@@ -17,6 +17,11 @@ static long get_file_size(FILE *f);
  * Functions
  */
 
+/**
+ * @brief Init the simple reader
+ *
+ * @param f Init with this file
+ */
 void minx_binary_init(FILE *f) {
 
     minx_error_register_shutdown_function(minx_binary_shutdown);
@@ -32,10 +37,23 @@ void minx_binary_init(FILE *f) {
     } while( readsize == lastreadsize );
 } 
 
+/**
+ * @brief Shutdown the Binary
+ */
 void minx_binary_shutdown() {
     free(binary);
 }
 
+/**
+ * @brief Get values from the binary at a specific position
+ *
+ * @param p Pointer to the location to get data from
+ * @param number_of_bytes Number of bytes to get
+ * @param dest Destination of the data
+ * @param destsize Size of the destination
+ *
+ * @return A pointer to the destination of the Data
+ */
 void * minx_binary_get_at(  uint64_t        p, 
                             unsigned int    number_of_bytes, 
                             void            *dest, 
@@ -51,6 +69,9 @@ signed int minx_binary_exists_at(uint64_t p) {
 }
 
 #ifdef DEBUGGING
+/**
+ * @brief Print the binary
+ */
 void minx_binary_print() {
     long i;
     unsigned int line = 0;
@@ -74,6 +95,13 @@ void minx_binary_print() {
  * Static functions implementations
  */
 
+/**
+ * @brief Get the size of the passed File
+ *
+ * @param f The file to get the size from
+ *
+ * @return The size of the file
+ */
 static long get_file_size(FILE *f) {
     long res;
     fseek(f, 0L, SEEK_END);

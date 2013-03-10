@@ -1,15 +1,20 @@
 #include "kernel/opcodes.h"
 
-/*
+/**
+ * @brief Opcode CMP 
+ *
  * Command:                 CMP 
  * Parameters:              2: register-address register-address
  * Affects Program Pointer: NO
  *
  * compare, 
+ *
  * result in akku_register_number, 
  * 1 if first is bigger, 
  * 2 if second is bigger, 
  * zero if equal
+ *
+ * @param params Pointer to parameters for this opcode
  */
 void minx_opc_cmp_func(uint64_t *params) {
 

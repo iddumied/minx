@@ -1,11 +1,15 @@
 #include "kernel/opcodes.h"
 
-/*
+/**
+ * @brief Opcode MOD
+ *
  * Command:                 MOD
  * Parameters:              2: register-address, register-address
  * Affects Program Pointer: NO
  *
  *
+ *
+ * @param params Pointer to parameters for this opcode
  */
 void minx_opc_mod_func(uint64_t *params) {
 

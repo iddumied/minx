@@ -1,5 +1,13 @@
 #include "main.h"
 
+/**
+ * @brief handle the signal passed by argument
+ *
+ * Currently, this function handles only SIGINT or SIGKILL and raises a global
+ * shutdown after printing the signal message.
+ *
+ * @param signal The shutdown signal
+ */
 void handle_signal(int signal) {
     if( signal == SIGINT || signal == SIGKILL ) {
         printf("[%i]: Shutdown ...", signal);
@@ -8,36 +16,48 @@ void handle_signal(int signal) {
     }
 }
 
+/**
+ * @brief Main function
+ *
+ * @param argc Argument count
+ * @param args Arguments. First must be binary
+ *
+ * @return Exit status of the binary
+ */
 int main(int argc, char **args) {
     if( argc < 2 ) {
-        printf("No Binary given!\n");
+        printf("No Arguments, invoking --help!\n\n");
+        minx_print_help();
         exit(1);
     }
 
     signal(SIGINT, handle_signal);
     signal(SIGQUIT, handle_signal);
+    signal(SIGKILL, handle_signal);
 
-    FILE *f = fopen(args[1], "r");
-
-    /*
-    char * file = "./out.out";
-    FILE *f = fopen(file, "r");
-    */
-
+    FILE *f;
     int exit_code;
 
     minx_error_init();
     minx_config_init();
     minx_config_parse(argc, args);
 
+    if(minx_config_get(CONF_HELP)->b || minx_config_get(CONF_HELP_SHORT)->b) {
+        exit_code = 0;
+        minx_print_help();
+        goto end;
+    }
+    
+    f = fopen(args[1], "r");
+
     if( minx_config_get(CONF_MINX_DEBUGGING)->b ) {
         printf( 
-"            _            \n"
+"             _            \n"
 "            (_)           \n"
-"_ __ ___  _ _ __ __  __\n"
+" _ __ ___  _ _ __ __  __\n"
 "| '_ ` _ \\| | '_ \\\\ \\/ /\n"
 "| | | | | | | | | |>  < \n"
-"|_| |_| |_|_|_| |_/_/\\_\\\n"
+"|_| |_| |_|_|_| |_/_/\\_\\\n\n"
              );
     }
 
@@ -52,6 +72,11 @@ int main(int argc, char **args) {
         minx_disasm_run();
     }
     else {
+        /*
+         * 
+         * The kernel initializes its heap and registers on its own.
+         *
+         */
         minx_kernel_init();
         exit_code = minx_kernel_run();
         minx_kernel_shutdown();
@@ -68,5 +93,7 @@ int main(int argc, char **args) {
     minx_error_shutdown();
 
     fclose(f);
+
+end:
     return exit_code;
 }

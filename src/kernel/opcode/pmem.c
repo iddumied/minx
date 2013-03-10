@@ -1,11 +1,15 @@
 #include "kernel/opcodes.h"
 
-/*
+/**
+ * @brief Opcode PMEM 
+ *
  * Command:                 PMEM 
  * Parameters:              1, heapnode-address
  * Affects Program Pointer: NO
  *
  *
+ *
+ * @param params Pointer to parameters for this opcode
  */
 void minx_opc_pmem_func(uint64_t* params) {
 #ifdef DEBUGGING

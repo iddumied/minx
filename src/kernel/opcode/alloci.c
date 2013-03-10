@@ -1,11 +1,15 @@
 #include "kernel/opcodes.h"
 
-/*
+/**
+ * @brief Opcode ALLOCI
+ *
  * Command:                 ALLOCI
  * Parameters:              1, value
  * Affects Program Pointer: NO
  *
  * Breaking DRY rule here, as minx_opc_alloc_func() is almost the same
+ *
+ * @param params Pointer to parameters for this opcode
  *
  */
 void minx_opc_alloci_func(uint64_t *params) {

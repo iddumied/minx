@@ -11,10 +11,12 @@ exists. So you or your compiler has to care about the jumps, the machine
 does not. It only checks, if the code position exists. If not, it stops
 executing with printing a fatal error message.
 
-special registers:
+Special registers:
 ------------------
-Registers 0x00 to 0xAF are special, they are not useable for program data, but
-anyway accessible for the program.
+
+Registers 0x00 to 0xAF are special, they _should_ not be used by the program. But they can.
+The VPU does not care about modifying the programm-ptr at all. The Binary
+can write to this register as it can write to every other register!
 
 - 0x0000	Programm-ptr, is zero at init and (uint64_t)-1 at end of programm
 - 0x0001	(unused yet)
@@ -23,10 +25,15 @@ anyway accessible for the program.
 				Bit	|	use 
 				----+-------
 				0	|	overflow 
-                1   |   heapalloc status (1: worked, 0: failure)
-				1-7	|	not used yet
-- 0x0004	overflow value 
-- 0x0005-0x00AF (unused yet, will be used for more status registers and stuff)
+                1   |   zero-bit
+                2   |   div-zero
+                3   |   alloc bit (set if alloc didn't work)
+                4   |   free bit (set if free didn't work)
+                5   |   resize bit (set if resize didn't work)
+                6   |   put bit (set if put didn't work)
+                7   |   read bit (set if read didn't work)
+                8   |   no-random bit (set if rand didn't work)
+- 0x0004-0x00AF (unused yet, will be used for more status registers and stuff)
 
 So, 0x00B0 is the first register which should be used for program data. With
 current implementation, there are 2^8 registers, so 0x0000FFFF is the last
@@ -45,22 +52,19 @@ opcodes
 -------
 
 'Register'	    stands for 16 Bit (2 Byte) register address (shortcut 'reg')
+                (hardcoded in binary)
 
 'Value'		    stands for 64 Bit (8 Byte) value
+                (hardcoded in binary)
 
-'Adress'	    stands for 64 Bit (8 Byte) code address
+'Adress'	    stands for 64 Bit (8 Byte) code address 
+                (hardcoded in binary)
 
-'Memory'        stands for 16 Bit (2 Byte) register address where a memory
-                address is stored, this memory has to be the first byte address 
-                of allocated memory!
+'MemoryID'      stands for a register where a 64 Bit (8 Byte) memory ID stands. 
 
-'MemoryAddr'    stands for 16 Bit (2 Byte) register address where a memory
-                address is stored. This memory address can be anywhere in the 
-                memory!
+'offset'        stands for register-address where memory offset in byte stands
 
-'offset'        stands for memory offset in byte
-
-'size'          stands for size in byte, maximal 8
+'size'          stands for register-address where the size in byte stands, maximal 8
 
 Maximal 5 parameters at the moment!
 
@@ -140,10 +144,19 @@ code | Short ex.| arguments				        | Expl.
 0x42 | JMPNZ	| Register, Adress		        | jump if register is not zero
 0x43 | IFZJMP	| Adress, Adress			    | if akku is zero jump, else jump
 0x44 | EXIT     | Register                      | Exit with errorcode from register
+     |          |                               |
 0x45 | XOR      | Register, Register            | result in akku 
 0x46 | XORI     | Register, Value               | result in akku 
 0x47 | XORR     | Register, Register            | result in register
 0x48 | XORIR    | Register, Value               | result in register 
+     |          |                               |
+0x49 | JMPR     | Register                      | jump to address in register 
+0x4A | JMPIZR   | Register, Register            | if reg is zero, jump to address in register 
+0x4B | JMPNZR	| Register, Register            | jump to address in register if register is not zero
+0x4C | IFZJMPRR	| Register, Register            | if akku is zero jump, else jump (to addr in register|register)
+0x4D | IFZJMPRA	| Register, Address             | if akku is zero jump, else jump (to addr in register|address)
+0x4E | LDADDR   | <none>                        | Load address of next opcode into akku
+0x4F | EXITI    | Value                         | exit with value
 -----+----------+-------------------------------+--------------------------- 
 
 These are special debugging opcodes and are only print when compiled with 
@@ -155,20 +168,23 @@ will be ignored automatically! The 0x5? block is reserved for them.
 0x51 | PREGS    | none                          | print registers
 0x52 | PPROG    | none                          | print program
 0x53 | PMEMS    | none                          | print all allocatet mems
-0x54 | PMEM     | Memory                        | print memory
+0x54 | PMEM     | MemoryID                      | print memory
 -----+----------+-------------------------------+--------------------------- 
 
-Heap opcodes:
-- the address of the memory is _always_ the first byte!
-- the size of the memory is in byte.
+Heap opcodes (0x6? are reserved for HEAP opcodes):
 
 -----+----------+-------------------------------+--------------------------- 
 0x60 | ALLOC    | Register                      | MemID or 0x00 in akku
 0x61 | ALLOCI   | Value                         | MemID or 0x00 in akku
-0x62 | RESIZE   | MemoryAddr, Register          | 
-0x63 | RESIZEI  | MemoryAddr, Value             | 
-0x64 | FREE     | MemoryAddr                    | 
-0x65 | PUT      | MemoryAddr, offset, size, reg | offset in mem, size (max 8 Byte), register to read from
-0x66 | READ     | MemoryAddr, offset, size, reg | offset in mem, size (max 8 Byte), register to put into 
-0x67 | GETSIZE  | Memory                        | load size of the memory into akku
+0x62 | RESIZE   | MemoryID, Register            | 
+0x63 | RESIZEI  | MemoryID, Value               | 
+0x64 | FREE     | MemoryID                      | 
+0x65 | PUT      | MemoryID, offset, size, reg   | offset in mem, size (max 8 Byte), register to read from
+0x66 | READ     | MemoryID, offset, size, reg   | offset in mem, size (max 8 Byte), register to put into 
+0x67 | GETSIZE  | MemoryID                      | load size of the memory into akku
+-----+----------+-------------------------------+--------------------------- 
+
+-----+----------+-------------------------------+--------------------------- 
+0x80 | LBSH     | Register                      | Left shift one byte
+0x81 | RBSH     | Register                      | Right shift one byte
 -----+----------+-------------------------------+--------------------------- 

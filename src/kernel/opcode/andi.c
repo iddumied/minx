@@ -1,11 +1,15 @@
 #include "kernel/opcodes.h"
 
-/*
+/**
+ * @brief Opcode ANDI
+ *
  * Command:                 ANDI
  * Parameters:              2: register-address, value
  * Affects Program Pointer: NO
  *
  * Result in akku
+ *
+ * @param params Pointer to parameters for this opcode
  */
 void minx_opc_andi_func(uint64_t *params) {
 #ifdef DEBUGGING

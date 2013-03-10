@@ -1,10 +1,8 @@
-#include "config.h"
+#include "util/config.h"
 
 /*
  * static functions
  */
-static void         set_config          (ConfigurationType ct);
-
 #if (defined DEBUG | defined DEBUGGING)
 static void         print_config        (void);
 #endif
@@ -16,35 +14,49 @@ static void         print_config        (void);
 /*
  * default config 
  */
-static Configuration    configuration[] = {
-    {   .type = CONF_VERBOSITY,             .value.b = 0    },
-    {   .type = CONF_MINX_DEBUGGING,        .value.b = 0    },
-    {   .type = CONF_SRC_DEBUGGING,         .value.b = 0    },
-    {   .type = CONF_PRINT_REGS_AT_EOP,     .value.b = 0    },
-    {   .type = CONF_DISASM,                .value.b = 0    },
-    {   .type = CONF_HEX,                   .value.b = 0    },
+static ConfigurationValue configuration[] = {
+    [CONF_VERBOSITY]                                = { .b = 0 },
+    [CONF_MINX_DEBUGGING]                           = { .b = 0 },
+    [CONF_SRC_DEBUGGING]                            = { .b = 0 },
+    [CONF_PRINT_REGS_AT_EOP]                        = { .b = 0 },
+    [CONF_PRINT_REGS_AT_EOP_WITHOUT_ZEROVALREGS]    = { .b = 0 },
+    [CONF_DISASM]                                   = { .b = 0 },
+    [CONF_HEX]                                      = { .b = 0 },
+    [CONF_FAST]                                     = { .b = 0 },
+    [CONF_HELP]                                     = { .b = 0 },
+    [CONF_HELP_SHORT]                               = { .b = 0 },
 };
 
 /*
  * config keys 
  */
-static ConfigurationKeyMap confkeys[] = {
-    {   .type   = CONF_VERBOSITY,               .configkey = "-v"           },
-    {   .type   = CONF_MINX_DEBUGGING,          .configkey = "--minx-debug" },
-    {   .type   = CONF_SRC_DEBUGGING,           .configkey = "-d"           },
-    {   .type   = CONF_PRINT_REGS_AT_EOP,       .configkey = "--regs"       },
-    {   .type   = CONF_DISASM,                  .configkey = "--disasm"     },
-    {   .type   = CONF_HEX,                     .configkey = "--hex"        },
+static char *confkeys[] = {
+    [CONF_VERBOSITY]                                = "-v",
+    [CONF_MINX_DEBUGGING]                           = "--minx-debug",
+    [CONF_SRC_DEBUGGING]                            = "-d",
+    [CONF_PRINT_REGS_AT_EOP]                        = "--regs",
+    [CONF_PRINT_REGS_AT_EOP_WITHOUT_ZEROVALREGS]    = "--notzeroregs",
+    [CONF_DISASM]                                   = "--disasm",
+    [CONF_HEX]                                      = "--hex",
+    [CONF_FAST]                                     = "--fast",
+    [CONF_HELP]                                     = "--help",
+    [CONF_HELP_SHORT]                               = "-h"
 };
 
 /*
  * Functions
  */
 
+/**
+ * @brief Init the config
+ */
 void minx_config_init() {
     minx_error_register_shutdown_function(minx_config_shutdown);
 }
 
+/**
+ * @brief shutdown the config
+ */
 void minx_config_shutdown() {
     return;
 }
@@ -52,28 +64,24 @@ void minx_config_shutdown() {
 /*
  * parse config 
  */
+/**
+ * @brief Parse the passed config
+ *
+ * @param argc The number of arguments
+ * @param argv The arguments
+ */
 void minx_config_parse(unsigned int argc, char ** argv) {
     unsigned int i, j;
     for( i = 0 ; i < argc; i++ ) {
         for( j = 0 ; j < (sizeof(confkeys)/sizeof(confkeys[0])); j++ ) {
-            if( 0 == strcmp( confkeys[j].configkey, argv[i] )) {
-                /*
-                switch(confkeys[j].type) {
-                    case CONF_VERBOSITY:
-                    case CONF_MINX_DEBUGGING:
-                    case CONF_SRC_DEBUGGING:
-                    case CONF_PRINT_REGS_AT_EOP:
-                    */
+            if( 0 == strcmp(confkeys[j], argv[i])) {
 
-
-                /* currently, there are only bool configs, but later on there
-                 * maybe are some more, key-value-pair type configurations
-                 */
-                        set_config(confkeys[j].type);
-                        /*
-                        break;
+                ConfigurationValue *cv = minx_config_get(CONF_MINX_DEBUGGING);
+                if( cv != NULL && cv->b ) {
+                    printf(MINX_CONFIG_PREFIX": conf set\n");
                 }
-                */
+
+                configuration[j].b = 1;
             }
         }
     }
@@ -90,14 +98,29 @@ void minx_config_parse(unsigned int argc, char ** argv) {
 #endif 
 }
 
+/**
+ * @brief Get the configuration of a specific type
+ *
+ * @param ct The configuration to get
+ *
+ * @return The configuration value
+ */
 ConfigurationValue* minx_config_get(ConfigurationType ct) {
-    unsigned int i;
-    for(i = 0 ; i < (sizeof(configuration)/sizeof(configuration[0])); i++)
-        if(configuration[i].type == ct)
-            return &configuration[i].value;
-    return NULL;
+    if( (sizeof(configuration) / sizeof(ConfigurationValue)) <= ct) {
+        return NULL;
+    }
+    else {
+        return &configuration[ct];
+    }
 }
 
+/**
+ * @brief Returns true if the passed config is set
+ *
+ * @param ct The config to check
+ *
+ * @return True if the config is set, else false
+ */
 int minx_config_is_set(ConfigurationType ct) {
     return minx_config_get(ct) != NULL;
 }
@@ -107,27 +130,14 @@ int minx_config_is_set(ConfigurationType ct) {
  * Static functions
  *
  */
-static void set_config(ConfigurationType ct) {
 #if (defined DEBUG | defined DEBUGGING)
-    ConfigurationValue *cv = minx_config_get(CONF_MINX_DEBUGGING);
-    if( cv != NULL && cv->b ) {
-        printf(MINX_CONFIG_PREFIX": conf set\n");
-    }
-#endif 
-
-    unsigned int i;
-    for(i = 0;
-        i < (sizeof(configuration)/sizeof(configuration[0])) &&
-        configuration[i].type != ct;
-        i++ );
-    configuration[i].value.b = 1;
-}
-
-#if (defined DEBUG | defined DEBUGGING)
+/**
+ * @brief Print the config (human readable)
+ */
 static void print_config() {
     unsigned int i;
     for( i = 0 ; i < (sizeof(configuration)/sizeof(configuration[0])); i++) {
-        printf(MINX_CONFIG_PREFIX": config %s = %i\n", confkeys[i].configkey, configuration[i].value.b);
+        printf(MINX_CONFIG_PREFIX": config %s = %i\n", confkeys[i], configuration[i].b);
     }
 }
 #endif

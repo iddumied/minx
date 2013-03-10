@@ -1,11 +1,15 @@
 #include "kernel/opcodes.h"
 
-/*
+/**
+ * @brief Opcode ANDR
+ *
  * Command:                 ANDR
  * Parameters:              2: register-address, register-address
  * Affects Program Pointer: NO
  *
  * Result in first register
+ *
+ * @param params Pointer to parameters for this opcode
  */
 void minx_opc_andr_func(uint64_t *params) {
 #ifdef DEBUGGING

@@ -1,11 +1,15 @@
 #include "kernel/opcodes.h"
 
-/*
+/**
+ * @brief Opcode XORI
+ *
  * Command:                 XORI
  * Parameters:              2: register-address, value 
  * Affects Program Pointer: NO
  *
  * Result in akku
+ *
+ * @param params Pointer to parameters for this opcode
  */
 void minx_opc_xori_func(uint64_t *params) {
 #ifdef DEBUGGING

@@ -1,25 +1,8 @@
 TODO:
 
-5) define a op code for defining op-codes.
-	Something like this:
-
-	DEF(opc, funcloc)
-
-	where opc is the opcode to define (or redefine). It will be automatically
-	masked for 16 bit.
-	The funcloc is a pointer to a function which is defined somewhere in the
-	binary. This function is read into the VPU and stored there. If the op code
-	which was defined is used, the VPU executes the stored procedure.
-
-	There should be some status registers reserved for statuses about the call.
-		-	was a override
-		-	worked/error
-
-5.1)define a op code ISDEV(reg, opc) for getting if a opcode is defined, result
-	in 'reg'
-
 9)	File reader should read the file as linked list, with automatically removing 
-	"old" parts of the file from memory to keep memuse smart.
+	"old" parts of the file from memory to keep memuse smart. 
+	A very tricky algorithm is required here!
 
 14) Create a plugin-system
 	opcodes:
@@ -55,9 +38,6 @@ TODO:
 		- a function for force-shutdown of the VM
 		- a function for shutdown without unloading
 
-15) Clean up the opcodes-protocol and release it as v1.0.0 to guarantee no more
-	changes of its core functionality.
-
 17.1) (addition to already done TODO #17) Organize the memory map, for fast
 		memory lookup and so on. The map has to be ordered to do a fast lookup
 		of the memory!
@@ -65,3 +45,12 @@ TODO:
 22) Interrupts? What about interrupts? We need a jump-to address for a
 	interrupt and a way to register this address for a particular interrupt type
 	such as SIGINT.
+
+28) Thread save VPU ? Would be so damn great!
+
+29) Rework complete documentation. (Adapt documentation/comments to a
+	documentation tool?)
+
+30) Rework the output of the VPU.
+
+31) Implement all overflow-checks!

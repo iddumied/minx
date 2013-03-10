@@ -1,11 +1,15 @@
 #include "kernel/opcodes.h"
 
-/*
+/**
+ * @brief Opcode CLRBI
+ *
  * Command:                 CLRBI
  * Parameters:              2: register-address, value
  * Affects Program Pointer: NO
  *
  *
+ *
+ * @param params Pointer to parameters for this opcode
  */
 void minx_opc_clrbi_func(uint64_t *params) {
     

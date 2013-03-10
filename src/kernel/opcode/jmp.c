@@ -1,11 +1,15 @@
 #include "kernel/opcodes.h"
 
-/*
+/**
+ * @brief Opcode JMP
+ *
  * Command:                 JMP
  * Parameters:              1: address
  * Affects Program Pointer: YES
  *
  *
+ *
+ * @param params Pointer to parameters for this opcode
  */
 void minx_opc_jmp_func(uint64_t *params) {
 #ifdef DEBUGGING

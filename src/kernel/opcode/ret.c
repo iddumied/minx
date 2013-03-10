@@ -1,11 +1,15 @@
 #include "kernel/opcodes.h"
 
-/*
+/**
+ * @brief Opcode RET
+ *
  * Command:                 RET
  * Parameters:              0
  * Affects Program Pointer: YES
  *
  *
+ *
+ * @param params Pointer to parameters for this opcode
  */
 void minx_opc_ret_func(uint64_t *params) {
 #ifdef DEBUGGING

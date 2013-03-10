@@ -1,11 +1,15 @@
 #include "kernel/opcodes.h"
 
-/*
+/**
+ * @brief Opcode ORIR
+ *
  * Command:                 ORIR
  * Parameters:              2: register-address, value
  * Affects Program Pointer: NO
  *
  *
+ *
+ * @param params Pointer to parameters for this opcode
  */
 void minx_opc_orir_func(uint64_t *params) {
 #ifdef DEBUGGING
