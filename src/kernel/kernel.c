@@ -22,13 +22,13 @@ static uint64_t                 *params;
 static int                      __running__     = 1;
 static int                      __exit_code__   = 0;
 
-static int                      src_debugging;
-
 /*
  * -----------------------------------------------------------------------------
  *          "static" macros
  * -----------------------------------------------------------------------------
  */
+
+#define src_debugging minx_config_get(CONF_SRC_DEBUGGING)->b
 
 /*
  * -----------------------------------------------------------------------------
@@ -47,13 +47,15 @@ static int                      src_debugging;
  *      - init the registers
  *      - init the stack 
  *      - init the command parameters storage
+ *
+ * The kernel does this init stuff because it is required for the kernel only.
+ * There is no reason why another part of minx should initialize these parts!
  */
 void minx_kernel_init(void) {
     minx_error_register_shutdown_function(minx_kernel_shutdown);
 
     __running__     = 1;
     __exit_code__   = 0;
-    src_debugging   = minx_config_get(CONF_SRC_DEBUGGING)->b;
 
     minx_registers_init();
     program_pointer = minx_registers_find_register(program_pointer_register_number);
@@ -162,8 +164,6 @@ void minx_kernel_program_pointer_manipulate(uint64_t new_pointer) {
 
 /**
  * @brief unset the running variables
- *
- * @deprecated
  */
 void minx_kernel_unset_running_variable(void) {
     __running__ = 0;
@@ -261,7 +261,7 @@ static uint64_t read_command_parameters(uint16_t *opcode) {
     uint64_t        next_pos = program_pointer->value + OPC_SIZE;
     unsigned int    i;
 
-    for(i = 0 ; opcodes[*opcode].params[i] ; i++ ) {
+    for(i = 0 ; opcodes[*opcode].params[i] || i < MAX_PARAMETER_COUNT; i++ ) {
         params[i] = *((uint64_t*) minx_binary_get_at(   next_pos, 
                                                         opcodes[*opcode].params[i], 
                                                         &params[i], 
@@ -271,3 +271,11 @@ static uint64_t read_command_parameters(uint16_t *opcode) {
 
     return next_pos;
 }
+
+
+/*
+ *
+ * undef static macros
+ *
+ */
+#undef src_debugging
