@@ -138,8 +138,6 @@ class JumpMark
   def initialize(name, hex)
     @name = name.gsub("\n", "").gsub(" ", "")
     @hex = hex 
-
-    puts "New Jumpmark #{@name} at #{@hex}"
   end
 
 end
@@ -166,7 +164,6 @@ class Compiler < CodeReader
 
   def initialize(filelines, jumpmarks)
     @source = filelines
-    puts "Compiling: #{@source}"
     
     @jumpmarks = Array.new
   end
@@ -223,13 +220,11 @@ class Preprocessor < CodeReader
   def preprocess 
     offset = 0
     @source.each do |line|
-      puts "Preprocessing '#{line.gsub("\n", "")}'"
       next if is_comment?(line)
       next if empty_line?(line)
 
       matched = line.match(/[a-z_]*:/)
       if matched
-        puts "MATCH '#{line.gsub("\n", "")}'"
         @jumpmarks << JumpMark.new(matched.string.gsub(":", ""), hex_of(offset))
 
       else 
@@ -249,7 +244,6 @@ class Preprocessor < CodeReader
     @jumpmarks.each do |mark|
       @source.map! do |line|
         if line.include? mark.name and not line.include? ":"
-          puts "translate: #{mark.name} to #{mark.hex}"
           line.gsub!(mark.name, mark.hex)
 
         elsif line.include? "#{mark.name}:"
@@ -283,7 +277,7 @@ if __FILE__ == $0
   if ARGV.include? "-E"
     puts "Marks:" 
     puts pre.jumpmarks.map { |m| m.name }.join(", ")
-    puts "Preprocessed:"
+    puts "\nPreprocessed:"
     puts pre.source
     exit 0
   end
