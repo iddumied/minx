@@ -30,6 +30,9 @@ void minx_disasm_run() {
     unsigned int longest_strrep_len = 10;
     unsigned int curr_strrep_len;
 
+    unsigned int progp_space;
+#define PROG_P_SPACE 6
+
     OpcodeInformation opci;
 
     while(minx_binary_exists_at(program_pointer)) {
@@ -37,10 +40,16 @@ void minx_disasm_run() {
 
         opci = opcodes[*opcode];
 
-        if(in_hex)
+        if(in_hex) {
             printf("[%#010"PRIx64"]", program_pointer);
-        else 
-            printf("[%"PRIu64"]", program_pointer);
+        }
+        else {
+            progp_space = printf("[%"PRIu64"]", program_pointer);
+            while(progp_space < PROG_P_SPACE) {
+                printf(" ");
+                progp_space++;
+            }
+        }
 
         curr_strrep_len = strlen(opci.strrep);
         printf(" %s", opci.strrep);
@@ -52,6 +61,8 @@ void minx_disasm_run() {
         program_pointer += OPC_SIZE;
         print_parameters(opci.params);
     }
+
+#undef PROG_P_SPACE
 }
 
 /**
