@@ -24,7 +24,7 @@ class Op < Struct.new :opc, :args; end
 #
 # These are the opcodes. You can also read them in the ByteCode.def file.
 #
-@ops = { 
+$ops = { 
 # opcode  =>         op    args
   "NOP" =>    Op.new(0x00, [] ), 
   "CALL" =>   Op.new(0x01, [ADDRESS] ), 
@@ -144,40 +144,46 @@ class JumpMark
 
 end
 
-class Code
+class CodeReader
 
-  def initialize(file, jumpmarks)
-    @source = file.readlines
-    @jumpmarks = Array.new
-    
+  def is_comment?(line)
+    line.start_with? ";" or line.start_with? "#"
   end
 
-  def translate_jumpmarks
-    @source.each do |line|
-      next if @jumpmarks.map(&:name).include? line.gsub(":", "").strip
+  def empty_line?(line)
+    line.chomp.empty? or line.strip.empty?
+  end
 
-      jm_names = @jumpmarks.map { |jm| line.include? jm.name }.select { |x| x == true }
-      if jm_names.any?
-        # 
-        # line includes a jumpmark, 'jm' is the found jumpmark-name
-        #
-        jm = jm_names.first
+  def hex_of(i)
+    "0x" + i.to_s(16).upcase
+  end
 
-        line.gsub!(jm, @jumpmarks.select { |mark| mark.name == jm }.first.hex)
-      end
-    end
+end
+
+class Compiler < CodeReader
+
+  attr_reader :source, :jumpmarks, :code
+
+  def initialize(filelines, jumpmarks)
+    @source = filelines
+    puts "Compiling: #{@source}"
+    
+    @jumpmarks = Array.new
   end
 
   def compile
     code = String.new
     @source.each do |line|
+      next if is_comment?(line) 
+      next if empty_line?(line)
+
       nodes = line.split(" ")
       opcode = nodes.shift
       args = create_args(opcode, nodes)
 
-      fail "UNALLOWED OPCODE #{opcode}" unless @ops.keys.include? opcode
+      fail "UNALLOWED OPCODE '#{opcode}'" unless $ops.keys.include? opcode
 
-      code << [@ops[opcode].opc].pack("S")
+      code << [$ops[opcode].opc].pack("S")
       code << args
     end
 
@@ -190,10 +196,10 @@ class Code
   def create_args(opc, args)
     res = ""
     args.each_with_index do |arg, i|
-      if [REGISTER, MEMORY].include? @ops[opc].args[i]
+      if [REGISTER, MEMORY].include? $ops[opc].args[i]
         res << [arg.to_i(16)].pack("S") # pack for 16 bit if register address
 
-      elsif [ADDRESS, VALUE].include? @ops[opc].args[i]
+      elsif [ADDRESS, VALUE].include? $ops[opc].args[i]
         res << [arg.to_i(16)].pack("Q") # pack for 64 bit if adress or value
 
       end
@@ -203,41 +209,94 @@ class Code
 
 end
 
-class Preprocessor
+class Preprocessor < CodeReader
 
-  attr_reader :jumpmarks
+  attr_reader :jumpmarks, :source
 
-  def initialize(file)
-    @file = file
+  def initialize(source)
+    @source = source
     @jumpmarks = Array.new
     preprocess
+    translate_jumpmarks
   end
 
   def preprocess 
     offset = 0
-    @file.readlines.each do |line|
+    @source.each do |line|
+      puts "Preprocessing '#{line.gsub("\n", "")}'"
       next if is_comment?(line)
+      next if empty_line?(line)
 
-      matched = line.match(/[a-z_]*:$/)
-      if not matched.nil?
-        @jumpmarks << JumpMark.new(matches.string.gsub(":", ""), hex_of(offset))
+      matched = line.match(/[a-z_]*:/)
+      if matched
+        puts "MATCH '#{line.gsub("\n", "")}'"
+        @jumpmarks << JumpMark.new(matched.string.gsub(":", ""), hex_of(offset))
 
       else 
         opcode = line.split(" ").first
-        if @ops[opcode].nil? then fail "Opcode not found: #{opcode}" end
-        offset += OPCODE + @ops[opcode].args
+        if $ops[opcode].nil? then fail "Opcode not found: '#{opcode}'" end
+        offset += OPCODE + $ops[opcode].args.inject { |x, sum| sum += x }
 
       end
 
     end
   end
 
-  def is_comment?(line)
-    line.start_with? ";" or line.start_with? "#"
+  #
+  # translate jumpmarks to it's hexadecimal jump addresses.
+  #
+  def translate_jumpmarks
+    @jumpmarks.each do |mark|
+      @source.map! do |line|
+        if line.include? mark.name and not line.include? ":"
+          puts "translate: #{mark.name} to #{mark.hex}"
+          line.gsub!(mark.name, mark.hex)
+
+        elsif line.include? "#{mark.name}:"
+          #
+          # remove jumpmarks
+          # 
+          line.gsub!(mark.name + ":", "")
+
+        end
+        
+        line
+      end
+    end
   end
 
-  def hex_of(i)
-    "0x" + i.to_s(16)
+end
+
+if __FILE__ == $0
+  if ARGV.empty? 
+    puts "No arguments."
+    exit 1
   end
 
+  f = File.open(ARGV.first, "r")
+  source = f.readlines
+  pre = Preprocessor.new(source)
+
+  #
+  # print preprocessed source of -E is set
+  #
+  if ARGV.include? "-E"
+    puts "Marks:" 
+    puts pre.jumpmarks.map { |m| m.name }.join(", ")
+    puts "Preprocessed:"
+    puts pre.source
+    exit 0
+  end
+
+  com = Compiler.new(pre.source, pre.jumpmarks)
+
+  code = com.compile
+
+  new_filename = ARGV.first + ".out"
+
+  nf = File.open(new_filename, "w+")
+  nf.write(code)
+  nf.close
+  
+  puts "#{ARGV.first} -> #{new_filename}"
 end
