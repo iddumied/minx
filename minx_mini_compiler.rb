@@ -250,7 +250,7 @@ class Preprocessor < CodeReader
           #
           # remove jumpmarks
           # 
-          line.gsub!(mark.name + ":", "; JUMPMARK: #{mark.name}")
+          line.gsub!(mark.name + ":", "; JUMPMARK: #{mark.name} at #{mark.hex}")
 
         end
         
