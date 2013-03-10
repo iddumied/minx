@@ -13,7 +13,7 @@
  */
 void minx_opc_not_func(uint64_t *params) {
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE("reg: %"PRIu64, params[1]);
+    EXPLAIN_OPCODE("R%"PRIu64, params[1]);
 #endif 
 
     Register *r1 = minx_registers_find_register(akku_register_number);

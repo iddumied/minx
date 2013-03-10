@@ -19,7 +19,7 @@ void minx_opc_add_func(uint64_t *params) {
 
 #ifdef DEBUGGING
     EXPLAIN_OPCODE_WITH_HEXF(
-            "R%"PRIu64" (%#010"PRIu64") + R%"PRIu64" (%#010"PRIu64")",
+            "R%"PRIu64" (%#010"PRIx64") + R%"PRIu64" (%#010"PRIx64")",
             "R%"PRIu64" (%"PRIu64") + R%"PRIu64" (%"PRIu64")", 
             params[0], r2->value, params[1], r3->value);
 #endif

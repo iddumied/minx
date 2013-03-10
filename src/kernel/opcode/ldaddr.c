@@ -17,7 +17,10 @@ void minx_opc_ldaddr_func(uint64_t *params) {
     akku->value = prop->value + OPC_SIZE;
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE("load address of next opcode (%"PRIu64") into akku", akku->value);
+    EXPLAIN_OPCODE_WITH_HEXF(
+            "load address of next opcode (%#010"PRIx64") into akku", 
+            "load address of next opcode (%"PRIu64") into akku", 
+            akku->value);
 #endif
 
 }
