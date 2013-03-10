@@ -128,6 +128,8 @@ class Op < Struct.new :opc, :args; end
 
   "LBSH" =>   Op.new(0x80, [REGISTER]), 
   "RBSH" =>   Op.new(0x81, [REGISTER]), 
+  "EXPORT" => Op.new(0x82, []), 
+  "IMPORT" => Op.new(0x83, []), 
 }
 
 #
