@@ -1,5 +1,4 @@
 JMP jmpmark
 
 jmpmark: 
-MOVI 0xB0 0x00 
-EXIT 0xB0
+EXITI 0x00
