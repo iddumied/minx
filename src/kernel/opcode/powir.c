@@ -16,13 +16,19 @@ void minx_opc_powir_func(uint64_t *params) {
     Register *r1 = minx_registers_find_register(params[0]);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE("R%"PRIu64" (%"PRIu64") ** %"PRIu64,
+    EXPLAIN_OPCODE_WITH_HEXF(
+            "R%"PRIu64" (%#010"PRIx64") ** %#010"PRIx64,
+            "R%"PRIu64" (%"PRIu64") ** %"PRIu64,
             params[0], r1->value,
             params[1]
             );
 #endif
 
     Register *status = minx_registers_find_register(statusregister);
+
+    if(minx_util_check_power_overflow64(r1->value, params[1])) {
+        setbit(status->value, OVERFLOW_BIT);
+    }
 
     /* no statuses yet: no overflow-check! */
     r1->value = powl(r1->value, params[1]);

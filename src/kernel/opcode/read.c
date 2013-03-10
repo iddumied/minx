@@ -23,12 +23,10 @@ void minx_opc_read_func(uint64_t *params) {
     Register *r4 = minx_registers_find_register(params[3]);
 
 #ifdef DEBUGGING 
-    EXPLAIN_OPCODE(
+    EXPLAIN_OPCODE_WITH_HEXF(
+            "from heap %#010"PRIx64" at offset %#010"PRIx64" %#010"PRIx64" Bytes into %#010"PRIx64,
             "from heap %"PRIu64" at offset %"PRIu64" %"PRIu64" Bytes into %"PRIu64,
-            r1->value,
-            r2->value,
-            r3->value,
-            params[3]
+            r1->value, r2->value, r3->value, params[3]
             );
 #endif 
 

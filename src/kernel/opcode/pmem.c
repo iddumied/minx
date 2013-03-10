@@ -14,7 +14,10 @@
 void minx_opc_pmem_func(uint64_t* params) {
 #ifdef DEBUGGING
     if( minx_config_get(CONF_SRC_DEBUGGING)->b ) {
-        EXPLAIN_OPCODE("memory: %"PRIu64, minx_registers_find_register(params[0])->value);
+        EXPLAIN_OPCODE_WITH_HEXF(
+                "memory: %#010"PRIx64, 
+                "memory: %"PRIu64, 
+                minx_registers_find_register(params[0])->value);
 
         minx_kernel_heap_print_heapnode(minx_registers_find_register(params[0])->value);
     }
