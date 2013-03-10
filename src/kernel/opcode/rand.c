@@ -27,7 +27,7 @@ void minx_opc_rand_func(uint64_t *params) {
         close(fd);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE("%"PRIu64, akku->value);
+    EXPLAIN_OPCODE_WITH_HEXF("%"PRIu64, "%#010"PRIx64, akku->value);
 #endif
 
     }

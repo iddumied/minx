@@ -13,7 +13,7 @@
  */
 void minx_opc_notr_func(uint64_t *params) {
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE("reg: %"PRIu64, params[0]);
+    EXPLAIN_OPCODE("R%"PRIu64, params[0]);
 #endif 
 
     Register *r1 = minx_registers_find_register(params[0]);

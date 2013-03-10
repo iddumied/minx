@@ -12,6 +12,7 @@
 #
 # Sizes of ...
 #
+OPCODE    = 2
 REGISTER  = 2
 VALUE     = 8
 ADDRESS   = 8
@@ -23,7 +24,7 @@ class Op < Struct.new :opc, :args; end
 #
 # These are the opcodes. You can also read them in the ByteCode.def file.
 #
-@ops = { 
+$ops = { 
 # opcode  =>         op    args
   "NOP" =>    Op.new(0x00, [] ), 
   "CALL" =>   Op.new(0x01, [ADDRESS] ), 
@@ -130,78 +131,166 @@ class Op < Struct.new :opc, :args; end
   "RBSH" =>   Op.new(0x81, [REGISTER]), 
 }
 
-#
-# decode arguments to binary
-#
-def create_args(opc, args)
-  res = ""
-  args.each_with_index do |arg, i| 
-    if [REGISTER, MEMORY].include? @ops[opc].args[i]
-      res << [arg.to_i(16)].pack("S") # pack for 16 bit if register address
-    elsif [ADDRESS, VALUE].include? @ops[opc].args[i]
-      res << [arg.to_i(16)].pack("Q") # pack for 64 bit if adress or value
+class JumpMark
+
+  attr_accessor :name, :hex
+
+  def initialize(name, hex)
+    @name = name.gsub("\n", "").gsub(" ", "")
+    @hex = hex 
+  end
+
+end
+
+class CodeReader
+
+  def is_comment?(line)
+    line.start_with? ";" or line.start_with? "#"
+  end
+
+  def empty_line?(line)
+    line.chomp.empty? or line.strip.empty?
+  end
+
+  def hex_of(i)
+    "0x" + i.to_s(16).upcase
+  end
+
+end
+
+class Compiler < CodeReader
+
+  attr_reader :source, :jumpmarks, :code
+
+  def initialize(filelines, jumpmarks)
+    @source = filelines
+    
+    @jumpmarks = Array.new
+  end
+
+  def compile
+    code = String.new
+    @source.each do |line|
+      next if is_comment?(line) 
+      next if empty_line?(line)
+
+      nodes = line.split(" ")
+      opcode = nodes.shift
+      args = create_args(opcode, nodes)
+
+      fail "UNALLOWED OPCODE '#{opcode}'" unless $ops.keys.include? opcode
+
+      code << [$ops[opcode].opc].pack("S")
+      code << args
+    end
+
+    code
+  end
+
+  #
+  # decode arguments to binary
+  #
+  def create_args(opc, args)
+    res = ""
+    args.each_with_index do |arg, i|
+      if [REGISTER, MEMORY].include? $ops[opc].args[i]
+        res << [arg.to_i(16)].pack("S") # pack for 16 bit if register address
+
+      elsif [ADDRESS, VALUE].include? $ops[opc].args[i]
+        res << [arg.to_i(16)].pack("Q") # pack for 64 bit if adress or value
+
+      end
+    end
+    res
+  end
+
+end
+
+class Preprocessor < CodeReader
+
+  attr_reader :jumpmarks, :source
+
+  def initialize(source)
+    @source = source
+    @jumpmarks = Array.new
+    preprocess
+    translate_jumpmarks
+  end
+
+  def preprocess 
+    offset = 0
+    @source.each do |line|
+      next if is_comment?(line)
+      next if empty_line?(line)
+
+      matched = line.match(/[a-z_]*:/)
+      if matched
+        @jumpmarks << JumpMark.new(matched.string.gsub(":", ""), hex_of(offset))
+
+      else 
+        opcode = line.split(" ").first
+        if $ops[opcode].nil? then fail "Opcode not found: '#{opcode}'" end
+        offset += OPCODE + $ops[opcode].args.inject { |x, sum| sum += x }
+
+      end
+
     end
   end
-  res
-end
 
-@code = ""
+  #
+  # translate jumpmarks to it's hexadecimal jump addresses.
+  #
+  def translate_jumpmarks
+    @jumpmarks.each do |mark|
+      @source.map! do |line|
+        if line.include? mark.name and not line.include? ":"
+          line.gsub!(mark.name, mark.hex)
 
-#
-# compile a line
-# 
-def process_line(line)
-    nodes = line.split(" ")
-    code = nodes.shift
-    args = create_args(code, nodes)
+        elsif line.include? "#{mark.name}:"
+          #
+          # remove jumpmarks
+          # 
+          line.gsub!(mark.name + ":", "; JUMPMARK: #{mark.name}")
 
-    fail "UNALLOWED OPCODE #{code}" unless @ops.keys.include? code
-
-    @code << [@ops[code].opc].pack("S")
-    @code << args
-end
-
-#
-# read stdin and compile just in time to binary
-#
-def read_stdin
-  loop do 
-    process_line(gets)
+        end
+        
+        line
+      end
+    end
   end
+
 end
 
-#
-# read file f and compile lines to binary
-#
-def read_file f
-  lines = File.readlines(f)
-  lines.each do |line| 
-    next if line.start_with? ";" or line.start_with? "#"
-    next if line.strip.empty? 
-    process_line(line)
+if __FILE__ == $0
+  if ARGV.empty? 
+    puts "No arguments."
+    exit 1
   end
+
+  f = File.open(ARGV.first, "r")
+  source = f.readlines
+  pre = Preprocessor.new(source)
+
+  #
+  # print preprocessed source of -E is set
+  #
+  if ARGV.include? "-E"
+    puts "Marks:" 
+    puts pre.jumpmarks.map { |m| m.name }.join(", ")
+    puts "\nPreprocessed:"
+    puts pre.source
+    exit 0
+  end
+
+  com = Compiler.new(pre.source, pre.jumpmarks)
+
+  code = com.compile
+
+  new_filename = ARGV.first + ".out"
+
+  nf = File.open(new_filename, "w+")
+  nf.write(code)
+  nf.close
+  
+  puts "#{ARGV.first} -> #{new_filename}"
 end
-
-#
-# run the stuff...
-#
-
-if ARGV.empty?
-  read_stdin
-else
-  read_file( ARGV.first )
-end
-
-print "#{ARGV.first} ->"
-
-if ARGV.empty?
-  filename = gets.chop
-  f = File.new(filename, "w")
-else
-  filename = ARGV.first + ".out"
-  f = File.open(filename, "w")
-end
-
-puts filename
-IO.write(f, @code)
-f.close
