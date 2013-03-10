@@ -52,3 +52,5 @@ TODO:
 	documentation tool?)
 
 30) Rework the output of the VPU.
+
+32) Fix overflow check asm file / mini compiler (don't know where the bug is)
