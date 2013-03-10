@@ -133,124 +133,111 @@ class Op < Struct.new :opc, :args; end
 
 class JumpMark
 
-  attr_accessor :name, :byte 
+  attr_accessor :name, :hex
 
-  def initialize(name, byte)
+  def initialize(name, hex)
     @name = name.gsub("\n", "").gsub(" ", "")
-    @byte = byte 
+    @hex = hex 
 
-    puts "New Jumpmark #{@name} at #{@byte}"
+    puts "New Jumpmark #{@name} at #{@hex}"
   end
 
 end
 
-@code = ""
-@jumpmarks = Array.new
+class Code
 
-#
-# decode arguments to binary
-#
-def create_args(opc, args)
-  res = ""
-  args.each_with_index do |arg, i| 
-    if @jumpmarks.map { |jm| jm.name }.include? arg 
-      arg = @jumpmarks.select { |jm| jm.name == arg }.first.byte.to_s
-    end
+  def initialize(file, jumpmarks)
+    @source = file.readlines
+    @jumpmarks = Array.new
+    
+  end
 
-    if [REGISTER, MEMORY].include? @ops[opc].args[i]
-      res << [arg.to_i(16)].pack("S") # pack for 16 bit if register address
-    elsif [ADDRESS, VALUE].include? @ops[opc].args[i]
-      res << [arg.to_i(16)].pack("Q") # pack for 64 bit if adress or value
+  def translate_jumpmarks
+    @source.each do |line|
+      next if @jumpmarks.map(&:name).include? line.gsub(":", "").strip
+
+      jm_names = @jumpmarks.map { |jm| line.include? jm.name }.select { |x| x == true }
+      if jm_names.any?
+        # 
+        # line includes a jumpmark, 'jm' is the found jumpmark-name
+        #
+        jm = jm_names.first
+
+        line.gsub!(jm, @jumpmarks.select { |mark| mark.name == jm }.first.hex)
+      end
     end
   end
-  res
-end
 
-#
-# compile a line
-# 
-def process_line(line)
-  return if line.match( /[a-z]+:/ ) 
-
-  nodes = line.split(" ")
-  code = nodes.shift
-  args = create_args(code, nodes)
-
-  fail "UNALLOWED OPCODE #{code}" unless @ops.keys.include? code
-
-  @code << [@ops[code].opc].pack("S")
-  @code << args
-end
-
-def preprocess(lines)
-
-  offset = 0
-
-  lines.each do |line|
-    next if line.start_with? ";" or line.start_with? "#"
-    next if line.strip.empty? 
-
-    matched = line.match( /[a-z]+:/ )
-    if not matched.nil?
-      puts "Matched: \"#{line}\""
-      @jumpmarks << JumpMark.new(matched.string.gsub(":", ""), offset)
-    else
-      puts "preprocess: \"#{line}\""
+  def compile
+    code = String.new
+    @source.each do |line|
       nodes = line.split(" ")
-      code = nodes.shift 
-      args = create_args(code, nodes)
-      fail "UNALLOWED OPCODE \"#{code}\"" unless @ops.keys.include? code
-      offset += OPCODE + args.bytesize
+      opcode = nodes.shift
+      args = create_args(opcode, nodes)
+
+      fail "UNALLOWED OPCODE #{opcode}" unless @ops.keys.include? opcode
+
+      code << [@ops[opcode].opc].pack("S")
+      code << args
     end
-    puts "offset at #{offset}"
+
+    code
   end
-end
 
-#
-# read stdin and compile just in time to binary
-#
-def read_stdin
-  lines = Array.new
-  loop do 
-    lines << gets
+  #
+  # decode arguments to binary
+  #
+  def create_args(opc, args)
+    res = ""
+    args.each_with_index do |arg, i|
+      if [REGISTER, MEMORY].include? @ops[opc].args[i]
+        res << [arg.to_i(16)].pack("S") # pack for 16 bit if register address
+
+      elsif [ADDRESS, VALUE].include? @ops[opc].args[i]
+        res << [arg.to_i(16)].pack("Q") # pack for 64 bit if adress or value
+
+      end
+    end
+    res
   end
-  preprocess(lines)
-  lines.each { |line| process_line line }
+
 end
 
-#
-# read file f and compile lines to binary
-#
-def read_file f
-  lines = File.readlines(f)
-  preprocess(lines)
-  lines.each do |line| 
-    next if line.start_with? ";" or line.start_with? "#"
-    next if line.strip.empty? 
-    process_line(line)
+class Preprocessor
+
+  attr_reader :jumpmarks
+
+  def initialize(file)
+    @file = file
+    @jumpmarks = Array.new
+    preprocess
   end
+
+  def preprocess 
+    offset = 0
+    @file.readlines.each do |line|
+      next if is_comment?(line)
+
+      matched = line.match(/[a-z_]*:$/)
+      if not matched.nil?
+        @jumpmarks << JumpMark.new(matches.string.gsub(":", ""), hex_of(offset))
+
+      else 
+        opcode = line.split(" ").first
+        if @ops[opcode].nil? then fail "Opcode not found: #{opcode}" end
+        offset += OPCODE + @ops[opcode].args
+
+      end
+
+    end
+  end
+
+  def is_comment?(line)
+    line.start_with? ";" or line.start_with? "#"
+  end
+
+  def hex_of(i)
+    "0x" + i.to_s(16)
+  end
+
 end
-
-#
-# run the stuff...
-#
-
-if ARGV.empty?
-  read_stdin
-else
-  read_file( ARGV.first )
-end
-
-print "#{ARGV.first} ->"
-
-if ARGV.empty?
-  filename = gets.chop
-  f = File.new(filename, "w")
-else
-  filename = ARGV.first + ".out"
-  f = File.open(filename, "w")
-end
-
-puts filename
-IO.write(f, @code)
-f.close
