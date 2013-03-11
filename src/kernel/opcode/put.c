@@ -21,7 +21,7 @@ void minx_opc_put_func(uint64_t *params) {
 
 #ifdef DEBUGGING
     EXPLAIN_OPCODE_WITH_HEXF(
-                "into heap %"PRIu64" at offset %"PRIu64" %u bytes from %#010"PRIx64,
+                "into heap %#010"PRIx64" at offset %010"PRIx64" %u bytes from %#010"PRIx64,
                 "into heap %"PRIu64" at offset %"PRIu64" %u bytes from %"PRIu64,
                 r1->value,
                 r2->value,

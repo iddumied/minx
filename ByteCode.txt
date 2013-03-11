@@ -122,10 +122,10 @@ code | Short ex.| arguments				        | Expl.
 0x29 | MULI     | Register, Value               | result in akku 
 0x2A | MULR     | Register, Register            | result in register
 0x2B | MULIR    | Register, Value               | result in register
-0x2C | DIV      | Register, Register            | result in akku 
-0x2D | DIVI     | Register, Value               | result in akku
-0x2E | DIVR     | Register, Register            | result in register 
-0x2F | DIVIR    | Register, Value               | result in register 
+0x2C | DIV      | Register, Register            | result in akku, dividing by zero will result in no dividing
+0x2D | DIVI     | Register, Value               | result in akku, dividing by zero will result in no dividing
+0x2E | DIVR     | Register, Register            | result in register, dividing by zero will result in no dividing 
+0x2F | DIVIR    | Register, Value               | result in register, dividing by zero will result in no dividing 
 0x30 | POW      | Register, Register            | result in akku
 0x31 | POWI     | Register, Value               | result in akku
 0x32 | POWR     | Register, Register            | result in register 

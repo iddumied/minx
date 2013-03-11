@@ -47,21 +47,25 @@ int main(int argc, char **args) {
         minx_print_help();
         goto end;
     }
+
+    if( !minx_util_filecheck_file_exists(args[1]) || 
+        !minx_util_filecheck_path_is_file(args[1]) ||
+        !minx_util_filecheck_file_is_readable(args[1])){
     
+        exit_code = 1;
+        goto end;
+    }
+
     f = fopen(args[1], "r");
 
-    if( minx_config_get(CONF_MINX_DEBUGGING)->b ) {
-        printf( 
-"             _            \n"
-"            (_)           \n"
-" _ __ ___  _ _ __ __  __\n"
-"| '_ ` _ \\| | '_ \\\\ \\/ /\n"
-"| | | | | | | | | |>  < \n"
-"|_| |_| |_|_|_| |_/_/\\_\\\n\n"
-             );
+    if(f == NULL) {
+        handle_file_open_error();
+        exit_code = 1;
+        goto end;
     }
 
     if(minx_config_get(CONF_MINX_DEBUGGING)->b) {
+        printminxasciiart();
         mtrace();
     }
 

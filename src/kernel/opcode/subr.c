@@ -17,7 +17,9 @@ void minx_opc_subr_func(uint64_t *params) {
     Register *r2 = minx_registers_find_register(params[1]);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE("R%"PRIu64" (%"PRIu64") -= R%"PRIu64" (%"PRIu64")", 
+    EXPLAIN_OPCODE_WITH_HEXF(
+            "R%"PRIu64" (%#010"PRIx64") -= R%"PRIu64" (%#010"PRIx64")",
+            "R%"PRIu64" (%"PRIu64") -= R%"PRIu64" (%"PRIu64")", 
             params[0], r1->value,
             params[2], r2->value
             );
@@ -25,7 +27,7 @@ void minx_opc_subr_func(uint64_t *params) {
 
     Register *status = minx_registers_find_register(statusregister);
 
-    if(r2->value > r1->value) {
+    if(minx_util_check_subtraction_overflow64(r2->value, r1->value)) {
         setbit(status->value, OVERFLOW_BIT);
     }
 

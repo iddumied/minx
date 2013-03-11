@@ -11,7 +11,10 @@
  */
 void minx_opc_exiti_func(uint64_t *params) {
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE("code: %"PRIu64, params[0]);
+    EXPLAIN_OPCODE_WITH_HEXF(
+            "code: %#010"PRIx64, 
+            "code: %"PRIu64, 
+            params[0]);
 #endif
 
     minx_kernel_unset_running_variable();

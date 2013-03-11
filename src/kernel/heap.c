@@ -372,7 +372,13 @@ void minx_kernel_heap_print_heap() {
     uint64_t i;
     unsigned int line = 0, j = 0;
     for(i = 0 ; i < last_heapnode_ptr; i++) {
-        printf("ID: %"PRIu64"\n", heapnodes[i]->memoryID);
+        if(minx_config_get(CONF_HEX)->b) {
+            printf("ID: %#010"PRIx64"\n", heapnodes[i]->memoryID);
+        }
+        else {
+            printf("ID: %"PRIu64"\n", heapnodes[i]->memoryID);
+        }
+
         printf("0x00000000 : ");
         for(j = 0; j < heapnodes[i]->size; j++ ) {
             if( heapnodes[i]->memory[j] == 0 ) {

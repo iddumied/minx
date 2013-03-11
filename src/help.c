@@ -5,7 +5,7 @@
  */
 void minx_print_help(void) {
     printf(
-            "usage: minx [program-binary | help] <flags...>\n"
+            "usage: minx [program-binary | --help] <flags...>\n"
             "\n"
             "   minx has to be compiled with certain options for some config flags.\n"
             "   They are indicated bracketed.\n"
