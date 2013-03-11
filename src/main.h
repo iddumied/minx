@@ -4,6 +4,7 @@
 #include "help.h"
 #include "util/error.h"
 #include "util/config.h"
+#include "util/filecheck.h"
 #include "reader/binary_reader.h"
 #include "kernel/kernel.h"
 
