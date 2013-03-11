@@ -70,6 +70,10 @@ opcodes
 
 'size'          stands for register-address where the size in byte stands, maximal 8
 
+'moduleID' and 
+'moduleOp'      are 'Register'. It just tells what there has to stand, but
+                the values are read from a register identified by the parameter.
+
 Maximal 5 parameters at the moment!
 
 code | Short ex.| arguments				        | Expl.
@@ -194,3 +198,13 @@ Heap opcodes (0x6? are reserved for HEAP opcodes):
 0x82 | EXPORT   | none                          | push all register (except program pointer) to the regstack
 0x83 | IMPORT   | none                          | pop all registers (except program pointer) from the regstack (all registers will be overridden, except program-pointer)
 -----+----------+-------------------------------+--------------------------- 
+
+Here the module-stuff goes.
+
+-----+----------+-------------------------------+--------------------------- 
+0x70 | MLOAD    | MemoryAddr                    | in the mem, there stands the path!, moduleID or zero in the akku
+0x71 | MUNLOAD  | ModuleID                      | reg with moduleID passed
+0x72 | MHASPRMS | ModuleID, ModuleOp            | reg with moduleID passed
+0x73 | MCALLNP  | ModuleID, ModuleOp            | reg with moduleID, memory passed
+0x74 | MCALL    | ModuleID, ModuleOp, MemoryAddr| reg with moduleID passed
+0x75 | MGETSTAT | ModuleID                      | get status of module in akku, zero for "not loaded" or failure

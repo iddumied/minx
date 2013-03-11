@@ -6,6 +6,7 @@
 #define MINX_KERNEL_FUNC_PRINT_PREFIX      "[minx][vpu][func]"
 #define MINX_KERNEL_OP_PRINT_PREFIX        "[minx][vpu][op]"
 #define MINX_KERNEL_REGISTER_PREFIX        "[minx][vpu][reg]"
+#define MINX_KERNEL_MODULE_PREFIX       "[minx][vpu][module]"
 
 #define MINX_CONFIG_PREFIX              "[minx][conf]"
 

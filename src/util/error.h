@@ -9,6 +9,11 @@ void    minx_error_shutdown                     (void);
 void    minx_error_global_shutdown              (void);
 void    minx_error_register_shutdown_function   (void(*func)(void));
 
+#define F_RUNTIME_ERROR(pref,f,...)                                         \
+    do {                                                                    \
+        fprintf(stderr,"%s"f,pref,__VA_ARGS__);                             \
+    } while (0)
+
 #define FATAL_ERROR FATAL_F_ERROR("func %s\nline %i\n",__func__,__LINE__);
 
 #define FATAL_DESC_ERROR(desc) FATAL_F_ERROR("func %s\nline %i\n%s\n",__func__,__LINE__,desc);

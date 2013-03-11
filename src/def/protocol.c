@@ -626,6 +626,42 @@ const OpcodeInformation opcodes[] = {
         .params = { HEAP_ADDRESS_SIZE },
     },
 
+    [MINX_OPC_MLOAD]   = { 
+        .opc_func = minx_opc_mload_func,
+        .strrep = "MLOAD",
+        .params = { HEAP_ADDRESS_SIZE },
+    },
+
+    [MINX_OPC_MUNLOAD]   = { 
+        .opc_func = minx_opc_munload_func,
+        .strrep = "MUNLOAD",
+        .params = { REGISTER_ADDRESS_SIZE },
+    },
+
+    [MINX_OPC_MHASPRMS]   = { 
+        .opc_func = minx_opc_mhasprms_func,
+        .strrep = "MHASPRMS",
+        .params = { REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE },
+    },
+
+    [MINX_OPC_MCALLNP]   = { 
+        .opc_func = minx_opc_mcallnp_func,
+        .strrep = "MCALLNP",
+        .params = { REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE },
+    },
+
+    [MINX_OPC_MCALL]   = { 
+        .opc_func = minx_opc_mcall_func,
+        .strrep = "MCALL",
+        .params = { REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE, HEAP_ADDRESS_SIZE },
+    },
+
+    [MINX_OPC_MGETSTAT]   = { 
+        .opc_func = minx_opc_mgetstat_func,
+        .strrep = "MGETSTAT",
+        .params = { REGISTER_ADDRESS_SIZE },
+    },
+
     [MINX_OPC_LBSH]     = {
         .opc_func = minx_opc_lbsh_func,
         .strrep = "LBSH",

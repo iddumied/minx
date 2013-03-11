@@ -305,6 +305,19 @@ err:
 }
 
 /**
+ * @brief Get a HeapNode* to heap identified by ID
+ *
+ * Externally visible alias for find_heap();
+ *
+ * @param heap The heap-ID
+ *
+ * @return The Heap requested by ID
+ */
+HeapNode * minx_kernel_heap_get(uint64_t heap) {
+    return find_heap(heap);
+}
+
+/*
  * @brief Remove a Heapnode from memory (seemingly)
  *
  * The minx_kernel_heap_free() function does NOT remove the HeapNode from the
