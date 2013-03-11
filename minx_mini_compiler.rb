@@ -21,6 +21,8 @@ MEMORY    = REGISTER
 # helper to store stuff
 class Op < Struct.new :opc, :args; end
 
+class SpecialOp < Struct.new(:args, :method); end
+
 #
 # These are the opcodes. You can also read them in the ByteCode.def file.
 #
@@ -133,6 +135,71 @@ $ops = {
   "IMPORT" => Op.new(0x83, []), 
 }
 
+
+####
+#
+#
+#
+# Special opcode methods
+#
+#
+#
+####
+
+
+#
+# expect:
+#
+# 1. argument: register for caching
+# 2. argument: register with the memoryID of the memory to write to 
+#
+# returns the code-replacement
+#
+def load_string_opcode(args)
+  string = Array.new
+  i = 0
+
+  cache1 = args[0]
+  cache2 = args[1]
+  cache3 = args[2]
+  memid = args[3]
+
+  args.last.each_byte do |chr|
+    string << "MOVI #{cache1} 0x01"
+    string << "MOVI #{cache2} 0x01"
+    string << "MOVI #{cache3} 0x#{chr.to_s(16).upcase}"
+    string << "PUT #{memid} #{cache1} #{cache2} #{cache3}"
+
+    i += 1
+  end
+
+  string
+end
+
+####
+#
+#
+#
+# Special opcode map
+#
+#
+#
+####
+
+
+$specials = {
+
+  #
+  # expect:
+  #
+  # 1. argument: register for caching
+  # 2. argument: register with the memoryID of the memory to write to 
+  #
+  # returns the code-replacement
+  #
+  "LDSTRING" => SpecialOp.new([REGISTER, REGISTER, REGISTER, String], method(:load_string_opcode)), 
+}
+
 class JumpMark
 
   attr_accessor :name, :hex
@@ -215,6 +282,7 @@ class Preprocessor < CodeReader
   def initialize(source)
     @source = source
     @jumpmarks = Array.new
+    translate_special_ops
     preprocess
     translate_jumpmarks
   end
@@ -261,6 +329,20 @@ class Preprocessor < CodeReader
     end
   end
 
+  def translate_special_ops
+    $specials.each_pair do |opstr, sop|
+      @source.map! do |line|
+        if line.include? opstr
+          nodes = line.split(" ")
+          cmd = nodes.shift
+          puts "parsing #{cmd} : #{nodes.join(", ")}"
+          line = sop.method.call(nodes)
+        end
+        line
+      end
+    end
+    @source.flatten!
+  end
 end
 
 if __FILE__ == $0
@@ -280,7 +362,7 @@ if __FILE__ == $0
     puts "Marks:" 
     puts pre.jumpmarks.map { |m| m.name }.join(", ")
     puts "\nPreprocessed:"
-    puts pre.source
+    puts pre.source.map(&:dump).join("\n")
     exit 0
   end
 
