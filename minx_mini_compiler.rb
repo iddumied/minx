@@ -137,9 +137,9 @@ $ops = {
 
   "MLOAD" =>  Op.new(0x70, [MEMORY]), 
   "MUNLOAD"=> Op.new(0x71, [MODULEID]), 
-  "MHASPRMS"=>Op.new(0x72, [MODULEID,]), 
-  "MCALLP" => Op.new(0x73, [MODULEID,]), 
-  "MCALL" =>  Op.new(0x74, [MODULEID,]), 
+  "MHASPRMS"=>Op.new(0x72, [MODULEID, REGISTER]), 
+  "MCALLNP"=> Op.new(0x73, [MODULEID, REGISTER]), 
+  "MCALL" =>  Op.new(0x74, [MODULEID, REGISTER, MEMORY]), 
   "MGETSTAT"=>Op.new(0x75, [MODULEID]), 
 }
 
