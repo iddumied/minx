@@ -122,6 +122,8 @@ void minx_kernel_module_shutdown(void) {
 
 /*
  * load function for loading a module
+ *
+ * Returns the module ID or zero on failure
  */
 uint64_t minx_kernel_module_load(char *module_path) {
     Module *mod = new_module(module_path);
@@ -164,8 +166,11 @@ uint64_t minx_kernel_module_load(char *module_path) {
                 mod->opcode_gets_params_func(mod->opcodes[i].opcode);
         }
     }
+    else {
+        return 0;
+    }
 
-    return ret;
+    return mod->module_id;
 }
 
 /*
