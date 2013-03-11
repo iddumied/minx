@@ -43,21 +43,21 @@ MOVI 0xB6 0x00
 ;
 
 
-; increment test
+; increment test OVERFLOW?
 INC 0xB5 
 ; if overflow? then exit-code++
-JMPIZ 0x03 __after_inc_test_exit_increment
+JMPNZ 0x03 __after_inc_test_exit_increment
 INC 0xB0
 ; reset statusbits
 MOVI 0x03 0x00
 __after_inc_test_exit_increment:
 
 
-; decrement test
+; decrement test OVERFLOW?
 
 DEC 0xB6
 ; if overflow then exit-code++
-JMPIZ 0x03 __after_dec_test_exit_increment
+JMPNZ 0x03 __after_dec_test_exit_increment
 INC 0xB0
 ; reset statusbits
 MOVI 0x03 0x00
@@ -67,7 +67,7 @@ __after_dec_test_exit_increment:
 ; addition test
 ADD 0xB3 0xB3
 ; if overflow then exit-code++
-JMPIZ 0x03 __after_addition_test_exit_increment
+JMPNZ 0x03 __after_addition_test_exit_increment
 INC 0xB0
 ; reset statusbits
 MOVI 0x03 0x00
@@ -77,7 +77,7 @@ __after_addition_test_exit_increment:
 ; subtraction test
 SUB 0xB2 0xB3
 ; if overflow the exit-code++
-JMPIZ 0x03 __after_subtraction_test_exit_increment
+JMPNZ 0x03 __after_subtraction_test_exit_increment
 INC 0xB0
 ; reset statusbits
 MOVI 0x03 0x00
@@ -87,7 +87,7 @@ __after_subtraction_test_exit_increment:
 ; multiplication testing
 MUL 0xB2 0xB3
 ; if overflow then exit-code++
-JMPIZ 0x03 __after_multiplication_test_exit_increment
+JMPNZ 0x03 __after_multiplication_test_exit_increment
 INC 0xB0
 ; reset statusbits
 MOVI 0x03 0x00
@@ -97,7 +97,7 @@ __after_multiplication_test_exit_increment:
 ; expotentation test
 POW 0xB2 0xB3
 ; if overflow then exit-code++
-JMPIZ 0x03 __after_exponentation_test_exit_increment
+JMPNZ 0x03 __after_exponentation_test_exit_increment
 INC 0xB0
 ; reset statusbits 
 MOVI 0x03 0x00 
