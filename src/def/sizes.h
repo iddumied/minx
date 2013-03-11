@@ -38,9 +38,7 @@
 
 
 /*
- * 
  * Print padding helpers
- *
  */
 
 #define         PROGRAM_POINTER_PADDING     "6"

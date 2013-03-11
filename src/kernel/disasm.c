@@ -54,9 +54,6 @@ static void print_parameters(unsigned int *params) {
     uint16_t *param16bit = malloc( sizeof(uint16_t) );
     uint64_t *param64bit = malloc( sizeof(uint64_t) );
 
-    int printed_chars;
-#define PRINT_PARAM_SPACE 8
-
     int in_hex = minx_config_get(CONF_HEX)->b;
 
     for(i = 0; params[i] || i < MAX_PARAMETER_COUNT; i++) {
@@ -75,11 +72,7 @@ static void print_parameters(unsigned int *params) {
                     printf("%#018"PRIx16, *param16bit);
             }
             else {
-                printed_chars = printf("%"PRIu16, *param16bit);
-                while(printed_chars < PRINT_PARAM_SPACE) {
-                    printf(" ");
-                    printed_chars++;
-                }
+                printf("%08"PRIu16, *param16bit);
             }
         }
         else { /* param 8 byte = 64 bit */
@@ -95,19 +88,13 @@ static void print_parameters(unsigned int *params) {
                     printf("%#018"PRIx64, *param64bit);
             }
             else {
-                printed_chars = printf("%"PRIu64, *param64bit);
-                while(printed_chars < PRINT_PARAM_SPACE) {
-                    printf(" ");
-                    printed_chars++;
-                }
+                printf("%08"PRIu64, *param64bit);
             }
         }
 
         program_pointer += params[i];
     }
     printf("\n");
-
-#undef PRINT_PARAM_SPACE
 }
 
 #endif // DISASSEMBLE
