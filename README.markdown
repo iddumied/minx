@@ -77,6 +77,9 @@ the opcode-identifiers change!
 
 A module needs the headers from ./module_headers/!
 
+Modules/Plugins are under development at the moment. I have no working modules
+yet to test it.
+
 ## Compile flags
 
 Compile with DEBUG to be able to debug the VPU 
