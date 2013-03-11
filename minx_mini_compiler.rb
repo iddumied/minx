@@ -17,6 +17,7 @@ REGISTER  = 2
 VALUE     = 8
 ADDRESS   = 8
 MEMORY    = REGISTER 
+MODULEID  = REGISTER
 
 # helper to store stuff
 class Op < Struct.new :opc, :args; end
@@ -133,6 +134,13 @@ $ops = {
   "RBSH" =>   Op.new(0x81, [REGISTER]), 
   "EXPORT" => Op.new(0x82, []), 
   "IMPORT" => Op.new(0x83, []), 
+
+  "MLOAD" =>  Op.new(0x70, [MEMORY]), 
+  "MUNLOAD"=> Op.new(0x71, [MODULEID]), 
+  "MHASPRMS"=>Op.new(0x72, [MODULEID,]), 
+  "MCALLP" => Op.new(0x73, [MODULEID,]), 
+  "MCALL" =>  Op.new(0x74, [MODULEID,]), 
+  "MGETSTAT"=>Op.new(0x75, [MODULEID]), 
 }
 
 
