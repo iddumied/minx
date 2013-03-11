@@ -36,4 +36,12 @@
  * // <v0.0.3-protocol-stable> 
  */
 
+
+/*
+ * Print padding helpers
+ */
+
+#define         PROGRAM_POINTER_PADDING     "6"
+#define         OPCODE_STRING_PADDING       "10"
+
 #endif // __MINX_VPU_SIZES_H__
