@@ -1,18 +1,5 @@
 #include "main.h"
 
-/*
- * static function prototypes
- */
-
-static void handle_file_open_error(void);
-
-/**
- * @brief Handle the error when the binary file could not be opened
- */
-static void handle_file_open_error() {
-    perror("Error opening file");
-}
-
 /**
  * @brief handle the signal passed by argument
  *
@@ -61,28 +48,10 @@ int main(int argc, char **args) {
         goto end;
     }
 
-    /*
-     * check if given path is a file
-     */
-    struct stat s;
-    if(stat(args[1], &s) == 0) {
-        if(s.st_mode & S_IFDIR) {
-            printf("Passed argument is a directory!\n");
-            exit_code = 1;
-            goto end;
-        }
-        else if(s.st_mode & S_IFREG) {
-            /* everything ok */
-        }
-        else {
-            printf("Passed argument is no file!\n");
-            exit_code = 1;
-            goto end;
-        }
-    }
-    else {
-        /* error */
-        printf("Error reading stats from passed path!\n");
+    if( !minx_util_filecheck_file_exists(args[1]) || 
+        !minx_util_filecheck_path_is_file(args[1]) ||
+        !minx_util_filecheck_file_is_readable(args[1])){
+    
         exit_code = 1;
         goto end;
     }
