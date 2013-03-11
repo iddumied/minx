@@ -12,7 +12,7 @@
 
 ALLOCI 0x3A
 
-LDSTRING 0xB0 0xB1 0xB2 0x02 "/home/matthias/dev/minx-d-testlib/bin/minx_module_basic.so"
+LDSTRING 0xB0 0xB1 0xB2 0x02 /home/matthias/dev/minx-d-testlib/bin/minx_module_basic.so
 
 ;
 ; move memory id
