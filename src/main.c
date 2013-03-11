@@ -95,18 +95,8 @@ int main(int argc, char **args) {
         goto end;
     }
 
-    if( minx_config_get(CONF_MINX_DEBUGGING)->b ) {
-        printf( 
-"             _            \n"
-"            (_)           \n"
-" _ __ ___  _ _ __ __  __\n"
-"| '_ ` _ \\| | '_ \\\\ \\/ /\n"
-"| | | | | | | | | |>  < \n"
-"|_| |_| |_|_|_| |_/_/\\_\\\n\n"
-             );
-    }
-
     if(minx_config_get(CONF_MINX_DEBUGGING)->b) {
+        printminxasciiart();
         mtrace();
     }
 
