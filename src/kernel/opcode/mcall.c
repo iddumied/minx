@@ -12,7 +12,10 @@ void minx_opc_mcall_func(uint64_t *params) {
     HeapNode *heap = minx_kernel_heap_get(params[2]);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE("Call module %i",mod_id_reg->value);
+    EXPLAIN_OPCODE_WITH_HEXF(
+            "Call module %#010"PRIx64,
+            "Call module %"PRIu64,
+            mod_id_reg->value);
 #endif
 
     minx_kernel_module_call_opcode(mod_id_reg->value, mod_op_reg->value, heap);

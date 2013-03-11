@@ -11,7 +11,10 @@ void minx_opc_mgetstat_func(uint64_t *params) {
     Register *mod_id_reg = minx_registers_find_register(params[0]);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE("Get status of module %i",mod_id_reg->value);
+    EXPLAIN_OPCODE_WITH_HEXF(
+            "Get status of module %#010"PRIx64,
+            "Get status of module %"PRIu64,
+            mod_id_reg->value);
 #endif
 
     akku->value = minx_kernel_module_get_status(mod_id_reg->value);
