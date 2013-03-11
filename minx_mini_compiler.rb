@@ -129,6 +129,8 @@ $ops = {
 
   "LBSH" =>   Op.new(0x80, [REGISTER]), 
   "RBSH" =>   Op.new(0x81, [REGISTER]), 
+  "EXPORT" => Op.new(0x82, []), 
+  "IMPORT" => Op.new(0x83, []), 
 }
 
 class JumpMark
@@ -230,7 +232,7 @@ class Preprocessor < CodeReader
       else 
         opcode = line.split(" ").first
         if $ops[opcode].nil? then fail "Opcode not found: '#{opcode}'" end
-        offset += OPCODE + $ops[opcode].args.inject { |x, sum| sum += x }
+        offset += OPCODE + ($ops[opcode].args.inject { |x, sum| sum += x } || 0)
 
       end
 

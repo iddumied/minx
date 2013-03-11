@@ -161,6 +161,8 @@ extern void         minx_kernel_set_exit_status             (int);
 
 #define         MINX_OPC_LBSH           0x80
 #define         MINX_OPC_RBSH           0x81
+#define         MINX_OPC_EXPORT         0x82
+#define         MINX_OPC_IMPORT         0x83
 
 /*
  * -----------------------------------------------------------------------------
@@ -303,7 +305,8 @@ void        minx_opc_getsize_func        (uint64_t* params);
 
 void        minx_opc_lbsh_func          (uint64_t* params);
 void        minx_opc_rbsh_func          (uint64_t* params);
-
+void        minx_opc_export_func        (uint64_t* params);
+void        minx_opc_import_func        (uint64_t* params);
 
 #endif // __MINX_VPU_OPCODES_H__
 

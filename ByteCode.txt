@@ -48,6 +48,10 @@ stack
 - infinite size (only limited by your system)
 - used for both function calls and pushing values
 
+regstack 
+-------- 
+- A stack where all registers can be pushed to with one command.
+
 opcodes
 -------
 
@@ -187,4 +191,6 @@ Heap opcodes (0x6? are reserved for HEAP opcodes):
 -----+----------+-------------------------------+--------------------------- 
 0x80 | LBSH     | Register                      | Left shift one byte
 0x81 | RBSH     | Register                      | Right shift one byte
+0x82 | EXPORT   | none                          | push all register (except program pointer) to the regstack
+0x83 | IMPORT   | none                          | pop all registers (except program pointer) from the regstack (all registers will be overridden, except program-pointer)
 -----+----------+-------------------------------+--------------------------- 

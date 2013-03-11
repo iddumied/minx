@@ -8,6 +8,8 @@
 #include "util/debug.h"
 #include "util/error.h"
 
+#include "stack/stack.h"
+
 /* @typedef Register Register Type
  */
 typedef struct {
@@ -25,6 +27,9 @@ void            minx_registers_init                 (void);
 void            minx_registers_shutdown             (void);
 uint16_t        minx_registers_get_register_count   (void);
 Register*       minx_registers_find_register        (uint64_t addr);
+
+int             minx_registers_push                 (void);
+int             minx_registers_pop                  (void);
 
 /*
  * optional prototypes
