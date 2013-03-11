@@ -85,6 +85,9 @@ There is a branch called 'pre-stable', including all features tested by me via
 fail-save or even that they are tested. Currently, there is no testing except
 the .asm files running!
 
+There is a bugfix-commit for a jump-opcode tagged 'v0.0.3-jump-bugfix'. You
+really should apply this commit if you use v0.0.3 !
+
 ## Additional notes
 
 If you define the macro DESTROY_MY_APPLICATION when compiling, you use Sony-like 
