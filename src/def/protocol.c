@@ -10,6 +10,8 @@
  *                          DON'T CHANGE THESE OPCODES! 
  *                          they are marked as stable in
  *                          v0.0.3-protocol-stable
+ *                          and
+ *                          v0.0.4
  *
  * New opcodes can be defined, but none of the <v0.0.3> marked ones should be
  * changed!
@@ -626,60 +628,70 @@ const OpcodeInformation opcodes[] = {
         .params = { HEAP_ADDRESS_SIZE },
     },
 
+    /* <v0.0.4> */
     [MINX_OPC_MLOAD]   = { 
         .opc_func = minx_opc_mload_func,
         .strrep = "MLOAD",
         .params = { HEAP_ADDRESS_SIZE },
     },
 
+    /* <v0.0.4> */
     [MINX_OPC_MUNLOAD]   = { 
         .opc_func = minx_opc_munload_func,
         .strrep = "MUNLOAD",
         .params = { REGISTER_ADDRESS_SIZE },
     },
 
+    /* <v0.0.4> */
     [MINX_OPC_MHASPRMS]   = { 
         .opc_func = minx_opc_mhasprms_func,
         .strrep = "MHASPRMS",
         .params = { REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE },
     },
 
+    /* <v0.0.4> */
     [MINX_OPC_MCALLNP]   = { 
         .opc_func = minx_opc_mcallnp_func,
         .strrep = "MCALLNP",
         .params = { REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE },
     },
 
+    /* <v0.0.4> */
     [MINX_OPC_MCALL]   = { 
         .opc_func = minx_opc_mcall_func,
         .strrep = "MCALL",
         .params = { REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE, HEAP_ADDRESS_SIZE },
     },
 
+    /* <v0.0.4> */
     [MINX_OPC_MGETSTAT]   = { 
         .opc_func = minx_opc_mgetstat_func,
         .strrep = "MGETSTAT",
         .params = { REGISTER_ADDRESS_SIZE },
     },
 
+    /* <v0.0.4> */
     [MINX_OPC_LBSH]     = {
         .opc_func = minx_opc_lbsh_func,
         .strrep = "LBSH",
         .params = { REGISTER_ADDRESS_SIZE },
     },
 
+    /* <v0.0.4> */
     [MINX_OPC_RBSH]     = {
         .opc_func = minx_opc_rbsh_func,
         .strrep = "RBSH",
         .params = { REGISTER_ADDRESS_SIZE },
     },
 
+    /* <v0.0.4> */
     [MINX_OPC_EXPORT]   = {
         .opc_func = minx_opc_export_func,
         .strrep = "EXPORT",
         .params = {},
     },
 
+    /* <v0.0.4> */
     [MINX_OPC_IMPORT]   = {
         .opc_func = minx_opc_import_func,
         .strrep = "IMPORT",

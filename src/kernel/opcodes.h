@@ -137,13 +137,13 @@ extern void         minx_kernel_set_exit_status             (int);
 #define         MINX_OPC_XORR           0x47    /* <v0.0.3-protocol-stable> */
 #define         MINX_OPC_XORIR          0x48    /* <v0.0.3-protocol-stable> */
 
-#define         MINX_OPC_JMPR           0x49 
-#define         MINX_OPC_JMPIZR         0x4A
-#define         MINX_OPC_JMPNZR         0x4B
-#define         MINX_OPC_IFZJMPRR       0x4C
-#define         MINX_OPC_IFZJMPRA       0x4D
-#define         MINX_OPC_LDADDR         0x4E 
-#define         MINX_OPC_EXITI          0x4F
+#define         MINX_OPC_JMPR           0x49    /* <v0.0.4> */ 
+#define         MINX_OPC_JMPIZR         0x4A    /* <v0.0.4> */
+#define         MINX_OPC_JMPNZR         0x4B    /* <v0.0.4> */
+#define         MINX_OPC_IFZJMPRR       0x4C    /* <v0.0.4> */
+#define         MINX_OPC_IFZJMPRA       0x4D    /* <v0.0.4> */
+#define         MINX_OPC_LDADDR         0x4E    /* <v0.0.4> */
+#define         MINX_OPC_EXITI          0x4F    /* <v0.0.4> */
 
 #define         MINX_OPC_PSTACK         0x50    /* <v0.0.3-protocol-stable> */
 #define         MINX_OPC_PREGS          0x51    /* <v0.0.3-protocol-stable> */
@@ -160,17 +160,17 @@ extern void         minx_kernel_set_exit_status             (int);
 #define         MINX_OPC_READ           0x66    /* <v0.0.3-protocol-stable> */
 #define         MINX_OPC_GETSIZE        0x67    /* <v0.0.3-protocol-stable> */
 
-#define         MINX_OPC_MLOAD          0x70
-#define         MINX_OPC_MUNLOAD        0x71
-#define         MINX_OPC_MHASPRMS       0x72
-#define         MINX_OPC_MCALLNP        0x73
-#define         MINX_OPC_MCALL          0x74
-#define         MINX_OPC_MGETSTAT       0x75
+#define         MINX_OPC_MLOAD          0x70    /* <v0.0.4> */
+#define         MINX_OPC_MUNLOAD        0x71    /* <v0.0.4> */
+#define         MINX_OPC_MHASPRMS       0x72    /* <v0.0.4> */
+#define         MINX_OPC_MCALLNP        0x73    /* <v0.0.4> */
+#define         MINX_OPC_MCALL          0x74    /* <v0.0.4> */
+#define         MINX_OPC_MGETSTAT       0x75    /* <v0.0.4> */
 
-#define         MINX_OPC_LBSH           0x80
-#define         MINX_OPC_RBSH           0x81
-#define         MINX_OPC_EXPORT         0x82
-#define         MINX_OPC_IMPORT         0x83
+#define         MINX_OPC_LBSH           0x80    /* <v0.0.4> */
+#define         MINX_OPC_RBSH           0x81    /* <v0.0.4> */
+#define         MINX_OPC_EXPORT         0x82    /* <v0.0.4> */
+#define         MINX_OPC_IMPORT         0x83    /* <v0.0.4> */
 
 /*
  * -----------------------------------------------------------------------------
