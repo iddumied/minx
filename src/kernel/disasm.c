@@ -19,20 +19,6 @@ void minx_disasm_run() {
     uint16_t *opcode = (uint16_t*) malloc(sizeof(uint16_t));
     int in_hex = minx_config_get(CONF_HEX)->b;
 
-    /*
-     * This is not a "magic" constant. It is just... I cannot calculate the
-     * length of the longest string representation of a opcode, as the type
-     * OpcodeInformation is incomplete, as I use a array.
-     *
-     * So I try it with 10. If it does not fit, it only disturbes the output a
-     * bit. Not so bad.
-     */
-    unsigned int longest_strrep_len = 10;
-    unsigned int curr_strrep_len;
-
-    unsigned int progp_space;
-#define PROG_P_SPACE 6
-
     OpcodeInformation opci;
 
     while(minx_binary_exists_at(program_pointer)) {
@@ -44,25 +30,13 @@ void minx_disasm_run() {
             printf("[%#010"PRIx64"]", program_pointer);
         }
         else {
-            progp_space = printf("[%"PRIu64"]", program_pointer);
-            while(progp_space < PROG_P_SPACE) {
-                printf(" ");
-                progp_space++;
-            }
+            printf("[%-"PROGRAM_POINTER_PADDING""PRIu64"]", program_pointer);
         }
 
-        curr_strrep_len = strlen(opci.strrep);
-        printf(" %s", opci.strrep);
-        while(curr_strrep_len < longest_strrep_len) {
-            printf(" ");
-            curr_strrep_len++;
-        }
-
+        printf(" %-"OPCODE_STRING_PADDING"s", opci.strrep);
         program_pointer += OPC_SIZE;
         print_parameters(opci.params);
     }
-
-#undef PROG_P_SPACE
 }
 
 /**
