@@ -165,6 +165,7 @@ uint64_t minx_kernel_module_load(char *module_path) {
             mod->opcodes[i].gets_params = 
                 mod->opcode_gets_params_func(mod->opcodes[i].opcode);
         }
+        mod->opcodes_count = mopc->len;
     }
     else {
         return 0;
