@@ -82,10 +82,10 @@ yet to test it.
 
 ## Compile flags
 
-Compile with DEBUG to be able to debug the VPU 
-Compile with DEBUGGING to be able to debug both the VPU and the source its running.
-Compile with VERBOSITY to be able to print registers at end of program
-Compile with DISASSEMBLE to be able to disassemble the binary
+* Compile with DEBUG to be able to debug the VPU 
+* Compile with DEBUGGING to be able to debug both the VPU and the source its running.
+* Compile with VERBOSITY to be able to print registers at end of program
+* Compile with DISASSEMBLE to be able to disassemble the binary
 
 If you compile with the Makefile shipped with the code, all these macros are
 defined. You have to edit the Makefile if you want to undef one of the opcodes.
