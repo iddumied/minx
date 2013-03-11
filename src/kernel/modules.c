@@ -204,10 +204,6 @@ void minx_kernel_module_call_opcode_noparam(uint64_t moduleID, uint64_t opc) {
 int minx_kernel_module_opcode_gets_params(uint64_t moduleID, uint64_t op) {
     Module *mod         = find_module(moduleID);
     ModuleOpcode *mop   = find_module_opcode(mod, op);
-
-    if(!mop)
-        mop->gets_params = mod->opcode_gets_params_func(op);
-
     return mop->gets_params;
 }
 
