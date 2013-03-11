@@ -173,7 +173,7 @@ def load_string_opcode(args)
   memid = args[3]
 
   args.last.each_byte do |chr|
-    string << "MOVI #{cache1} 0x01"
+    string << "MOVI #{cache1} 0x#{i.to_s(16).upcase}"
     string << "MOVI #{cache2} 0x01"
     string << "MOVI #{cache3} 0x#{chr.to_s(16).upcase}"
     string << "PUT #{memid} #{cache1} #{cache2} #{cache3}"
