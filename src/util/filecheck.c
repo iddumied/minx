@@ -1,4 +1,4 @@
-#include "util/filechecks.h"
+#include "util/filecheck.h"
 
 /**
  * @brief 
@@ -25,11 +25,11 @@ signed int minx_util_filecheck_path_is_file(char *path) {
      */
     struct stat s;
     if(stat(path, &s) == 0) {
-        if(s.st_mode & S_IFREG) {
+        if(S_ISREG(s.st_mode)) {
             /* everything ok */
             return 1;
         }
-        else if(s.st_mode & S_IFDIR) {
+        else if(S_ISDIR(s.st_mode)) {
             printf("Passed argument is a directory!\n");
             return 0;
         }
