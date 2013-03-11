@@ -27,7 +27,7 @@ void minx_disasm_run() {
         opci = opcodes[*opcode];
 
         if(in_hex) {
-            printf("[%#010"PRIx64"]", program_pointer);
+            printf("[%#010"PRIX64"]", program_pointer);
         }
         else {
             printf("[%-"PROGRAM_POINTER_PADDING""PRIu64"]", program_pointer);
@@ -69,7 +69,7 @@ static void print_parameters(unsigned int *params) {
                 if (*param16bit == 0x00)
                     printf("0x0000000000000000");
                 else 
-                    printf("%#018"PRIx16, *param16bit);
+                    printf("%#018"PRIX16, *param16bit);
             }
             else {
                 printf("%08"PRIu16, *param16bit);
@@ -85,7 +85,7 @@ static void print_parameters(unsigned int *params) {
                 if (*param64bit == 0x00)
                     printf("0x0000000000000000");
                 else 
-                    printf("%#018"PRIx64, *param64bit);
+                    printf("%#018"PRIX64, *param64bit);
             }
             else {
                 printf("%08"PRIu64, *param64bit);
