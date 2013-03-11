@@ -55,9 +55,6 @@ TODO:
 	interrupt and a way to register this address for a particular interrupt type
 	such as SIGINT.
 
-<<<<<<< HEAD
-26) Write a module-library to test the module infrastructure.
-=======
 26) Add jump opcodes to jump with address from register!
 
 27) Add opcodes to push complete registers on a register-stack and pop complete
@@ -71,4 +68,3 @@ TODO:
 30) Rework the output of the VPU.
 
 32) Fix overflow check asm file / mini compiler (don't know where the bug is)
->>>>>>> pre-stable
