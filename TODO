@@ -1,7 +1,8 @@
 TODO:
 
 9)	File reader should read the file as linked list, with automatically removing 
-	"old" parts of the file from memory to keep memuse smart.
+	"old" parts of the file from memory to keep memuse smart. 
+	A very tricky algorithm is required here!
 
 14) Create a plugin-system
 	opcodes:
@@ -54,4 +55,20 @@ TODO:
 	interrupt and a way to register this address for a particular interrupt type
 	such as SIGINT.
 
+<<<<<<< HEAD
 26) Write a module-library to test the module infrastructure.
+=======
+26) Add jump opcodes to jump with address from register!
+
+27) Add opcodes to push complete registers on a register-stack and pop complete
+	registers from this stack.
+
+28) Thread save VPU ? Would be so damn great!
+
+29) Rework complete documentation. (Adapt documentation/comments to a
+	documentation tool?)
+
+30) Rework the output of the VPU.
+
+32) Fix overflow check asm file / mini compiler (don't know where the bug is)
+>>>>>>> pre-stable

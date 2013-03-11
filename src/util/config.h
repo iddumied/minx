@@ -6,7 +6,6 @@
 
 #include "util/error.h"
 #include "util/debug.h"
-
 #include "util/config_types.h"
 
 void                    minx_config_init    (void);

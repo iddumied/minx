@@ -4,6 +4,11 @@
 #include "def/sizes.h" /* for MAX_PARAMETER_COUNT */ 
 #include "kernel/opcodes.h"
 
+/**
+ * @brief Opcode mapping type
+ *
+ * Maps a opcode function to its string representation and its param sizes
+ */
 typedef struct {
     void (*opc_func)(uint64_t*);
     char *strrep;

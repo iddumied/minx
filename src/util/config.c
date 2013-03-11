@@ -24,6 +24,8 @@ static ConfigurationValue configuration[] = {
     [CONF_HEX]                                      = { .b = 0 },
     [CONF_FAST]                                     = { .b = 0 },
     [CONF_SAVE]                                     = { .b = 0 },
+    [CONF_HELP]                                     = { .b = 0 },
+    [CONF_HELP_SHORT]                               = { .b = 0 },
 };
 
 /*
@@ -39,22 +41,36 @@ static char *confkeys[] = {
     [CONF_HEX]                                      = "--hex",
     [CONF_FAST]                                     = "--fast",
     [CONF_SAVE]                                     = "--save",
+    [CONF_HELP]                                     = "--help",
+    [CONF_HELP_SHORT]                               = "-h"
 };
 
 /*
  * Functions
  */
 
+/**
+ * @brief Init the config
+ */
 void minx_config_init() {
     minx_error_register_shutdown_function(minx_config_shutdown);
 }
 
+/**
+ * @brief shutdown the config
+ */
 void minx_config_shutdown() {
     return;
 }
 
 /*
  * parse config 
+ */
+/**
+ * @brief Parse the passed config
+ *
+ * @param argc The number of arguments
+ * @param argv The arguments
  */
 void minx_config_parse(unsigned int argc, char ** argv) {
     unsigned int i, j;
@@ -84,6 +100,13 @@ void minx_config_parse(unsigned int argc, char ** argv) {
 #endif 
 }
 
+/**
+ * @brief Get the configuration of a specific type
+ *
+ * @param ct The configuration to get
+ *
+ * @return The configuration value
+ */
 ConfigurationValue* minx_config_get(ConfigurationType ct) {
     if( (sizeof(configuration) / sizeof(ConfigurationValue)) <= ct) {
         return NULL;
@@ -93,6 +116,13 @@ ConfigurationValue* minx_config_get(ConfigurationType ct) {
     }
 }
 
+/**
+ * @brief Returns true if the passed config is set
+ *
+ * @param ct The config to check
+ *
+ * @return True if the config is set, else false
+ */
 int minx_config_is_set(ConfigurationType ct) {
     return minx_config_get(ct) != NULL;
 }
@@ -103,6 +133,9 @@ int minx_config_is_set(ConfigurationType ct) {
  *
  */
 #if (defined DEBUG | defined DEBUGGING)
+/**
+ * @brief Print the config (human readable)
+ */
 static void print_config() {
     unsigned int i;
     for( i = 0 ; i < (sizeof(configuration)/sizeof(configuration[0])); i++) {

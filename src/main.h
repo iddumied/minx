@@ -1,8 +1,10 @@
 #ifndef __MINX_MAIN_H__
 #define __MINX_MAIN_H__
 
+#include "help.h"
 #include "util/error.h"
 #include "util/config.h"
+#include "util/filecheck.h"
 #include "reader/binary_reader.h"
 #include "kernel/kernel.h"
 
@@ -14,6 +16,11 @@
 #include <stdio.h>
 #include <mcheck.h>
 #include <signal.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 void handle_signal(int sig);
 

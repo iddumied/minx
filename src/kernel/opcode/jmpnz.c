@@ -1,17 +1,21 @@
 #include "kernel/opcodes.h"
 
-/*
+/**
+ * @brief Opcode JMPNZ
+ *
  * Command:                 JMPNZ
  * Parameters:              2: register-address, address
  * Affects Program Pointer: YES
  *
  *
+ *
+ * @param params Pointer to parameters for this opcode
  */
 void minx_opc_jmpnz_func(uint64_t *params) {
 #ifdef DEBUGGING
     EXPLAIN_OPCODE_WITH_HEXF(
-            "to %#010"PRIx64" if reg %"PRIu64" != 0",
-            "to %"PRIu64" if reg %"PRIu64" != 0", 
+            "to %#010"PRIx64" if R%"PRIu64" != 0",
+            "to %"PRIu64" if R%"PRIu64" != 0", 
             params[1], 
             params[0]);
 #endif 

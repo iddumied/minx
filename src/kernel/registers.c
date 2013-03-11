@@ -1,11 +1,22 @@
 #include "registers.h"
 
+/*
+ * static variables
+ */
+
 static Register             *   registers       = NULL;
 static uint16_t                 register_count  = 0;
 
 #define register_exists(addr)   (register_count >= addr)
 
-/*
+/**
+ * @brief Register stack for pushing all registers at once
+ */
+static Stack                *   register_stack;
+
+/**
+ * @brief Initialize the registers of the kernel
+ *
  * init registers 
  *
  * allocate memory for the registers, set all registers to 0x00 and set the
@@ -28,20 +39,36 @@ void minx_registers_init() {
 
         registers[register_count].value = 0x00;
     }
+
+    /* initialize the register_stack */
+    register_stack = empty_stack();
 }
 
-
+/**
+ * @brief Shutdown the registers of the kernel
+ */
 void minx_registers_shutdown(void) {
     free(registers);
 }
 
+/**
+ * @brief get the number of registers
+ *
+ * @return The number of registers
+ */
 uint16_t minx_registers_get_register_count(void) {
     return register_count;
 }
 
-/*
+/**
+ * @brief Find a register by its address
+ *
  * find a register in the register_map by it's address. If the requested
  * register does not exist, fail.
+ *
+ * @param addr The register adress
+ *
+ * @return A pointer to the found register
  */
 Register* minx_registers_find_register(uint64_t addr) {
 #if (defined DEBUGGING | defined DEBUG)
@@ -54,6 +81,59 @@ Register* minx_registers_find_register(uint64_t addr) {
     return &registers[ addr ]; 
 }
 
+/**
+ * @brief Push all registers except 0x00 to the register stack
+ *
+ * Sets all registers except 0x00 (program pointer) to 0x00 after storing the
+ * current data on the register stack.
+ *
+ * @return 0 if failed, else 1
+ */
+int minx_registers_push(void) {
+    uint64_t *regs = (uint64_t*) malloc(sizeof(uint64_t) * (register_count-1));
+    if( regs == NULL )
+        goto err;
+
+    uint16_t i;
+    for(i = 1; i < register_count; i++) {
+        regs[i-1] = registers[i].value;
+        registers[i].value = 0x00;
+    }
+
+    stackpush(register_stack, regs, (sizeof(uint64_t) * (register_count-1)));
+    free(regs);
+
+    return 1;
+err:
+    return 0;
+}
+
+/**
+ * @brief Pop all registers except 0x00 from the register stack
+ *
+ * Overrides all registers except the program pointer
+ *
+ * @return 0 if failed, else 1
+ */
+int minx_registers_pop(void) {
+    uint64_t *regs = (uint64_t*) malloc(sizeof(uint64_t) * (register_count-1));
+    if( regs == NULL )
+        goto err;
+
+    regs = (uint64_t*)stackpop(register_stack);
+
+    uint16_t i;
+    for( i = 1; i < register_count; i++) {
+        registers[i].value = regs[i-1];
+    }
+
+    free(regs);
+
+    return 1;
+err:
+    return 0;
+}
+
 /*
  * -----------------------------------------------------------------------------
  *          optional functions - definitions
@@ -61,6 +141,11 @@ Register* minx_registers_find_register(uint64_t addr) {
  */
 
 #if (defined VERBOSITY | defined DEBUGGING)
+/**
+ * @brief Print a register
+ *
+ * @param i The register number
+ */
 void minx_registers_print_register(unsigned int i) {
 
 #define r_val minx_registers_find_register(i)->value
@@ -86,4 +171,3 @@ void minx_registers_print_register(unsigned int i) {
 
 }
 #endif //(defined VERBOSITY | defined DEBUGGING)
-

@@ -1,11 +1,15 @@
 #include "kernel/opcodes.h"
 
-/*
+/**
+ * @brief Opcode URAND
+ *
  * Command:                 URAND
  * Parameters:              0:
  * Affects Program Pointer: NO
  *
  *
+ *
+ * @param params Pointer to parameters for this opcode
  */
 #ifndef DESTROY_MY_APPLICATION
 void minx_opc_urand_func(uint64_t *params) {
@@ -22,7 +26,7 @@ void minx_opc_urand_func(uint64_t *params) {
         close(fd);
 
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE("%"PRIu64, akku->value);
+    EXPLAIN_OPCODE_WITH_HEXF("%#010"PRIx64, "%"PRIu64, akku->value);
 #endif
 
     }

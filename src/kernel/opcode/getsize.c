@@ -1,11 +1,15 @@
 #include "kernel/opcodes.h"
 
-/*
+/**
+ * @brief Opcode GETSIZE
+ *
  * Command:                 GETSIZE
  * Parameters:              1, heap-address
  * Affects Program Pointer: NO
  *
  *
+ *
+ * @param params Pointer to parameters for this opcode
  */
 void minx_opc_getsize_func(uint64_t *params) {
 #ifdef DEBUGGING
