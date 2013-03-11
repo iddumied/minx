@@ -14,7 +14,7 @@ executing with printing a fatal error message.
 Special registers:
 ------------------
 
-Registers 0x00 to 0xAF are special, they _should_ not be used by the program. But they can.
+Registers 0x00 to 0x1F are special, they _should_ not be used by the program. But they can.
 The VPU does not care about modifying the programm-ptr at all. The Binary
 can write to this register as it can write to every other register!
 
@@ -33,14 +33,14 @@ can write to this register as it can write to every other register!
                 6   |   put bit (set if put didn't work)
                 7   |   read bit (set if read didn't work)
                 8   |   no-random bit (set if rand didn't work)
-- 0x0004-0x00AF (unused yet, will be used for more status registers and stuff)
+- 0x0004-0x001F (unused yet, will be used for more status registers and stuff)
 
-So, 0x00B0 is the first register which should be used for program data. With
+So, 0x0020 is the first register which should be used for program data. With
 current implementation, there are 2^8 registers, so 0x0000FFFF is the last
 register. Registers are addressed with 16 bit because if the machine should
 provide more registers later on, there are just small changes.
 
-So, 176 Registers for special use, 256 Registers all in all, makes 82 Registers
+So, 32 Registers for special use, 256 Registers all in all, makes 224 Registers
 for program data.
 
 stack 
