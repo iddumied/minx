@@ -232,7 +232,7 @@ class Preprocessor < CodeReader
       else 
         opcode = line.split(" ").first
         if $ops[opcode].nil? then fail "Opcode not found: '#{opcode}'" end
-        offset += OPCODE + $ops[opcode].args.inject { |x, sum| sum += x }
+        offset += OPCODE + ($ops[opcode].args.inject { |x, sum| sum += x } || 0)
 
       end
 
