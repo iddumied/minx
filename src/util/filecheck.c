@@ -1,22 +1,22 @@
 #include "util/filecheck.h"
 
 /**
- * @brief 
+ * @brief Check if a file exists
  *
- * @param path
+ * @param path the path to the file
  *
- * @return 
+ * @return true if the file exists, else false
  */
 signed int minx_util_filecheck_file_exists(char *path) {
     return access(path, F_OK) != -1;
 }
 
 /**
- * @brief 
+ * @brief Check if a path is a file or something else
  *
- * @param path
+ * @param path The path to check
  *
- * @return 
+ * @return true if the path is a file, else false
  */
 signed int minx_util_filecheck_path_is_file(char *path) {
 
@@ -45,11 +45,11 @@ signed int minx_util_filecheck_path_is_file(char *path) {
 }
 
 /**
- * @brief 
+ * @brief Check if the file under the path is readable
  *
- * @param path
+ * @param path The path to the file
  *
- * @return 
+ * @return true if the file is readable, else false
  */
 signed int minx_util_filecheck_file_is_readable(char *path) {
     return access(path, R_OK) != -1;
