@@ -28,8 +28,6 @@ static int                      __exit_code__   = 0;
  * -----------------------------------------------------------------------------
  */
 
-#define src_debugging minx_config_get(CONF_SRC_DEBUGGING)->b
-
 /*
  * -----------------------------------------------------------------------------
  *          visible functions - definitions
@@ -38,7 +36,7 @@ static int                      __exit_code__   = 0;
 
 /**
  * @brief Initialize the kernel
- *
+ 
  * Public init function 
  *
  * starts the kernel:
@@ -198,7 +196,7 @@ static void run_opcode(uint16_t opc) {
 
     minxkerneldbgprintf("Running opcode: %"PRIu16"\n", opc);
     
-    if(src_debugging) {
+    if(minx_config_get(CONF_SRC_DEBUGGING)->b) {
        printf(MINX_KERNEL_OP_PRINT_PREFIX" %s: ", opcodes[opc].strrep);
     }
 
@@ -212,7 +210,7 @@ static void run_opcode(uint16_t opc) {
 
 
 #if (defined DEBUGGING | defined DEBUG)
-    if(src_debugging) {
+    if(minx_config_get(CONF_SRC_DEBUGGING)->b) {
         printf("\n");
     }
     if ( program_pointer->value != END_OF_PROGRAM ) {
@@ -271,11 +269,3 @@ static uint64_t read_command_parameters(uint16_t *opcode) {
 
     return next_pos;
 }
-
-
-/*
- *
- * undef static macros
- *
- */
-#undef src_debugging
