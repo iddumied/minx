@@ -167,10 +167,14 @@ extern void         minx_kernel_set_exit_status             (int);
 #define         MINX_OPC_MCALL          0x74    /* <v0.0.4> */
 #define         MINX_OPC_MGETSTAT       0x75    /* <v0.0.4> */
 
+#define         MINX_OPC_MGETPC         0x76
+#define         MINX_OPC_MCALLPP        0x77
+
 #define         MINX_OPC_LBSH           0x80    /* <v0.0.4> */
 #define         MINX_OPC_RBSH           0x81    /* <v0.0.4> */
 #define         MINX_OPC_EXPORT         0x82    /* <v0.0.4> */
 #define         MINX_OPC_IMPORT         0x83    /* <v0.0.4> */
+
 
 /*
  * -----------------------------------------------------------------------------

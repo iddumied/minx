@@ -670,6 +670,18 @@ const OpcodeInformation opcodes[] = {
         .params = { REGISTER_ADDRESS_SIZE },
     },
 
+    [MINX_OPC_MGETPC]   = {
+        .opc_func = minx_opc_mgetpc_func,
+        .strrep = "MGETPC",
+        .params = { REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE },
+    },
+
+    [MINX_OPC_MCALLPP]  = {
+        .opc_func = minx_opc_mcallpp_func,
+        .strrep = "MCALPP",
+        .params = { REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE, REGISTER_ADDRESS_SIZE },
+    },
+
     /* <v0.0.4> */
     [MINX_OPC_LBSH]     = {
         .opc_func = minx_opc_lbsh_func,

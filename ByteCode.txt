@@ -208,3 +208,5 @@ Here the module-stuff goes.
 0x73 | MCALLNP  | ModuleID, ModuleOp            | reg with moduleID, memory passed
 0x74 | MCALL    | ModuleID, ModuleOp, MemoryAddr| reg with moduleID passed
 0x75 | MGETSTAT | ModuleID                      | get status of module in akku, zero for "not loaded" or failure
+0x76 | MGETPC   | ModuleID, ModuleOp            | get parameter-count into akku
+0x77 | MCALLPP  | ModuleID, ModuleOp, MemoryID  | call opcode with multible params
