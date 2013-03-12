@@ -101,6 +101,21 @@ typedef struct {
     uint64_t    (*get_status_func)          (void);
 
     /*
+     * get number of parameters for opcode
+     */
+    uint64_t    (*get_opc_param_count_func) (uint64_t opcode);
+
+    /*
+     * call opcode with mutliple parameters
+     */
+    uint64_t    (*call_multiparam_func)     (uint64_t opcode,
+                                            char **memories,
+                                            uint64_t *memory_sizes,
+                                            unsigned int count);
+
+
+
+    /*
      * number of opcodes
      */
     unsigned int opcodes_count;
