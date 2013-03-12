@@ -370,7 +370,7 @@ if __FILE__ == $0
     puts "Marks:" 
     puts pre.jumpmarks.map { |m| m.name }.join(", ")
     puts "\nPreprocessed:"
-    puts pre.source.map(&:dump).join("\n")
+    puts pre.source
     exit 0
   end
 
