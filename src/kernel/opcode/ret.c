@@ -18,6 +18,8 @@ void minx_opc_ret_func(uint64_t *params) {
     if (stack_is_empty(stack))
         FATAL_DESC_ERROR("Cannot RET, stack is empty!");
      
-    minx_kernel_program_pointer_manipulate( *((uint64_t*) stackpop(stack)));
+    uint64_t *poped = stackpop(stack);
+    minx_kernel_program_pointer_manipulate(*poped);
+    free(poped);
 }
 
