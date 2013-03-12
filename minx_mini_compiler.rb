@@ -222,7 +222,7 @@ end
 class CodeReader
 
   def is_comment?(line)
-    line.start_with? ";" or line.start_with? "#"
+    line.include? ";" or line.start_with? "#"
   end
 
   def empty_line?(line)
