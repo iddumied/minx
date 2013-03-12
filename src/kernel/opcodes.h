@@ -322,6 +322,9 @@ void        minx_opc_mcallnp_func       (uint64_t* params);
 void        minx_opc_mcall_func         (uint64_t* params);
 void        minx_opc_mgetstat_func      (uint64_t* params);
 
+void        minx_opc_mgetpc_func        (uint64_t* params);
+void        minx_opc_mcallpp_func       (uint64_t* params);
+
 void        minx_opc_lbsh_func          (uint64_t* params);
 void        minx_opc_rbsh_func          (uint64_t* params);
 void        minx_opc_export_func        (uint64_t* params);
