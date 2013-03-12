@@ -15,5 +15,5 @@ void minx_opc_mgetpc_func(uint64_t *params) {
 
     Register *akku = minx_registers_find_register(akku_register_number);
 
-    akku->value = minx_kernel_module_get_parameter_count(mod_id_reg->value, mod_op_reg->value): 
+    akku->value = minx_kernel_module_get_parameter_count(mod_id_reg->value, mod_op_reg->value);
 }

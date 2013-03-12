@@ -258,13 +258,13 @@ uint64_t minx_kernel_module_call_multiparameter_opcode( uint64_t moduleID,
     if( metaheap->size % sizeof(uint64_t) != 0 ) {
         FATAL_F_ERROR("Cannot call mutliparameter opcode with multi-parameters"
                 ", as there are to much byte (%"PRIu64") to identify them "
-                "(must be multible of %i",
+                "(must be multible of %lu",
                 metaheap->size, sizeof(uint64_t)
                 );
     }
 
     unsigned int    heapcount   = metaheap->size / 8;
-    HeapNode        *heaps      = (HeapNode*)   malloc(sizeof(HeapNode*) * heapcount);
+    HeapNode        **heaps     = (HeapNode**)   malloc(sizeof(HeapNode*) * heapcount);
     char            **memories  = (char**)      malloc(sizeof(char*) * heapcount);
     uint64_t        *sizes      = (uint64_t*)   malloc(sizeof(uint64_t) * heapcount);
     uint64_t        curr_heapid;
@@ -275,7 +275,7 @@ uint64_t minx_kernel_module_call_multiparameter_opcode( uint64_t moduleID,
         curr_heapid     = ((uint64_t*)metaheap->memory)[i];
         heaps[i]        = minx_kernel_heap_get(curr_heapid);
         memories[i]     = heaps[i]->memory;
-        memory_sizes[i] = heaps[i]->size;
+        sizes[i]        = heaps[i]->size;
     }
 
     ret = find_module(moduleID)->call_multiparam_func(op, memories, sizes, heapcount);
