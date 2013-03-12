@@ -9,7 +9,7 @@ __foo:
 	RET
 
 __bar:
-	MOVI 0x21 0x55
+	MOVI 0x22 0x55
 	RET
 
 __start:
