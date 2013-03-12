@@ -43,8 +43,8 @@ __return_n:
 
 __start:
 
-; call fib for 0x05 == 5
-MOVI 0x21 0x05
+; call fib for 0x03 == 3
+MOVI 0x21 0x03
 
 ; copy this value
 MOV	0x50 0x21
@@ -64,3 +64,5 @@ __sumres:
 	JMPNZR 0x50 __sumres
 
 ; SUM is in Register 0x51 now.
+
+EXITI 0x00
