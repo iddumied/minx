@@ -14,7 +14,7 @@
  */
 void minx_opc_call_func(uint64_t *params) {
 #ifdef DEBUGGING
-    EXPLAIN_OPCODE_WITH_HEXF("%#010"PRIx64, "%"PRIu64, params[1]);
+    EXPLAIN_OPCODE_WITH_HEXF("%#010"PRIx64, "%"PRIu64, params[0]);
 #endif
     /*
      * push to stack
