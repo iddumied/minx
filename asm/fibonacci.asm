@@ -6,6 +6,12 @@ JMP __start
 
 __fib:
 
+	; pop backjump
+	POP 0x22 
+
+	; pop parameter
+	POP 0x21
+
 	; n in 0x21
 	
 	; if n < 2
@@ -21,22 +27,46 @@ __fib:
 
 	JMPIZ 0x02 __return_n
 	
+	; parameter for next call in 0x24, for next call in 0x25
+	MOV 0x24 0x21
+	MOV 0x25 0x21
 	; fib(n-1)
-	DEC 0x21
+	DEC 0x24
+	; for fib(n-2)
+	DEC 0x25
+	DEC 0x25
+
+	; push as new parameter for fib(n-2)
+	PUSH 0x25
+	; push as new parameter for fib(n-1)
+	PUSH 0x24
+
 	CALL __fib
 
-	; fib(n-2)
-	DEC 0x21
+	; swap the pushed values
+	POP 0x24
+	POP 0x25 
+	PUSH 0x24 
+	PUSH 0x25
+
 	CALL __fib
+
+	; add result: 0x02 = fib(n-1)+fib(n-2)
+	POP 0x24
+	POP 0x25
+	ADD 0x24 0x25
+
+	; push it back to stack
+	PUSH 0x02
+	PUSH 0x22
+	RET
 
 __return_n:
 
-	; stash backjump
-	POP 0x22
-	; push the current value to stack
+	;push return
 	PUSH 0x21
 
-	; push backjump
+	;push backjump
 	PUSH 0x22
 
 	RET
@@ -46,23 +76,14 @@ __start:
 ; call fib for 0x03 == 3
 MOVI 0x21 0x03
 
-; copy this value
-MOV	0x50 0x21
+; push parameter for fib(n) call
+PUSH 0x21
 
 ; call
 CALL __fib
 
-; and now sum the result values from the stack
+POP 0x02
 
-MOVI 0x51 0x00
-__sumres:
-	
-	POP 0x52
-	ADD 0x51 0x52
-
-	DEC 0x50
-	JMPNZR 0x50 __sumres
-
-; SUM is in Register 0x51 now.
+; result is in akku now
 
 EXITI 0x00
