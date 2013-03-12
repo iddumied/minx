@@ -164,6 +164,11 @@ void        minx_kernel_module_set_config           (uint64_t moduleID,
                                                     unsigned int len);
 uint64_t    minx_kernel_module_get_status           (uint64_t moduleID);
 
+uint64_t    minx_kernel_module_get_parameter_count  (uint64_t moduleID, uint64_t op);
+uint64_t    minx_kernel_module_call_multiparameter_opcode  (uint64_t moduleID, 
+                                                            uint64_t op, 
+                                                            HeapNode *metaheap);
+
 /*
  * extern function names
  */

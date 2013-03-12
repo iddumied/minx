@@ -226,6 +226,67 @@ uint64_t minx_kernel_module_get_status(uint64_t moduleID) {
     return find_module(moduleID)->get_status_func();
 }
 
+/**
+ * @brief Get number of required parameters for this opcode
+ *
+ * @param moduleID The ID of the module
+ * @param op The opcode to get the parameter-count for
+ *
+ * @return Number of parameters, zero if module/opcode was not found
+ */
+uint64_t minx_kernel_module_get_parameter_count(uint64_t moduleID, uint64_t op) {
+    return find_module(moduleID)->get_opc_param_count_func(op);
+}
+
+/**
+ * @brief 
+ *
+ * @param moduleID
+ * @param op
+ * @param heap
+ *
+ * @return 
+ */
+uint64_t minx_kernel_module_call_multiparameter_opcode( uint64_t moduleID, 
+                                                        uint64_t op, 
+                                                        HeapNode *metaheap) {
+
+    /*
+     * Each heap-node-address has sizeof(uint64_t) Bytes.
+     * If there are bytes left, this causes the VPU to error hard.
+     */
+    if( metaheap->size % sizeof(uint64_t) != 0 ) {
+        FATAL_F_ERROR("Cannot call mutliparameter opcode with multi-parameters"
+                ", as there are to much byte (%"PRIu64") to identify them "
+                "(must be multible of %i",
+                metaheap->size, sizeof(uint64_t)
+                );
+    }
+
+    unsigned int    heapcount   = metaheap->size / 8;
+    HeapNode        *heaps      = (HeapNode*)   malloc(sizeof(HeapNode*) * heapcount);
+    char            **memories  = (char**)      malloc(sizeof(char*) * heapcount);
+    uint64_t        *sizes      = (uint64_t*)   malloc(sizeof(uint64_t) * heapcount);
+    uint64_t        curr_heapid;
+    uint64_t        ret;
+    unsigned int    i;
+
+    for(i = 0; i < heapcount; i++) {
+        curr_heapid     = ((uint64_t*)metaheap->memory)[i];
+        heaps[i]        = minx_kernel_heap_get(curr_heapid);
+        memories[i]     = heaps[i]->memory;
+        memory_sizes[i] = heaps[i]->size;
+    }
+
+    ret = find_module(moduleID)->call_multiparam_func(op, memories, sizes, heapcount);
+
+    free(heaps);
+    free(memories);
+    free(sizes);
+
+    return ret;
+}
+
 /*
  * -----------------------------------------------------------------------------
  *                      static function implementations
