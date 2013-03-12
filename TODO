@@ -13,3 +13,5 @@ TODO:
 	such as SIGINT.
 
 28) Thread save VPU ? Would be so damn great!
+
+33) Plugins with several parameters (HeapNode with HeapNode-ID-Array ?)
