@@ -108,4 +108,17 @@ void        minx_module_set_configs     (   ConfigurationType *types,
  */
 uint64_t    minx_module_get_status      (void);
 
+/*
+ * Get number of parameters a opcode gets
+ */
+uint64_t    minx_module_get_opcode_parameter_count  (void);
+
+/*
+ * Call multi-parameter opcode
+ */
+uint64_t    minx_module_call_multiparam_opcode      (uint64_t opcode,
+                                                    char **memories,
+                                                    uint64_t *memsizes,
+                                                    unsigned int count);
+
 #endif //__MINX_MODULE_H__
