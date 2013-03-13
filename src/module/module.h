@@ -111,7 +111,7 @@ uint64_t    minx_module_get_status      (void);
 /*
  * Get number of parameters a opcode gets
  */
-uint64_t    minx_module_get_opcode_parameter_count  (void);
+uint64_t    minx_module_get_opcode_parameter_count  (uint64_t opcode);
 
 /*
  * Call multi-parameter opcode
