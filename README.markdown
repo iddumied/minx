@@ -54,6 +54,10 @@ first Argument _has to be_ the binary you want to run, then:
 
 	-v				verbosity (does nothing yet, requires VERBOSITY)
 	-d				debugging the source it is running
+	--sbs			(only with -d) debugging step by step
+						use STRG+D for next step 
+						use <number> ENTER for <number> steps
+
 	--minx-debug	debugging the VPU internals (not convenient for normal
 					users)
 	--regs			printing registers at end of program (much output!)
