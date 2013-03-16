@@ -24,9 +24,8 @@ JMP __start
 ; 
 __fib:
 	CMPI 0xB0 0x02
-	DEC 0x02
-	DEC 0x02
-	JMPIZ 0x02 __pre_endfib
+	EQLI 0x02 0x02
+	JMPNZ 0x02 __pre_endfib
 
 	CALL __checkheapsize
 	
