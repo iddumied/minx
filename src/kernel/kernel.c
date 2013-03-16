@@ -203,7 +203,16 @@ static void run_opcode(uint16_t opc) {
     minxkerneldbgprintf("Running opcode: %"PRIu16"\n", opc);
     
     if(minx_config_get(CONF_SRC_DEBUGGING)->b) {
-       printf(MINX_KERNEL_OP_PRINT_PREFIX" %s: ", opcodes[opc].strrep);
+        if(minx_config_get(CONF_HEX)->b) {
+            printf(MINX_KERNEL_OP_PRINT_PREFIX"[0x%08"PRIX64"] %s: ", 
+                    program_pointer->value, 
+                    opcodes[opc].strrep);
+        }
+        else {
+            printf(MINX_KERNEL_OP_PRINT_PREFIX"[%10"PRIu64"] %s: ", 
+                    program_pointer->value, 
+                    opcodes[opc].strrep);
+        }
     }
 
     fflush(stdout);
