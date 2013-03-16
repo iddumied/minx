@@ -10,6 +10,7 @@ typedef enum {
     CONF_VERBOSITY,         /* only if compiled with DEBUG */
     CONF_MINX_DEBUGGING,    /* only if compiled with DEBUGGING */
     CONF_SRC_DEBUGGING,     /* only if compiled with DEBUGGING */
+    CONF_SRC_DEBUGGING_SBS, /* debugging step by step flag */
     CONF_PRINT_REGS_AT_EOP, /* print registers at end of program */
     CONF_PRINT_REGS_AT_EOP_WITHOUT_ZEROVALREGS, /* print registers at end of 
                                                    program, but not them with 

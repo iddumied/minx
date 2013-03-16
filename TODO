@@ -15,3 +15,5 @@ TODO:
 28) Thread save VPU ? Would be so damn great!
 
 34) work on --fast option, ensure the VPU caches as much as possible.
+
+35) Add step by step debugging
