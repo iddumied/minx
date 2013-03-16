@@ -6,8 +6,10 @@
  * -----------------------------------------------------------------------------
  */
 
-static uint64_t     read_command_parameters(uint16_t *opcode);
+static uint64_t     read_command_parameters     (uint16_t *opcode);
 static void         run_opcode                  (uint16_t);
+
+static void         sbs_debugging_wait          (void);
 
 /*
  * -----------------------------------------------------------------------------
@@ -90,6 +92,10 @@ int minx_kernel_run() {
 
 #if (defined DEBUGGING || defined DEBUG)
         fflush(stdout);
+
+        if(minx_config_get(CONF_SRC_DEBUGGING_SBS)->b) {
+            sbs_debugging_wait();
+        }
 #endif // (defined DEBUGGING || defined DEBUG)
 
 
@@ -268,4 +274,24 @@ static uint64_t read_command_parameters(uint16_t *opcode) {
     }
 
     return next_pos;
+}
+
+/**
+ * @brief waiter function for debugging
+ *
+ * The sbs (step-by-step) debugging waits for user input. 
+ * It can read numbers and proceeds n steps, or it reads nothing and does one step.
+ */
+static void sbs_debugging_wait(void) {
+    if(!minx_config_get(CONF_SRC_DEBUGGING)->b)
+        return;
+
+    static unsigned int steps = 0;
+
+    if(steps > 0) {
+        steps--;
+        return;
+    }
+
+    scanf("%u", &steps);
 }
