@@ -6,6 +6,7 @@
 #include <string.h>
 
 #include "util/error.h"
+#include "util/dim.h"
 
 #if (defined DEBUGGING | defined DEBUG)
 #include <stdio.h>

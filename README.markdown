@@ -84,12 +84,13 @@ A module needs the headers from ./module_headers/!
 Modules/Plugins are under development at the moment. I have no working modules
 yet to test it.
 
-## Compile flags
+## Compile flags/macros
 
 * Compile with DEBUG to be able to debug the VPU 
 * Compile with DEBUGGING to be able to debug both the VPU and the source its running.
 * Compile with VERBOSITY to be able to print registers at end of program
 * Compile with DISASSEMBLE to be able to disassemble the binary
+* Compile with __MINIRAM__ to ensure the vpu will not load the binary into the ram in one chunk (2MiB currently)
 
 If you compile with the Makefile shipped with the code, all these macros are
 defined. You have to edit the Makefile if you want to undef one of the opcodes.

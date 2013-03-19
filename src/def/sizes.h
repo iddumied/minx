@@ -44,4 +44,9 @@
 #define         PROGRAM_POINTER_PADDING     "6"
 #define         OPCODE_STRING_PADDING       "10"
 
+/*
+ * binary-loading sizes
+ */
+#define         MINX_ONE_CHUNK_LOAD_SIZE    (2 * MEBIBYTE)
+
 #endif // __MINX_VPU_SIZES_H__
