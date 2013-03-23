@@ -72,7 +72,7 @@ LDFLAGS += -lm -ldl # link math.h
 all: prepare ${TARGET} link move
 
 prepare:
-	@mkdir ${BIN}
+	@mkdir -p ${BIN}
 
 ${TARGET}: $(OBJECTS) $(ADDITIONAL_TASKS)
 	${LD} ${LINK_OBJECTS} -o ${TARGET}
