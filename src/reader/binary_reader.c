@@ -51,7 +51,7 @@ static FILE             *file;
 static long             filesize;
 static long             cachechunk_size;
 static struct cchunk    **chunks;
-static unsigned int     chunkcount;
+static uint64_t         chunkcount;
 
 /**
  * @brief When this counter hits a specific value, the cchunks are cleaned up.
@@ -72,10 +72,6 @@ static uint64_t         gc_iteration_counter;
  * @param f The file, containing the binary
  */
 void minx_binary_init(FILE *f) {
-#ifdef DEBUGGING
-    minxbinarydbgprint("Binary init");
-#endif
-
     file = f;
     filesize                = get_file_size(f);
     cachechunk_size         = calculate_caching_size(filesize);
@@ -85,24 +81,31 @@ void minx_binary_init(FILE *f) {
      * initialize the chunks array.
      *
      */
-    uint64_t cache_created, i;
+    uint64_t cache_created;
 
     /* calc the number, how many chunks are required */
-    for(    i = 0, cache_created = 0;
+    for(    chunkcount = 0, cache_created = 0;
             cache_created < filesize; 
-            i++, cache_created += cachechunk_size);
+            chunkcount++, cache_created += cachechunk_size);
 
-    chunks = (struct cchunk**) malloc(sizeof(struct cchunk*) * i);
+    chunks = (struct cchunk**) malloc(sizeof(struct cchunk*) * chunkcount+1);
 
     /* allocate the chunks, but not the binary */
-    for(    i = 0, cache_created = 0;
+    for(    chunkcount = 0, cache_created = 0;
             cache_created < filesize; 
-            i++, cache_created += cachechunk_size) {
+            chunkcount++, cache_created += cachechunk_size) {
 
-        chunks[i]           = get_new_cchunk();
+        chunks[chunkcount] = get_new_cchunk();
     }
 
     loadchunk(chunks[0]); /*!< precache the first chunk */
+    chunkcount++; /*now, chunkcount is the real count, not a index anymore */
+
+#ifdef DEBUGGING
+    minxbinarydbgprintf("Binary initialized with %u chunks, %ld Bytes max per chunk", 
+            chunkcount, cachechunk_size);
+#endif
+
 }
 
 /**
