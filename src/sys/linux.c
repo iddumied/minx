@@ -4,6 +4,7 @@ static struct sysinfo *sys_info;
 
 void minx_sys_init(void) {
     sys_info = (struct sysinfo*) malloc(sizeof(struct sysinfo));
+    sysinfo(sys_info);
 }
 
 void minx_sys_shutdown(void) {
@@ -16,8 +17,5 @@ void minx_sys_shutdown(void) {
  * @return The size of the RAM in bytes
  */
 long minx_sys_get_ramsize(void) {
-    if(sys_info == NULL)
-        sysinfo(sys_info);
-
     return sys_info->totalram;
 }
