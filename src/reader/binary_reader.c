@@ -18,19 +18,31 @@ struct cchunk {
  * --------------------------
  */
 
-static long             get_file_size               (FILE *f);
-static long             calculate_caching_size      (long filesize);
-static void             precache                    (void);
-static struct cchunk*   get_new_cchunk              (void);
-static void             uncache                     (struct cchunk*);
+static long             get_file_size                   (FILE *f);
+static long             calculate_caching_size          (long filesize);
+static void             precache                        (void);
+static struct cchunk*   get_new_cchunk                  (void);
+static void             uncache                         (struct cchunk*);
+static unsigned int     calculate_chunknum_for_address  (uint64_t addr);
+static void             loadchunk                       (struct cchunk *chunk);
 
 /*
  * static variables
  */
 
+static FILE             *file;
 static long             filesize;
 static long             cachechunk_size;
 static struct cchunk    *chunks;
+static unsigned int     chunkcount;
+
+/*
+ *
+ * ------------------------
+ * Function implementations
+ * ------------------------
+ *
+ */
 
 /**
  * @brief Initialize the binary reader
@@ -38,10 +50,98 @@ static struct cchunk    *chunks;
  * @param f The file, containing the binary
  */
 void minx_binary_init(FILE *f) {
+    file = f;
     filesize        = get_file_size(f);
     cachechunk_size = calculate_caching_size(filesize);
     precache();
 }
+
+/**
+ * @brief shutdown the binary reader
+ *
+ * Free all binary chunks
+ */
+void minx_binary_shutdown(void) {
+    for(;chunkcount != 0; chunkcount--) {
+        free(chunks[chunkcount-1].data);
+        chunks[chunkcount-1].data = NULL;
+    }
+    free(chunks);
+}
+
+/**
+ * @brief get bytes from the binary at a specific position
+ *
+ * @return a pointer to the bytes
+ */
+void * minx_binary_get_at(  uint64_t p, 
+                            unsigned int number_of_bytes, 
+                            void *dest, 
+                            size_t destsize) {
+
+    unsigned int chunknum           = calculate_chunknum_for_address(p);
+    uint64_t first_addr_in_chunk    = cachechunk_size * (chunknum);
+    unsigned int chunk_byte_addr    = p - first_addr_in_chunk;
+    int is_multichunk               = (chunk_byte_addr + number_of_bytes) > cachechunk_size;
+
+    memset(dest, 0x00, destsize);
+    if(is_multichunk) {
+        if(chunknum+1 > chunkcount) {
+            FATAL_F_ERROR("Cannot load binary chunk %i, does not exist!", chunknum+1);
+        }
+
+        loadchunk(&chunks[chunknum]);
+        loadchunk(&chunks[chunknum+1]);
+
+        unsigned int chunk_1_copy_size = cachechunk_size - chunk_byte_addr;
+        unsigned int chunk_2_copy_size = number_of_bytes - chunk_1_copy_size;
+
+        memcpy(dest, &chunks[chunknum].data[chunk_byte_addr], chunk_1_copy_size);
+        memcpy(((char*)dest)+chunk_1_copy_size, chunks[chunknum+1].data, chunk_2_copy_size);
+    }
+    else {
+        loadchunk(&chunks[chunknum]);
+        memcpy(dest, &chunks[chunknum].data[chunk_byte_addr], number_of_bytes);
+    }
+
+    return dest;
+}
+
+/**
+ * @brief Checks if the binary exists at a given position
+ *
+ * @param p The position to check
+ *
+ * @return true if the binary exists at the position pointed to by p, else false.
+ */
+signed int minx_binary_exists_at(uint64_t p) {
+    return filesize > p;
+}
+
+#ifdef DEBUGGING
+void minx_binary_print(void) {
+    struct cchunk   *chunk;
+    long            i;
+    unsigned int    line = 0;
+    
+    printf("0x00000000 : ");
+
+    for(chunk = chunks; chunk != chunks[chunkcount-1]; chunk++) {
+        for(i = 0 ; i < cachechunk_size; i++ ) {
+            if( chunk->data[i] == 0 ) {
+                printf("0x00000000 ");
+            }
+            else {
+                printf("%#010x ", chunk->data[i]);
+            }
+            if((i+1) % 8 == 0) {
+                printf("\n%#010x : ", ++line);
+            }
+        } 
+    }
+    printf("\n");
+}
+#endif
 
 /*
  * -------------------------------
@@ -101,4 +201,36 @@ static long calculate_caching_size(long filesize) {
 
     return useabe_ram / MINX_BINARY_MIN_CHUNK_COUNT;
 #endif //__MINIRAM__
+}
+
+/**
+ * @brief Calculate the chunk number (index in chunks array) by the passed address
+ *
+ * @param addr The address to calculate the chunk number for
+ *
+ * @return The number of the chunk where the address points into
+ */
+static unsigned int calculate_chunknum_for_address(uint64_t addr) {
+    return (addr - (addr % cachechunk_size)) / cachechunk_size;
+}
+
+/**
+ * @brief Load a chunk. If the chunk is not allocated, load its data, else return
+ *
+ * @param chunk The chunk to load
+ */
+static void loadchunk(struct cchunk *chunk) {
+    if(chunk->state == ALLOCATED)
+        return;
+
+    chunk->data = (char*) malloc(cachechunk_size);
+
+    fseek(file, 0L, (cachechunk_size * chunk->num));
+    memset(chunk->data, 0x00, cachechunk_size);
+    fread(chunk->data, sizeof(char), cachechunk_size, file);
+
+    /*
+     * Finally, set the chunk status
+     */
+    chunk->state = ALLOCATED;
 }
