@@ -143,16 +143,16 @@ void * minx_binary_get_at(  uint64_t p,
         unsigned int chunk_1_copy_size = cachechunk_size - chunk_byte_addr;
         unsigned int chunk_2_copy_size = number_of_bytes - chunk_1_copy_size;
 
-        memcpy(dest, &chunks[chunknum].data[chunk_byte_addr], chunk_1_copy_size);
-        memcpy(((char*)dest)+chunk_1_copy_size, chunks[chunknum+1].data, chunk_2_copy_size);
+        memcpy(dest, &(chunks[chunknum]->data[chunk_byte_addr]), chunk_1_copy_size);
+        memcpy(((char*)dest)+chunk_1_copy_size, chunks[chunknum+1]->data, chunk_2_copy_size);
 
-        chunks[chunknum+1].hit_counter++;
+        chunks[chunknum+1]->hit_counter++;
     }
     else {
-        memcpy(dest, &chunks[chunknum].data[chunk_byte_addr], number_of_bytes);
+        memcpy(dest, &(chunks[chunknum]->data[chunk_byte_addr]), number_of_bytes);
     }
 
-    chunks[chunknum].hit_counter++;
+    chunks[chunknum]->hit_counter++;
 
     gc_iteration_counter++;
     if(gc_iteration_counter > ITERATIONS_UNTIL_GC) {
@@ -315,8 +315,8 @@ static void loadchunk(struct cchunk *chunk) {
  * @brief Garbage collector like mechanizm to remove old chunks of binary.
  */
 static void gc(void) {
-    struct cchunk *chunk = chunks;
-    for(chunk = chunks; chunk != &chunks[chunkcount-1]; chunk++) {
+    struct cchunk *chunk;
+    for(chunk = chunks[0]; chunk != chunks[chunkcount-1]; chunk++) {
         if(chunk->hit_counter < (ITERATIONS_UNTIL_GC / 100 * BINARY_FREE_PERCENTAGE)) {
             uncache(chunk);
         }
