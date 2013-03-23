@@ -321,12 +321,12 @@ static unsigned int calculate_chunknum_for_address(uint64_t addr) {
  * @param chunk The chunk to load
  */
 static void loadchunk(struct cchunk *chunk) {
+    if(chunk->state == ALLOCATED)
+        return;
+
 #ifdef DEBUGGING
     minxbinarydbgprintf("Load chunk %u", chunk->num);
 #endif
-
-    if(chunk->state == ALLOCATED)
-        return;
 
     chunk->data = (char*) malloc(cachechunk_size);
 
