@@ -252,6 +252,34 @@ static long calculate_caching_size(long filesize) {
 }
 
 /**
+ * @brief Allocate a new struct cchunk
+ *
+ * @return pointer to new struct cchunk or NULL on failure
+ */
+static struct cchunk* get_new_cchunk(void) {
+    struct cchunk *c = (struct cchunk*) malloc(sizeof(struct cchunk));
+    
+    if(c) {
+        c->state    = FREE;
+        c->size     = 0;
+        c->num      = 0;
+        c->data     = NULL;
+    }
+
+    return c;
+}
+
+/**
+ * @brief Free the memory of this struct cchunk, set its state to FREE
+ *
+ * @param c A pointer to the struct cchunk to free
+ */
+static void uncache(struct cchunk *c) {
+    c->state = FREE;
+    free(c->data);
+}
+
+/**
  * @brief Calculate the chunk number (index in chunks array) by the passed address
  *
  * @param addr The address to calculate the chunk number for
