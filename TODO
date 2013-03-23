@@ -14,4 +14,6 @@ TODO:
 
 28) Thread save VPU ? Would be so damn great!
 
+33) Plugins with several parameters (HeapNode with HeapNode-ID-Array ?)
+
 34) work on --fast option, ensure the VPU caches as much as possible.

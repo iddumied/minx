@@ -101,6 +101,21 @@ typedef struct {
     uint64_t    (*get_status_func)          (void);
 
     /*
+     * get number of parameters for opcode
+     */
+    uint64_t    (*get_opc_param_count_func) (uint64_t opcode);
+
+    /*
+     * call opcode with mutliple parameters
+     */
+    uint64_t    (*call_multiparam_func)     (uint64_t opcode,
+                                            char **memories,
+                                            uint64_t *memory_sizes,
+                                            unsigned int count);
+
+
+
+    /*
      * number of opcodes
      */
     unsigned int opcodes_count;
@@ -148,6 +163,11 @@ void        minx_kernel_module_set_config           (uint64_t moduleID,
                                                     ConfigurationValue *vals,
                                                     unsigned int len);
 uint64_t    minx_kernel_module_get_status           (uint64_t moduleID);
+
+uint64_t    minx_kernel_module_get_parameter_count  (uint64_t moduleID, uint64_t op);
+uint64_t    minx_kernel_module_call_multiparameter_opcode  (uint64_t moduleID, 
+                                                            uint64_t op, 
+                                                            HeapNode *metaheap);
 
 /*
  * extern function names
