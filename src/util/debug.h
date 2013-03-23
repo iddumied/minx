@@ -5,6 +5,7 @@
 
 #include <stdio.h>
 
+#include "util/config.h"
 #include "util/print_prefixes.h"
 
 /* helper macro */
