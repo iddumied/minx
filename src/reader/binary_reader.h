@@ -10,6 +10,8 @@
 #include "util/error.h"
 #include "util/dim.h"
 
+#include "sys/sys.h"
+
 #if (defined DEBUGGING | defined DEBUG)
 #include <stdio.h>
 #endif 
