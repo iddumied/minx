@@ -19,13 +19,13 @@
 
 /* debugging for binary */
 #define minxbinarydbgprintf(f,...)                                          \
-    minxdbgprintf(CONF_MINX_DEBUGGING,MINX_BINARY_PRINT_PREFIX,f,__VA_ARGS__);
+    minxdbgprintf(CONF_MINX_DEBUGGING,MINX_BINARY_PRINT_PREFIX,f"\n",__VA_ARGS__);
 
 #define minxbinarydbgprint(f)                                               \
     do {                                                                    \
         ConfigurationValue *cv = minx_config_get(CONF_MINX_DEBUGGING);      \
         if(cv != NULL && cv->b) {                                           \
-            printf(MINX_BINARY_PRINT_PREFIX": "f);                          \
+            printf(MINX_BINARY_PRINT_PREFIX": "f"\n");                      \
         }                                                                   \
     }while(0)
 
