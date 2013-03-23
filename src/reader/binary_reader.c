@@ -37,7 +37,6 @@ struct cchunk {
 
 static long             get_file_size                   (FILE *f);
 static long             calculate_caching_size          (long filesize);
-static void             precache                        (void);
 static struct cchunk*   get_new_cchunk                  (void);
 static void             uncache                         (struct cchunk*);
 static unsigned int     calculate_chunknum_for_address  (uint64_t addr);
@@ -186,7 +185,7 @@ void minx_binary_print(void) {
     
     printf("0x00000000 : ");
 
-    for(chunk = chunks; chunk != chunks[chunkcount-1]; chunk++) {
+    for(chunk = chunks[0]; chunk != chunks[chunkcount-1]; chunk++) {
         for(i = 0 ; i < cachechunk_size; i++ ) {
             if( chunk->data[i] == 0 ) {
                 printf("0x00000000 ");
