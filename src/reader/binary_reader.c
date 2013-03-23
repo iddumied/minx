@@ -51,7 +51,7 @@ static void             gc                              (void);
 static FILE             *file;
 static long             filesize;
 static long             cachechunk_size;
-static struct cchunk    *chunks;
+static struct cchunk    **chunks;
 static unsigned int     chunkcount;
 
 /**
@@ -74,9 +74,32 @@ static uint64_t         gc_iteration_counter;
  */
 void minx_binary_init(FILE *f) {
     file = f;
-    filesize        = get_file_size(f);
-    cachechunk_size = calculate_caching_size(filesize);
-    precache();
+    filesize                = get_file_size(f);
+    cachechunk_size         = calculate_caching_size(filesize);
+    gc_iteration_counter    = 0;
+
+    /*
+     * initialize the chunks array.
+     *
+     */
+    uint64_t cache_created, i;
+
+    /* calc the number, how many chunks are required */
+    for(    i = 0, cache_created = 0;
+            cache_created < filesize; 
+            i++, cache_created += cachechunk_size);
+
+    chunks = (struct cchunk**) malloc(sizeof(struct cchunk*) * i);
+
+    /* allocate the chunks, but not the binary */
+    for(    i = 0, cache_created = 0;
+            cache_created < filesize; 
+            i++, cache_created += cachechunk_size) {
+
+        chunks[i]           = get_new_cchunk();
+    }
+
+    loadchunk(chunks[0]); /*!< precache the first chunk */
 }
 
 /**
@@ -86,8 +109,8 @@ void minx_binary_init(FILE *f) {
  */
 void minx_binary_shutdown(void) {
     for(;chunkcount != 0; chunkcount--) {
-        free(chunks[chunkcount-1].data);
-        chunks[chunkcount-1].data = NULL;
+        free(chunks[chunkcount-1]->data);
+        chunks[chunkcount-1]->data = NULL;
     }
     free(chunks);
 }
@@ -108,23 +131,34 @@ void * minx_binary_get_at(  uint64_t p,
     int is_multichunk               = (chunk_byte_addr + number_of_bytes) > cachechunk_size;
 
     memset(dest, 0x00, destsize);
+    loadchunk(chunks[chunknum]);
     if(is_multichunk) {
         if(chunknum+1 > chunkcount) {
-            FATAL_F_ERROR("Cannot load binary chunk %i, does not exist!", chunknum+1);
+            FATAL_F_ERROR(
+                    "Cannot load binary chunk %u, does not exist!", 
+                    chunknum+1);
         }
 
-        loadchunk(&chunks[chunknum]);
-        loadchunk(&chunks[chunknum+1]);
+        loadchunk(chunks[chunknum+1]);
 
         unsigned int chunk_1_copy_size = cachechunk_size - chunk_byte_addr;
         unsigned int chunk_2_copy_size = number_of_bytes - chunk_1_copy_size;
 
         memcpy(dest, &chunks[chunknum].data[chunk_byte_addr], chunk_1_copy_size);
         memcpy(((char*)dest)+chunk_1_copy_size, chunks[chunknum+1].data, chunk_2_copy_size);
+
+        chunks[chunknum+1].hit_counter++;
     }
     else {
-        loadchunk(&chunks[chunknum]);
         memcpy(dest, &chunks[chunknum].data[chunk_byte_addr], number_of_bytes);
+    }
+
+    chunks[chunknum].hit_counter++;
+
+    gc_iteration_counter++;
+    if(gc_iteration_counter > ITERATIONS_UNTIL_GC) {
+        gc();
+        gc_iteration_counter = 0;
     }
 
     return dest;
