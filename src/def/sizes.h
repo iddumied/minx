@@ -60,4 +60,16 @@
  */
 #define         MINX_BINARY_MIN_CHUNK_COUNT         10
 
+/*
+ * Sets the number of binary-access until the garbage-collector for the binary
+ * reader is called. Currently very low!
+ */
+#define         ITERATIONS_UNTIL_GC                 10000
+
+/*
+ * free chunks of memory, less than n percent used in the last
+ * ITERATIONS_UNTIL_GC cycles.
+ */
+#define         BINARY_FREE_PERCENTAGE              25
+
 #endif // __MINX_VPU_SIZES_H__
