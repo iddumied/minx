@@ -47,7 +47,8 @@
 /*
  * binary-loading sizes
  */
-#define         MINX_ONE_CHUNK_LOAD_SIZE            (2 * MEBIBYTE)
+#define         __MINIRAM__ /* just for testing */
+#define         MINX_ONE_CHUNK_LOAD_SIZE            (50 /*byte*/) /*(2 * MEBIBYTE)*/
 
 /* max 10% of ram is for the binary of the running program. */
 #define         MINX_BINARY_MAX_RAM_PERCENTAGE      10
@@ -64,7 +65,7 @@
  * Sets the number of binary-access until the garbage-collector for the binary
  * reader is called. Currently very low!
  */
-#define         ITERATIONS_UNTIL_GC                 10000
+#define         ITERATIONS_UNTIL_GC                 10 /* 10000 */
 
 /*
  * free chunks of memory, less than n percent used in the last
