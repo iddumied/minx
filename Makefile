@@ -74,8 +74,7 @@ all: prepare ${TARGET} link move
 prepare:
 	@mkdir ${BIN}
 
-${TARGET}: $(OBJECTS) $(ADDITIONAL_TASKS)
-	${LD} ${LINK_OBJECTS} -o ${TARGET}
+${TARGET}: $(OBJECTS) $(ADDITIONAL_TASKS) link move
 
 %.o: %.c 
 	${CC} -c ${CFLAGS} ${HEADERS} ${MINX_FLAGS} $^ -o $@
