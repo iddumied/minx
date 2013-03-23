@@ -72,6 +72,10 @@ static uint64_t         gc_iteration_counter;
  * @param f The file, containing the binary
  */
 void minx_binary_init(FILE *f) {
+#ifdef DEBUGGING
+    minxbinarydbgprint("Binary init");
+#endif
+
     file = f;
     filesize                = get_file_size(f);
     cachechunk_size         = calculate_caching_size(filesize);
@@ -107,6 +111,10 @@ void minx_binary_init(FILE *f) {
  * Free all binary chunks
  */
 void minx_binary_shutdown(void) {
+#ifdef DEBUGGING
+    minxbinarydbgprint("Binary shutdown");
+#endif
+
     for(;chunkcount != 0; chunkcount--) {
         free(chunks[chunkcount-1]->data);
         chunks[chunkcount-1]->data = NULL;
@@ -123,6 +131,9 @@ void * minx_binary_get_at(  uint64_t p,
                             unsigned int number_of_bytes, 
                             void *dest, 
                             size_t destsize) {
+#ifdef DEBUGGING
+    minxbinarydbgprintf("Get Binary: %u Bytes", number_of_bytes);
+#endif
 
     unsigned int chunknum           = calculate_chunknum_for_address(p);
     uint64_t first_addr_in_chunk    = cachechunk_size * (chunknum);
@@ -179,6 +190,8 @@ signed int minx_binary_exists_at(uint64_t p) {
  * @brief Print the binary
  */
 void minx_binary_print(void) {
+    minxbinarydbgprint("Print binary");
+
     struct cchunk   *chunk;
     long            i;
     unsigned int    line = 0;
@@ -236,6 +249,10 @@ static long get_file_size(FILE *f) {
  * @return The max-size of a cache-chunk
  */
 static long calculate_caching_size(long filesize) {
+#ifdef DEBUGGING
+    minxbinarydbgprint("Calculate caching size");
+#endif
+
 #ifndef __MINIRAM__
     return MINX_ONE_CHUNK_LOAD_SIZE;
 #else //__MINIRAM__
@@ -275,6 +292,10 @@ static struct cchunk* get_new_cchunk(void) {
  * @param c A pointer to the struct cchunk to free
  */
 static void uncache(struct cchunk *c) {
+#ifdef DEBUGGING
+    minxbinarydbgprintf("uncache chunk %u", c->num);
+#endif
+
     c->state = FREE;
     free(c->data);
 }
@@ -287,6 +308,10 @@ static void uncache(struct cchunk *c) {
  * @return The number of the chunk where the address points into
  */
 static unsigned int calculate_chunknum_for_address(uint64_t addr) {
+#ifdef DEBUGGING
+    minxbinarydbgprint("Calculate chunknum");
+#endif
+    
     return (addr - (addr % cachechunk_size)) / cachechunk_size;
 }
 
@@ -296,6 +321,10 @@ static unsigned int calculate_chunknum_for_address(uint64_t addr) {
  * @param chunk The chunk to load
  */
 static void loadchunk(struct cchunk *chunk) {
+#ifdef DEBUGGING
+    minxbinarydbgprintf("Load chunk %u", chunk->num);
+#endif
+
     if(chunk->state == ALLOCATED)
         return;
 
@@ -315,6 +344,9 @@ static void loadchunk(struct cchunk *chunk) {
  * @brief Garbage collector like mechanizm to remove old chunks of binary.
  */
 static void gc(void) {
+#ifdef DEBUG
+    minxbinarydbgprint("Called garbage collector");
+#endif
     struct cchunk *chunk;
     for(chunk = chunks[0]; chunk != chunks[chunkcount-1]; chunk++) {
         if(chunk->hit_counter < (ITERATIONS_UNTIL_GC / 100 * BINARY_FREE_PERCENTAGE)) {
