@@ -89,13 +89,16 @@ static long get_file_size(FILE *f) {
  */
 static long calculate_caching_size(long filesize) {
 #ifndef __MINIRAM__
-    if (filesize <= MINX_ONE_CHUNK_LOAD_SIZE) {
-        return MINX_ONE_CHUNK_LOAD_SIZE;
-    }
-
+    return MINX_ONE_CHUNK_LOAD_SIZE;
 #else //__MINIRAM__
 
+    long ram_size   = minx_sys_get_ramsize();
 
+    /**
+     * @brief In want of a better variable name.
+     */
+    long useabe_ram = ram_size / 100 * MINX_BINARY_MAX_RAM_PERCENTAGE;
 
+    return useabe_ram / MINX_BINARY_MIN_CHUNK_COUNT;
 #endif //__MINIRAM__
 }

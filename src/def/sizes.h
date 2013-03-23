@@ -47,6 +47,17 @@
 /*
  * binary-loading sizes
  */
-#define         MINX_ONE_CHUNK_LOAD_SIZE    (2 * MEBIBYTE)
+#define         MINX_ONE_CHUNK_LOAD_SIZE            (2 * MEBIBYTE)
+
+/* max 10% of ram is for the binary of the running program. */
+#define         MINX_BINARY_MAX_RAM_PERCENTAGE      10
+
+/* 
+ * min number of chunks in the memory.
+ *
+ * This is required because if you have 10G of RAM, it is not sure I can
+ * allocate 1G in row. So I do some splitting into chunks.
+ */
+#define         MINX_BINARY_MIN_CHUNK_COUNT         10
 
 #endif // __MINX_VPU_SIZES_H__

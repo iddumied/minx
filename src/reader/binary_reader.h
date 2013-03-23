@@ -5,6 +5,8 @@
 #include <stdint.h>
 #include <string.h>
 
+#include "def/sizes.h"
+
 #include "util/error.h"
 #include "util/dim.h"
 
