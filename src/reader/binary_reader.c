@@ -1,10 +1,26 @@
 #include "reader/binary_reader.h"
 
+/*
+ * The binary reader works after a simple algo:
+ *
+ * The operations on each node are counted. After n steps, the nodes witch were
+ * accessed less than 25% of the stepcount are free'd.
+ *
+ * This value can be changed! It's just a testing value
+ * It's defined in def/sizes.h
+ */
+
+/**
+ * @brief Enum to set the chunk state
+ */
 enum cchunkstate {
     FREE,
     ALLOCATED,
 };
 
+/**
+ * @brief A chunk to store a part of the binary.
+ */
 struct cchunk {
     enum cchunkstate    state; /*!< inidicates if this chunk is currently available */
     size_t              size; /*!< size of this chunk (its data) */
@@ -119,6 +135,9 @@ signed int minx_binary_exists_at(uint64_t p) {
 }
 
 #ifdef DEBUGGING
+/**
+ * @brief Print the binary
+ */
 void minx_binary_print(void) {
     struct cchunk   *chunk;
     long            i;
@@ -169,21 +188,10 @@ static long get_file_size(FILE *f) {
  *
  * @param filesize The size of the File
  *
- * Sizes are calculated by a simple algorithm. If the size of the binary is less
- * than n bytes, it will be loaded into RAM completely (well, if your OS does
- * swapping, I don't care). 
+ * If __MINIRAM__ is defined, the size of a chunk is taken from the 
+ * MINX_ONE_CHUNK_LOAD_SIZE macro, so it is defined at compile time.
  *
- * n is defined in the MINX_ONE_CHUNK_LOAD_SIZE macro.
- *
- * This behaviour can be forbidden by defining the __MINIRAM__ macro.
- *
- * If it is bigger, it will be divided in 2 to n chunks. If __MINIRAM__ is defined,
- * this is 0.1% of the RAM-size, else it is 1% of the RAM-size.
- *
- * I think these values are really good. On a 2GiB-RAM machine, 0.1 is about
- * 2MiB, 1% is ~20 MiB. This is really much for a minx-binary AT THE MOMENT.
- * Later on, these values will change (especially if there is a compiler for a
- * high-level language, not this basic ASM-Stuff!)
+ * Else, it is calculated by the MINX_BINARY_MAX_RAM_PERCENTAGE macro.
  *
  * @return The max-size of a cache-chunk
  */
