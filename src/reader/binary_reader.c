@@ -25,6 +25,7 @@ struct cchunk {
     enum cchunkstate    state; /*!< inidicates if this chunk is currently available */
     size_t              size; /*!< size of this chunk (its data) */
     unsigned int        num; /*!< chunk-number. Used to calculate addresses, so starting with zero */
+    uint64_t            hit_counter; /*!< Counts the hits in one gc-iteration */
     char                *data; /*!< the binary. */
 };
 
@@ -41,6 +42,7 @@ static struct cchunk*   get_new_cchunk                  (void);
 static void             uncache                         (struct cchunk*);
 static unsigned int     calculate_chunknum_for_address  (uint64_t addr);
 static void             loadchunk                       (struct cchunk *chunk);
+static void             gc                              (void);
 
 /*
  * static variables
@@ -51,6 +53,11 @@ static long             filesize;
 static long             cachechunk_size;
 static struct cchunk    *chunks;
 static unsigned int     chunkcount;
+
+/**
+ * @brief When this counter hits a specific value, the cchunks are cleaned up.
+ */
+static uint64_t         gc_iteration_counter;
 
 /*
  *
@@ -241,4 +248,16 @@ static void loadchunk(struct cchunk *chunk) {
      * Finally, set the chunk status
      */
     chunk->state = ALLOCATED;
+}
+
+/**
+ * @brief Garbage collector like mechanizm to remove old chunks of binary.
+ */
+static void gc(void) {
+    struct cchunk *chunk = chunks;
+    for(chunk = chunks; chunk != &chunks[chunkcount-1]; chunk++) {
+        if(chunk->hit_counter < (ITERATIONS_UNTIL_GC / 100 * BINARY_FREE_PERCENTAGE)) {
+            uncache(chunk);
+        }
+    }
 }
