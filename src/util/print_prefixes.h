@@ -10,5 +10,7 @@
 
 #define MINX_CONFIG_PREFIX              "[minx][conf]"
 
+#define MINX_BINARY_PRINT_PREFIX        "[minx][binary]"
+
 
 #endif // __MINX_PRINT_PREFIXES_H__
