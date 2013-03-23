@@ -4,8 +4,10 @@
 #ifdef __linux__
 #include <sys/sysinfo.h>
 #else //_WIN32 || _WIN64
-#error Can't be compiled on non-linux OSes yet
+#error "Can't be compiled on non-linux OSes yet"
 #endif 
+
+#include <stdlib.h>
 
 /*
  *

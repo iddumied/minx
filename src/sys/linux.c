@@ -1,6 +1,6 @@
-#include "sys/linux.h"
+#include "sys/sys.h"
 
-static struct sysinfo sys_info = NULL;
+static struct sysinfo *sys_info;
 
 void minx_sys_init(void) {
     sys_info = (struct sysinfo*) malloc(sizeof(struct sysinfo));
@@ -16,8 +16,8 @@ void minx_sys_shutdown(void) {
  * @return The size of the RAM in bytes
  */
 long minx_sys_get_ramsize(void) {
-    if(total == 0)
-        sysinfo(&sys_info);
+    if(sys_info == NULL)
+        sysinfo(sys_info);
 
     return sys_info->totalram;
 }
