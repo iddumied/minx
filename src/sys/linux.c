@@ -3,6 +3,7 @@
 static struct sysinfo *sys_info;
 
 void minx_sys_init(void) {
+    minx_error_register_shutdown_function(minx_sys_shutdown);
     sys_info = (struct sysinfo*) malloc(sizeof(struct sysinfo));
     sysinfo(sys_info);
 }

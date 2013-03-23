@@ -69,6 +69,7 @@ int main(int argc, char **args) {
         mtrace();
     }
 
+    minx_sys_init();
     minx_binary_init(f);
 
 #ifdef DISASSEMBLE
@@ -93,6 +94,7 @@ int main(int argc, char **args) {
 
 
     minx_binary_shutdown();
+    minx_sys_shutdown();
     minx_config_shutdown();
     minx_error_shutdown();
 
