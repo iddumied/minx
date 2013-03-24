@@ -97,22 +97,17 @@ the moment. Maybe I'll fix this.
 # Plugins (modules)
 
 Plugins are called modules, because a plugins is a kernel-module. A plugin has
-to implement the module-header located in src/module/module.h, NOT the header
-from src/kernel/modules.h !
+to implement the module-header located in src/module/module.h (also in ./module_headers/)
+, NOT the header from src/kernel/modules.h !
 
 A module can implement serveral opcodes. But be careful! Your module has to
 implement opcodes as stable, don't change them. Existing programs will crash if
 the opcode-identifiers change!
 
-A module needs the headers from ./module_headers/!
-
 Modules/Plugins are under development at the moment. I have no working modules
 yet to test it.
 
 # Additional notes
-
-If you define the macro DESTROY_MY_APPLICATION when compiling, you use Sony-like 
-random number generation. (For more information have a look at the RAND opcode).
 
 If you want to talk about minx, send me an email. I'm on IRC (freenode), too,
 but minx has no own channel yet. Just no need for it. 
