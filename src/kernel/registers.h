@@ -20,6 +20,11 @@ typedef struct {
  * currently, registers are addressed with 1 byte addresses.
  * But the addresses are read from the binary as 2 byte, because if we want to
  * upgrade later, we do not have to change the compiler so much.
+ *
+ * The maximum value for this compiletime constant is 0xFFFF+1 = 65536. We could
+ * it increase much more, the vpu would allocate as much registers as this
+ * constant says! But the binary could not access them, because
+ * 2-Byte-register-addresses is the maximum, and that's it!
  */
 #define         MAX_REGISTERS       (0x00FF+1) /* 256 */
 
