@@ -347,13 +347,16 @@ static void loadchunk(struct cchunk *chunk) {
  * @brief Garbage collector like mechanizm to remove old chunks of binary.
  */
 static void gc(void) {
-#ifdef DEBUG
-    minxbinarydbgprint("Called garbage collector");
-#endif
     struct cchunk *chunk;
+    unsigned int i = 0;
+
     for(chunk = chunks[0]; chunk != chunks[chunkcount-1]; chunk++) {
         if(chunk->hit_counter < (ITERATIONS_UNTIL_GC / 100 * BINARY_FREE_PERCENTAGE)) {
             uncache(chunk);
+            i++;
         }
     }
+#ifdef DEBUG
+    minxbinarydbgprintf("Called garbage collector, free'd %u chunks", i);
+#endif
 }
