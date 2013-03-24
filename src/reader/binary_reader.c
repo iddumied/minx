@@ -299,6 +299,7 @@ static void uncache(struct cchunk *c) {
 #endif
 
     c->state = FREE;
+    c->hit_counter = 0;
     free(c->data);
 }
 
