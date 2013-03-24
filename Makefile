@@ -33,7 +33,7 @@ MINX_FLAGS = -D DEBUG -D DEBUGGING -D VERBOSITY -D DISASSEMBLE
 #
 CFLAGS += -Wall 
 CFLAGS += -std=c99
-CFLAGS += -g
+CFLAGS += -ggdb
 
 #
 ##
