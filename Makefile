@@ -69,12 +69,10 @@ LDFLAGS += -lm -ldl # link math.h
 # The tasks
 ##
 #
-all: prepare ${TARGET} link move
+${TARGET}: prepare $(OBJECTS) $(ADDITIONAL_TASKS) link move
 
 prepare:
 	@mkdir -p ${BIN}
-
-${TARGET}: $(OBJECTS) $(ADDITIONAL_TASKS) link move
 
 %.o: %.c 
 	${CC} -c ${CFLAGS} ${HEADERS} ${MINX_FLAGS} $^ -o $@
