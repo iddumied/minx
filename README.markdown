@@ -68,6 +68,9 @@ first Argument _has to be_ the binary you want to run, then:
 					the VPU to preallocate memory in any way.
 	--help | -h		print help message and exit
 
+Note: You _can_ use -d with --minx-debug, BUT the output is really disturbed at
+the moment. Maybe I'll fix this.
+
 Plugins (modules)
 -----------------
 
