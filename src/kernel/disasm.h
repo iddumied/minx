@@ -1,6 +1,7 @@
 #ifndef __MINX_DISASM_H__
 #define __MINX_DISASM_H__
 
+#define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 
 #include "util/config.h"

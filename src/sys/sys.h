@@ -9,6 +9,7 @@
 
 #include <stdlib.h>
 
+#include "util/error.h"
 /*
  *
  *

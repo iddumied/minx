@@ -1,6 +1,7 @@
 #ifndef __MINX_UTIL_OVERFLOWCHECK_H__
 #define __MINX_UTIL_OVERFLOWCHECK_H__
 
+#define __STDC_FORMAT_MACROS
 #include <stdint.h>
 #include <inttypes.h>
 

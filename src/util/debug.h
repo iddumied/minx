@@ -13,7 +13,10 @@
     do {                                                                    \
         ConfigurationValue *cv = minx_config_get(conf);                     \
         if(cv != NULL && cv->b) {                                           \
-            printf(pref": "format,__VA_ARGS__);                             \
+            printf(     pref                                                \
+                        ": "                                                \
+                        format,                                             \
+                        __VA_ARGS__);                                       \
         }                                                                   \
     }while(0)
 

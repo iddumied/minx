@@ -1,6 +1,7 @@
 #ifndef __MINX_VPU_OPCODES_H__
 #define __MINX_VPU_OPCODES_H__
 
+#define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 #include <math.h>
 #include <sys/stat.h>

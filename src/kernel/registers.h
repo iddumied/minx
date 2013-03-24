@@ -2,6 +2,7 @@
 #define __MINX_KERNEL_REGISTERS_H__
 
 #include <stdlib.h>
+#define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 
 #include "util/config.h"

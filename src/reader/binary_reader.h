@@ -1,9 +1,11 @@
 #ifndef __MINX_BINARY_READER_H__
 #define __MINX_BINARY_READER_H__
 
+#define __STDC_FORMAT_MACROS
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
+#include <inttypes.h>
 
 #include "def/sizes.h"
 

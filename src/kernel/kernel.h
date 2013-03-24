@@ -21,6 +21,7 @@
  * And these headers are only required if compiled with DEBUG
  */
 #ifdef DEBUG
+#define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 
 #include "util/debug.h"

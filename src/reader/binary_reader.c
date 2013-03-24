@@ -101,7 +101,7 @@ void minx_binary_init(FILE *f) {
     loadchunk(chunks[0]); /*!< precache the first chunk */
 
 #ifdef DEBUGGING
-    minxbinarydbgprintf("Binary initialized with %u chunks, %ld Bytes max per chunk", 
+    minxbinarydbgprintf("Binary initialized with %"PRIu64" chunks, %ld Bytes max per chunk", 
             chunkcount, cachechunk_size);
 #endif
 
