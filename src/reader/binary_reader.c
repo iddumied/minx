@@ -255,7 +255,7 @@ static long calculate_caching_size(long filesize) {
     minxbinarydbgprint("Calculate caching size");
 #endif
 
-#ifndef __MINIRAM__
+#ifdef __MINIRAM__
     return MINX_ONE_CHUNK_LOAD_SIZE;
 #else //__MINIRAM__
 
