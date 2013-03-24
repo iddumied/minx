@@ -282,6 +282,7 @@ static struct cchunk* get_new_cchunk(void) {
         c->state    = FREE;
         c->size     = 0;
         c->num      = 0;
+        c->hit_counter = 0;
         c->data     = NULL;
     }
 
