@@ -99,7 +99,6 @@ void minx_binary_init(FILE *f) {
     }
 
     loadchunk(chunks[0]); /*!< precache the first chunk */
-    chunkcount++; /*now, chunkcount is the real count, not a index anymore */
 
 #ifdef DEBUGGING
     minxbinarydbgprintf("Binary initialized with %u chunks, %ld Bytes max per chunk", 
