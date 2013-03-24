@@ -17,3 +17,5 @@ TODO:
 33) Plugins with several parameters (HeapNode with HeapNode-ID-Array ?)
 
 34) work on --fast option, ensure the VPU caches as much as possible.
+
+36) Output is disturbed when combining -d with --minx-debug
