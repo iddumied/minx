@@ -336,7 +336,8 @@ static void loadchunk(struct cchunk *chunk) {
 
     fseek(file, 0L, (cachechunk_size * chunk->num));
     memset(chunk->data, 0x00, cachechunk_size);
-    fread(chunk->data, sizeof(char), cachechunk_size, file);
+
+    chunk->size = fread(chunk->data, sizeof(char), cachechunk_size, file);
 
     /*
      * Finally, set the chunk status
