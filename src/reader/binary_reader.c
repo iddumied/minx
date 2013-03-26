@@ -143,7 +143,11 @@ void * minx_binary_get_at(  uint64_t p,
     int is_multichunk               = (chunk_byte_addr + number_of_bytes) > cachechunk_size;
 
     memset(dest, 0x00, destsize);
-    loadchunk(chunks[chunknum]);
+
+    if(chunks[chunknum]->state == FREE) {
+        loadchunk(chunks[chunknum]);
+    }
+
     if(is_multichunk) {
         if(chunknum+1 > chunkcount) {
             FATAL_F_ERROR(
@@ -151,7 +155,9 @@ void * minx_binary_get_at(  uint64_t p,
                     chunknum+1);
         }
 
-        loadchunk(chunks[chunknum+1]);
+        if (chunks[chunknum+1]->state == FREE) {
+            loadchunk(chunks[chunknum+1]);
+        }
 
         unsigned int chunk_1_copy_size = cachechunk_size - chunk_byte_addr;
         unsigned int chunk_2_copy_size = number_of_bytes - chunk_1_copy_size;
@@ -319,14 +325,11 @@ static unsigned int calculate_chunknum_for_address(uint64_t addr) {
 }
 
 /**
- * @brief Load a chunk. If the chunk is not allocated, load its data, else return
+ * @brief Load a chunk.
  *
  * @param chunk The chunk to load
  */
 static void loadchunk(struct cchunk *chunk) {
-    if(chunk->state == ALLOCATED)
-        return;
-
 #ifdef DEBUGGING
     minxbinarydbgprintf("Load chunk %u", chunk->num);
 #endif
