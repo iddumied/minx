@@ -46,6 +46,10 @@ defined. You have to edit the Makefile if you want to undef one of the opcodes.
 I would love you to submit patches. If you do so, please do a `git rebase`, so I
 don't have to click through all commits. Just squash the unimportant ones!
 
+Please document for doxygen. If you don't know how to do it, have a look at my
+code. I'm a doxygen beginner, but I think you can easily see what the stuff has
+to look about.
+
 What I do _NOT_ merge: 
 
 - uncommented code (just if it is self-explanatory)
