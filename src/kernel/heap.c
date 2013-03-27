@@ -50,6 +50,17 @@ void minx_kernel_heap_init(void) {
 
     /* set the memory_id_counter to 1, because zero is returned on error */
     memory_id_counter           = MINX_KERNEL_HEAP_ERROR + 1;
+
+    /*
+     * if configured to be fast, allocate HEAPNODES_PREALLOCATE_COUNT heapnodes 
+     * at setup.
+     */
+    if(minx_config_get(CONF_FAST)->b) {
+        unsigned int i;
+        for(i = 0; i < HEAPNODES_PREALLOCATE_COUNT; i++) {
+            create_new_heapnode();
+        }
+    }
 }
 
 /**

@@ -28,6 +28,8 @@
 #define HEAPNODES_REALLOC_FAST_STEP         50
 #define HEAPNODES_REALLOC_STEP              5
 
+#define HEAPNODES_PREALLOCATE_COUNT         100
+
 
 /** @typedef HeapNode
  *
