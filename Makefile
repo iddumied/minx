@@ -90,6 +90,10 @@ move:
 clean:
 	@rm ${OBJECTS}
 
+doc: 
+	echo "doxygen installed?"
+	@doxygen
+
 #
 #
 # compiling utilc
