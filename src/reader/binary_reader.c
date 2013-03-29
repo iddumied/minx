@@ -96,6 +96,7 @@ void minx_binary_init(FILE *f) {
             chunkcount++, cache_created += cachechunk_size) {
 
         chunks[chunkcount] = get_new_cchunk();
+        chunks[chunkcount]->num = chunkcount;
     }
 
     loadchunk(chunks[0]); /*!< precache the first chunk */
