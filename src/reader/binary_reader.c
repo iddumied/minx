@@ -348,6 +348,13 @@ static void loadchunk(struct cchunk *chunk) {
 
 /**
  * @brief Garbage collector like mechanizm to remove old chunks of binary.
+ *
+ * The gc_iteration_counter identifies, how much times the binary was read since
+ * the last gc() call. If a chunk was read less than BINARY_FREE_PERCENTAGE % in 
+ * this number of iterations, it will be free'd.
+ *
+ * If the hit_counter is zero, the chunk is fresh, so it is required soon. Don't
+ * free this one...
  */
 static void gc(void) {
     unsigned int i, j = 0;
