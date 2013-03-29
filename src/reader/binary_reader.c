@@ -113,10 +113,6 @@ void minx_binary_init(FILE *f) {
  * Free all binary chunks
  */
 void minx_binary_shutdown(void) {
-#ifdef DEBUGGING
-    minxbinarydbgprint("Binary shutdown");
-#endif
-
     for(;chunkcount != 0; chunkcount--) {
         free(chunks[chunkcount-1]->data);
         chunks[chunkcount-1]->data = NULL;
