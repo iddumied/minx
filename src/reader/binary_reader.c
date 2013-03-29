@@ -367,6 +367,6 @@ static void gc(void) {
         }
     }
 #ifdef DEBUG
-    minxbinarydbgprintf("Called garbage collector, free'd %u chunks", i);
+    minxbinarydbgprintf("Called garbage collector, free'd %u chunks", j);
 #endif
 }
