@@ -360,7 +360,8 @@ static void loadchunk(struct cchunk *chunk) {
 static void gc(void) {
     unsigned int i, j = 0;
     for(i = 0; i < chunkcount; i++) {
-        if(chunks[i]->hit_counter < (ITERATIONS_UNTIL_GC / 100 * BINARY_FREE_PERCENTAGE)) {
+        if(chunks[i]->hit_counter < (gc_iteration_counter * (100/BINARY_FREE_PERCENTAGE)) && 
+                chunks[i]->hit_counter != 0) {
             uncache(chunks[i]);
             j++;
         }
