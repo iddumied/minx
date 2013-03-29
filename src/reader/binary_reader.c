@@ -351,10 +351,6 @@ static void loadchunk(struct cchunk *chunk) {
 static void gc(void) {
     unsigned int i, j = 0;
     for(i = 0; i < chunkcount; i++) {
-#ifdef DEBUGGING
-            printf("Uncache %u?\n", i);
-            fflush(stdout);
-#endif
         if(chunks[i]->hit_counter < (ITERATIONS_UNTIL_GC / 100 * BINARY_FREE_PERCENTAGE)) {
             uncache(chunks[i]);
             j++;
