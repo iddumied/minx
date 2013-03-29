@@ -71,6 +71,6 @@
  * free chunks of memory, less than n percent used in the last
  * ITERATIONS_UNTIL_GC cycles.
  */
-#define         BINARY_FREE_PERCENTAGE              25
+#define         BINARY_FREE_PERCENTAGE              5
 
 #endif // __MINX_VPU_SIZES_H__
