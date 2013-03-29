@@ -343,7 +343,8 @@ static void loadchunk(struct cchunk *chunk) {
     /*
      * Finally, set the chunk status
      */
-    chunk->state = ALLOCATED;
+    chunk->state        = ALLOCATED;
+    chunk->hit_counter  = 0;
 }
 
 /**
