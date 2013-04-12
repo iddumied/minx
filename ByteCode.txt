@@ -76,33 +76,33 @@ opcodes
 
 Maximal 5 parameters at the moment!
 
-code | Short ex.| arguments				        | Expl.
+code | Short ex.| arguments			| Expl.
 -----+----------+-------------------------------+-----------------------
-0x00 | NOP		| none					        |
-0x01 | CALL	    | Adress					    | Push current addr to Stack, jump to address
-0x02 | RET		| none					        | Jump to $(stack pop)
+0x00 | NOP	| none				|
+0x01 | CALL	| Adress			| Push current addr to Stack, jump to address
+0x02 | RET	| none				| Jump to $(stack pop)
      |          |                               |
-0x03 | MOV		| Register, Register		    |
-0x04 | MOVI	    | Register, Value			    |
+0x03 | MOV	| Register, Register		|
+0x04 | MOVI	| Register, Value		|
      |          |                               |
-0x05 | NOT		| Register				        | result in akku
-0x06 | NOTR	    | Register				        | result in register
+0x05 | NOT	| Register			| result in akku
+0x06 | NOTR	| Register			| result in register
      |          |                               |
-0x07 | AND		| Register, Register		    | result in akku
-0x08 | ANDI	    | Register, Value			    | result in akku
-0x09 | ANDR	    | Register, Register		    | result in register 
-0x0A | ANDIR	| Register, Value			    | result in register
+0x07 | AND	| Register, Register		| result in akku
+0x08 | ANDI	| Register, Value		| result in akku
+0x09 | ANDR	| Register, Register		| result in register 
+0x0A | ANDIR	| Register, Value		| result in register
      |          |                               |
-0x0B | OR		| Register, Register		    | result in akku 
-0x0C | ORI		| Register, Value			    | result in akku 
-0x0D | ORR		| Register, Register		    | result in register 
-0x0E | ORIR	    | Register, Value			    | result in register
+0x0B | OR	| Register, Register		| result in akku 
+0x0C | ORI	| Register, Value		| result in akku 
+0x0D | ORR	| Register, Register		| result in register 
+0x0E | ORIR	| Register, Value		| result in register
      |          |                               |
-0x0F | DEC		| Register				        | result in register 
-0x10 | INC		| Register				        | result in register 
+0x0F | DEC	| Register			| result in register 
+0x10 | INC	| Register			| result in register 
      |          |                               |
-0x11 | LSH		| Register				        | result in register 
-0x12 | RSH		| Register				        | result in register 
+0x11 | LSH	| Register			| result in register 
+0x12 | RSH	| Register			| result in register 
      |          |                               |
 0x13 | CMP      | Register, Register            | compare, result in akku, 1 if first is bigger, 2 if second is bigger, zero if equal
 0x14 | CMPI     | Register, Value               | see opcode CMP
@@ -114,10 +114,10 @@ code | Short ex.| arguments				        | Expl.
 0x19 | CLRB     | Register, Register            | result in register
 0x1A | CLRBI    | Register, Value               | result in register
      |          |                               |
-0x20 | ADD		| Register, Register		    | result in akku 
-0x21 | ADDI		| Register, Value			    | result in akku 
-0x22 | ADDR		| Register, Register		    | result in register 
-0x23 | ADDIR	| Register, Value			    | result in register
+0x20 | ADD	| Register, Register		| result in akku 
+0x21 | ADDI	| Register, Value		| result in akku 
+0x22 | ADDR	| Register, Register		| result in register 
+0x23 | ADDIR	| Register, Value		| result in register
 0x24 | SUB      | Register, Register            | result in akku 
 0x25 | SUBI     | Register, Value               | result in akku 
 0x26 | SUBR     | Register, Register            | result in register 
@@ -143,14 +143,14 @@ code | Short ex.| arguments				        | Expl.
 0x3A | RAND     | none                          | result in akku
 0x3B | URAND    | none                          | result in akku
 0x3C | READSTACK| none                          | result in akku
-0x3D | PUSH		| Register				        | push register to stack
-0x3E | POP		| Register				        | pop from stack into register
-0x3F | DROP		| none					        | pop from stack and drop
+0x3D | PUSH	| Register			| push register to stack
+0x3E | POP	| Register			| pop from stack into register
+0x3F | DROP	| none				| pop from stack and drop
      |          |                               |
-0x40 | JMP		| Adress					    | jump to address (number of byte)
-0x41 | JMPIZ	| Register, Adress		        | jump if register is zero
-0x42 | JMPNZ	| Register, Adress		        | jump if register is not zero
-0x43 | IFZJMP	| Adress, Adress			    | if akku is zero jump, else jump
+0x40 | JMP	| Adress			| jump to address (number of byte)
+0x41 | JMPIZ	| Register, Adress		| jump if register is zero
+0x42 | JMPNZ	| Register, Adress		| jump if register is not zero
+0x43 | IFZJMP	| Adress, Adress		| if akku is zero jump, else jump
 0x44 | EXIT     | Register                      | Exit with errorcode from register
      |          |                               |
 0x45 | XOR      | Register, Register            | result in akku 
